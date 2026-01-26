@@ -33,6 +33,16 @@ Default to "balanced" if not set.
 Store resolved models for use in Task calls below.
 </step>
 
+<step name="check_autonomous_mode" priority="first">
+Read autonomous mode setting:
+
+```bash
+AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
+```
+
+Store for use in decision points below. Checkpoint handling via execute-plan.md already references POLICY-06/07.
+</step>
+
 <step name="load_project_state">
 Before any operation, read project state:
 
@@ -273,6 +283,20 @@ Execute each wave in sequence. Autonomous plans within a wave run in parallel.
 
    If any agent in wave fails:
    - Report which plan failed and why
+
+   **If AUTONOMOUS=true:**
+
+   Apply default: Continue with remaining waves (recoverable failure) or stop (systemic failure).
+
+   Recoverable: Single plan failure, others can proceed.
+   Systemic: Git issues, permissions, all agents failed.
+
+   ```
+   Auto-decided: {continue|stop} -- {reason} [autonomous-defaults.md]
+   ```
+
+   **If AUTONOMOUS=false:**
+
    - Ask user: "Continue with remaining waves?" or "Stop execution?"
    - If continue: proceed to next wave (dependent plans may also fail)
    - If stop: exit with partial completion report
@@ -434,6 +458,18 @@ grep "^status:" "$PHASE_DIR"/*-VERIFICATION.md | cut -d: -f2 | tr -d ' '
 Phase goal verified. Proceed to update_roadmap.
 
 **If human_needed:**
+
+**If AUTONOMOUS=true:**
+
+Human verification items noted but cannot be auto-verified. Log and proceed.
+
+```
+Auto-decided: proceed with noted items -- Human verification requires visual/interactive testing [autonomous-defaults.md]
+```
+
+Continue to update_roadmap. Items logged in VERIFICATION.md for manual review.
+
+**If AUTONOMOUS=false:**
 
 ```markdown
 ## ✓ Phase {X}: {Name} — Human Verification Required
