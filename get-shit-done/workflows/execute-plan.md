@@ -80,7 +80,59 @@ AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:spa
 
 Store for use in checkpoint handling. When `AUTONOMOUS=true`, checkpoints will be handled automatically using documented patterns.
 
+**If AUTONOMOUS=true, initialize session decision tracking:**
+
+1. Create DECISIONS.md if doesn't exist:
+```bash
+if [ ! -f .planning/DECISIONS.md ]; then
+  cat > .planning/DECISIONS.md << 'EOF'
+# Decision Log
+
+This file tracks all autonomous decisions made across GSD sessions. Each session has its own section. Decisions are append-only; corrections are new decisions that explicitly override prior decisions.
+
+## Format
+
+| Column | Description |
+|--------|-------------|
+| ID | Session-scoped identifier (D001, D002, ...) |
+| Timestamp | UTC time of decision (HH:MM:SS) |
+| Decision Point | What was being decided |
+| Choice | The selected option |
+| Reason | Brief rationale |
+| Context Refs | Sources cited (FILE.md:section or L##) |
+| Confidence | HIGH/MEDIUM/LOW |
+
+EOF
+fi
+```
+
+2. Start new session in DECISIONS.md:
+```bash
+echo "" >> .planning/DECISIONS.md
+echo "## Session: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .planning/DECISIONS.md
+echo "" >> .planning/DECISIONS.md
+echo "| ID | Timestamp | Decision Point | Choice | Reason | Context Refs | Confidence |" >> .planning/DECISIONS.md
+echo "|----|-----------|----------------|--------|--------|--------------|------------|" >> .planning/DECISIONS.md
+```
+
+3. Load recent decisions for session history (tail last 30 lines for context):
+```bash
+tail -30 .planning/DECISIONS.md 2>/dev/null
+```
+
+4. Initialize session decision history table (in-memory for this execution):
+
+```markdown
+## Session Decisions (auto-maintained)
+
+| ID | Decision | Choice | Reason | Context |
+|----|----------|--------|--------|---------|
+```
+
+Track session decision counter: `DECISION_ID=0`
+
 Reference: @~/.claude/get-shit-done/references/autonomous.md
+Reference: @~/.claude/get-shit-done/references/context-assembly.md
 </step>
 
 <step name="identify_plan">
@@ -1079,18 +1131,91 @@ Reference: @~/.claude/get-shit-done/references/autonomous-defaults.md
    ```
    Auto-decided: approved — All verification checks passed [list results]
    ```
+
+   **Persist decision to DECISIONS.md:**
+   ```bash
+   DECISION_ID=$((DECISION_ID + 1))
+   DECISION_ID_PADDED=$(printf "D%03d" $DECISION_ID)
+   echo "| ${DECISION_ID_PADDED} | $(date -u +%H:%M:%S) | verify: ${TASK_NAME} | approved | All checks passed | ${VERIFICATION_RESULTS} | HIGH |" >> .planning/DECISIONS.md
+   ```
+
+   Update session decision history table with approval.
    Continue to next task.
 3. If ANY fail: Fall back to human verification (present checkpoint even in autonomous mode)
 
 **For checkpoint:decision:**
+
+**Step 1: Gather decision context** (per context-assembly.md):
+
+```markdown
+1. Read PROJECT.md: Core Value, Constraints, Key Decisions sections
+   - Extract explicit preferences relevant to this decision
+   - If explicit preference found: Citation format [PROJECT.md:Section Name]
+
+2. Read REQUIREMENTS.md: Active requirements relevant to this decision
+   - Check for requirement that constrains valid choices
+   - If requirement found: Citation format [REQUIREMENTS.md:requirement-id]
+
+3. Check session decision history for related prior decisions
+   - Scan "Session Decisions" table for related choices
+   - If related decision exists: Note for consistency [S###]
+
+4. Read RESEARCH.md if exists in phase directory
+   - Check for technical recommendations
+   - If recommendation found: Citation format [RESEARCH.md:Section]
+
+Stop when context is sufficient for this decision (~2000 token cap).
+```
+
+**Step 2: Check session history before deciding:**
+```markdown
+Scan session decisions for related choices.
+If related decision found (e.g., S001 chose database type):
+  - For consistency: Include "consistent with S###" in reason
+  - For override: Include "(overrides S###: [justification])" in reason
+```
+
+**Step 3: Make decision based on gathered context:**
 1. Read available options from task
-2. Check project context (PROJECT.md, REQUIREMENTS.md, current stack)
-3. Select option that best matches context
+2. Select option that best matches gathered context
+3. Output trace with citations:
    ```
-   Auto-decided: [option] — [context-based reason]
+   Auto-decided: [option] — [reason] [context refs]
+   ```
+   Examples:
+   ```
+   Auto-decided: postgresql — Relational data model required [PROJECT.md:Constraints, REQUIREMENTS.md:DB-01]
+   Auto-decided: jwt — Stateless API, consistent with S001 [PROJECT.md:L48, S001]
    ```
    Continue with selected option.
-4. If no clear match: Select safest/most reversible option with assumption logged
+4. If no clear match: Select safest/most reversible option with assumption logged:
+   ```
+   Auto-decided: [option] — No policy match, selected safest option. Assumption: [what was assumed]
+   ```
+
+**Step 4: Determine confidence level:**
+- HIGH: Context explicitly addresses this decision (user preference or requirement)
+- MEDIUM: Context provides related guidance (research recommendation)
+- LOW: Using default due to insufficient context
+
+**Step 5: Persist decision to DECISIONS.md:**
+
+```bash
+# Increment decision counter
+DECISION_ID=$((DECISION_ID + 1))
+DECISION_ID_PADDED=$(printf "D%03d" $DECISION_ID)
+
+# Append decision row to DECISIONS.md
+echo "| ${DECISION_ID_PADDED} | $(date -u +%H:%M:%S) | ${DECISION_POINT} | ${CHOICE} | ${REASON} | ${CONTEXT_REFS} | ${CONFIDENCE} |" >> .planning/DECISIONS.md
+```
+
+Update session decision history table (in context):
+```markdown
+Add row to "## Session Decisions" table:
+| S[ID] | [decision] | [choice] | [reason] | [context] |
+```
+
+This enables later decisions to reference this decision via S### format.
 
 **For checkpoint:human-action:**
 1. Cannot be automated (requires human-only action)
