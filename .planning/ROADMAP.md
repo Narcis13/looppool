@@ -77,10 +77,13 @@ Plans:
   2. `/gsd:plan-phase` runs end-to-end with zero human input when autonomous enabled
   3. `/gsd:execute-phase` runs all checkpoints autonomously when autonomous enabled
   4. All other GSD workflows check autonomous flag before prompting user
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Add autonomous handling to execute-phase workflow (failure recovery, checkpoint routing)
+- [ ] 04-02-PLAN.md — Implement discuss-phase autonomous skip (exits early when autonomous enabled)
+- [ ] 04-03-PLAN.md — Add autonomous handling to new-milestone (research, roadmap approval)
+- [ ] 04-04-PLAN.md — Add autonomous handling to auxiliary workflows (discovery, debug, resume-work)
 
 ### Phase 5: Architecture Refactoring
 **Goal**: Large monolithic files extracted into maintainable focused modules
@@ -120,6 +123,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Inner Voice Foundation | 2/2 | Complete | 2026-01-26 |
 | 2. Context-Aware Reasoning | 2/2 | Complete | 2026-01-26 |
 | 3. Decision Policies | 3/3 | Complete | 2026-01-26 |
-| 4. Workflow Integration | 0/TBD | Not started | - |
+| 4. Workflow Integration | 0/4 | Planned | - |
 | 5. Architecture Refactoring | 0/TBD | Not started | - |
 | 6. Safety Features | 0/TBD | Not started | - |
