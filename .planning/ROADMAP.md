@@ -45,10 +45,11 @@ Plans:
   2. Decision history is maintained within session for consistency across decisions
   3. All decisions are persisted to `.planning/DECISIONS.md` with timestamps and context refs
   4. Later decisions reference earlier decisions when relevant
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Create context assembly reference and DECISIONS.md template
+- [ ] 02-02-PLAN.md — Integrate context-aware reasoning into execute-plan.md
 
 ### Phase 3: Decision Policies
 **Goal**: Specific policies answer common GSD questions automatically
@@ -115,7 +116,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Inner Voice Foundation | 2/2 | ✓ Complete | 2026-01-26 |
-| 2. Context-Aware Reasoning | 0/TBD | Not started | - |
+| 2. Context-Aware Reasoning | 0/2 | Ready to execute | - |
 | 3. Decision Policies | 0/TBD | Not started | - |
 | 4. Workflow Integration | 0/TBD | Not started | - |
 | 5. Architecture Refactoring | 0/TBD | Not started | - |
