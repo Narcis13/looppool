@@ -95,10 +95,13 @@ Plans:
   3. execute-plan.md workflow (1844 lines) is split into focused modules
   4. STATE.md has schema validation with required fields defined
   5. STATE.md auto-recovers from ROADMAP.md when corrupted or missing
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md — Extract gsd-planner.md into focused modules (<500 lines)
+- [ ] 05-02-PLAN.md — Extract gsd-executor.md into focused modules (<500 lines)
+- [ ] 05-03-PLAN.md — Extract execute-plan.md and deduplicate shared content (<800 lines)
+- [ ] 05-04-PLAN.md — Create STATE.md schema and auto-recovery, atomic JSON pattern
 
 ### Phase 6: Safety Features
 **Goal**: Safer autonomous operation with rollback and inline plan revision
@@ -124,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Context-Aware Reasoning | 2/2 | Complete | 2026-01-26 |
 | 3. Decision Policies | 3/3 | Complete | 2026-01-26 |
 | 4. Workflow Integration | 4/4 | Complete | 2026-01-27 |
-| 5. Architecture Refactoring | 0/TBD | Not started | - |
+| 5. Architecture Refactoring | 0/4 | Not started | - |
 | 6. Safety Features | 0/TBD | Not started | - |
