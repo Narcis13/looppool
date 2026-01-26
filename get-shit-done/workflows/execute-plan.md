@@ -10,6 +10,7 @@ Read config.json for planning behavior settings.
 @~/.claude/get-shit-done/references/autonomous.md
 @~/.claude/get-shit-done/references/autonomous-defaults.md
 @~/.claude/get-shit-done/references/checkpoints.md
+@~/.claude/get-shit-done/references/decision-policies.md
 </required_reading>
 
 <process>
@@ -78,7 +79,12 @@ Read autonomous mode setting:
 AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
 ```
 
-Store for use in checkpoint handling. When `AUTONOMOUS=true`, checkpoints will be handled automatically using documented patterns.
+Store for use in checkpoint handling. When `AUTONOMOUS=true`:
+- checkpoint:human-verify uses POLICY-07 (auto-approve if all checks pass)
+- checkpoint:decision uses POLICY-06 (context-based selection)
+- checkpoint:human-action always requires human (cannot be automated)
+
+Reference: @~/.claude/get-shit-done/references/decision-policies.md
 
 **If AUTONOMOUS=true, initialize session decision tracking:**
 
@@ -1126,10 +1132,13 @@ When encountering `type="checkpoint:*"`:
 Reference: @~/.claude/get-shit-done/references/autonomous-defaults.md
 
 **For checkpoint:human-verify:**
+
+Apply POLICY-07 (Checkpoint Human-Verify Auto-Approval):
+
 1. Run all automated verifications specified in the task (tests, builds, curl checks)
 2. If ALL pass:
    ```
-   Auto-decided: approved — All verification checks passed [list results]
+   Auto-decided: approved -- All verification checks passed [POLICY-07, tests: {pass}/{total}, build: success]
    ```
 
    **Persist decision to DECISIONS.md:**
@@ -1142,8 +1151,13 @@ Reference: @~/.claude/get-shit-done/references/autonomous-defaults.md
    Update session decision history table with approval.
    Continue to next task.
 3. If ANY fail: Fall back to human verification (present checkpoint even in autonomous mode)
+   ```
+   Verification failed -- Falling back to human [POLICY-07, test failures: {count}]
+   ```
 
 **For checkpoint:decision:**
+
+Apply POLICY-06 (Checkpoint Decision Selection):
 
 **Step 1: Gather decision context** (per context-assembly.md):
 
@@ -1178,19 +1192,24 @@ If related decision found (e.g., S001 chose database type):
 **Step 3: Make decision based on gathered context:**
 1. Read available options from task
 2. Select option that best matches gathered context
-3. Output trace with citations:
-   ```
-   Auto-decided: [option] — [reason] [context refs]
-   ```
+3. Output trace with citations (include POLICY-06):
+   - If explicit preference found in context:
+     ```
+     Auto-decided: {option} -- {reason} [POLICY-06, {context_refs}, HIGH]
+     ```
+   - If research recommendation found:
+     ```
+     Auto-decided: {option} -- {reason} [POLICY-06, {context_refs}, MEDIUM]
+     ```
    Examples:
    ```
-   Auto-decided: postgresql — Relational data model required [PROJECT.md:Constraints, REQUIREMENTS.md:DB-01]
-   Auto-decided: jwt — Stateless API, consistent with S001 [PROJECT.md:L48, S001]
+   Auto-decided: postgresql -- Relational data model required [POLICY-06, PROJECT.md:Constraints, REQUIREMENTS.md:DB-01, HIGH]
+   Auto-decided: jwt -- Stateless API, consistent with S001 [POLICY-06, PROJECT.md:L48, S001, MEDIUM]
    ```
    Continue with selected option.
-4. If no clear match: Select safest/most reversible option with assumption logged:
+4. If no clear match (use safest option):
    ```
-   Auto-decided: [option] — No policy match, selected safest option. Assumption: [what was assumed]
+   Auto-decided: {option} -- No policy match, selected safest option [POLICY-06, Assumption: {assumption}, LOW]
    ```
 
 **Step 4: Determine confidence level:**
