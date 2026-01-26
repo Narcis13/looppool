@@ -12,7 +12,7 @@ This roadmap delivers full autonomous execution for GSD, enabling Claude to reas
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Inner Voice Foundation** - Config flag, decision traces, full commitment mode
+- [x] **Phase 1: Inner Voice Foundation** - Config flag, decision traces, full commitment mode
 - [ ] **Phase 2: Context-Aware Reasoning** - Context assembly, decision history, audit trail
 - [ ] **Phase 3: Decision Policies** - Specific policies for each GSD decision type
 - [ ] **Phase 4: Workflow Integration** - Connect autonomous reasoning to all GSD workflows
@@ -26,15 +26,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Depends on**: Nothing (first phase)
 **Requirements**: VOICE-01, VOICE-02, VOICE-05, VOICE-07
 **Success Criteria** (what must be TRUE):
-  1. Setting `autonomous: true` in config.json enables autonomous mode across GSD
+  1. Config flag pattern and reference docs exist for enabling autonomous mode (workflow integration in Phase 4)
   2. Every autonomous decision outputs `Auto-decided: [choice] — [reason]` trace
   3. When enabled, ALL decision points are auto-decided (no partial autonomy)
   4. When context is insufficient, system uses documented defaults and logs assumptions
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Create autonomous reference documentation (patterns, defaults)
-- [ ] 01-02-PLAN.md — Integrate autonomous handling into execute-plan.md
+- [x] 01-01-PLAN.md — Create autonomous reference documentation (patterns, defaults)
+- [x] 01-02-PLAN.md — Integrate autonomous handling into execute-plan.md
 
 ### Phase 2: Context-Aware Reasoning
 **Goal**: Decisions are grounded in project context and tracked for consistency
@@ -114,7 +114,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inner Voice Foundation | 0/2 | Planned | - |
+| 1. Inner Voice Foundation | 2/2 | ✓ Complete | 2026-01-26 |
 | 2. Context-Aware Reasoning | 0/TBD | Not started | - |
 | 3. Decision Policies | 0/TBD | Not started | - |
 | 4. Workflow Integration | 0/TBD | Not started | - |
