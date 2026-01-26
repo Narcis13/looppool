@@ -30,6 +30,8 @@ This is the brownfield equivalent of new-project. The project exists, PROJECT.md
 @~/.claude/get-shit-done/references/ui-brand.md
 @~/.claude/get-shit-done/templates/project.md
 @~/.claude/get-shit-done/templates/requirements.md
+@~/.claude/get-shit-done/references/autonomous.md
+@~/.claude/get-shit-done/references/decision-policies.md
 </execution_context>
 
 <context>
@@ -53,6 +55,14 @@ Milestone name: $ARGUMENTS (optional - will prompt if not provided)
 - Read MILESTONES.md (what shipped previously)
 - Read STATE.md (pending todos, blockers)
 - Check for MILESTONE-CONTEXT.md (from /gsd:discuss-milestone)
+
+**Read autonomous mode:**
+
+```bash
+AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
+```
+
+Store for use in decision points below.
 
 ## Phase 2: Gather Milestone Goals
 
