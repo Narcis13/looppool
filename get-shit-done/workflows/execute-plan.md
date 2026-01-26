@@ -7,6 +7,9 @@ Read STATE.md before any operation to load project context.
 Read config.json for planning behavior settings.
 
 @~/.claude/get-shit-done/references/git-integration.md
+@~/.claude/get-shit-done/references/autonomous.md
+@~/.claude/get-shit-done/references/autonomous-defaults.md
+@~/.claude/get-shit-done/references/checkpoints.md
 </required_reading>
 
 <process>
@@ -1063,6 +1066,42 @@ TASK_COMMITS+=("Task ${TASK_NUM}: ${TASK_COMMIT}")
 When encountering `type="checkpoint:*"`:
 
 **Critical: Claude automates everything with CLI/API before checkpoints.** Checkpoints are for verification and decisions, not manual work.
+
+### Autonomous Checkpoint Handling
+
+**If AUTONOMOUS=true:**
+
+Reference: @~/.claude/get-shit-done/references/autonomous-defaults.md
+
+**For checkpoint:human-verify:**
+1. Run all automated verifications specified in the task (tests, builds, curl checks)
+2. If ALL pass:
+   ```
+   Auto-decided: approved — All verification checks passed [list results]
+   ```
+   Continue to next task.
+3. If ANY fail: Fall back to human verification (present checkpoint even in autonomous mode)
+
+**For checkpoint:decision:**
+1. Read available options from task
+2. Check project context (PROJECT.md, REQUIREMENTS.md, current stack)
+3. Select option that best matches context
+   ```
+   Auto-decided: [option] — [context-based reason]
+   ```
+   Continue with selected option.
+4. If no clear match: Select safest/most reversible option with assumption logged
+
+**For checkpoint:human-action:**
+1. Cannot be automated (requires human-only action)
+   ```
+   Autonomous mode: Human action required for [action], pausing for user
+   ```
+2. Present checkpoint and wait for user (same as interactive mode)
+
+**If AUTONOMOUS=false:**
+
+[Interactive checkpoint handling below - unchanged from original]
 
 **Display checkpoint clearly:**
 
