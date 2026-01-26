@@ -496,6 +496,261 @@ Autonomous mode: Verification failed, human review required
 
 ---
 
+## Policy Integration Patterns
+
+How workflows apply policies. Workflows reference this document for policy rules; they don't define policies inline.
+
+### Pattern 1: Simple Binary Policy (POLICY-01, 05, 07)
+
+For policies with clear yes/no outcomes based on observable conditions.
+
+```markdown
+<step name="decision_point">
+Check AUTONOMOUS flag from workflow start.
+
+**If AUTONOMOUS=true:**
+
+1. Check observable conditions:
+   ```bash
+   [condition check commands from policy]
+   ```
+
+2. Apply POLICY-XX:
+   IF [condition true]
+   THEN [choice A]
+   ```
+   Auto-decided: [choice A] -- [reason] [POLICY-XX, {details}]
+   ```
+   Execute choice A.
+
+   IF [condition false]
+   THEN [choice B]
+   ```
+   Auto-decided: [choice B] -- [reason] [POLICY-XX]
+   ```
+   Execute choice B.
+
+**If AUTONOMOUS=false:**
+[Existing interactive flow - unchanged]
+</step>
+```
+
+**Applicable policies:**
+- POLICY-01: map codebase OR skip mapping
+- POLICY-05: approve OR revision loop
+- POLICY-07: approve OR human fallback
+
+### Pattern 2: Context-Based Policy (POLICY-06)
+
+For policies that require gathering context before deciding.
+
+```markdown
+<step name="checkpoint_decision">
+Check AUTONOMOUS flag from workflow start.
+
+**If AUTONOMOUS=true:**
+
+1. Gather decision context (per context-assembly.md):
+   - Check PROJECT.md for explicit preference
+   - Check REQUIREMENTS.md for constraints
+   - Check session history for related decisions
+   - Check RESEARCH.md for recommendations
+
+2. Match context to available options:
+   - Explicit preference -> HIGH confidence
+   - Session consistency -> MEDIUM confidence
+   - Research recommendation -> MEDIUM confidence
+   - No context -> safest option, LOW confidence
+
+3. Select option with highest confidence match
+
+4. Output trace with context citations:
+   ```
+   Auto-decided: {option} -- {reason} [POLICY-06, {citations}, {confidence}]
+   ```
+
+5. Record decision in DECISIONS.md for session history
+
+**If AUTONOMOUS=false:**
+[Existing checkpoint:decision handling - unchanged]
+</step>
+```
+
+### Pattern 3: Verification-Based Policy (POLICY-07)
+
+For policies that depend on automated verification results.
+
+```markdown
+<step name="checkpoint_verify">
+Check AUTONOMOUS flag from workflow start.
+
+**If AUTONOMOUS=true:**
+
+1. Run all automated verifications:
+   - Tests: `npm test` (exit code)
+   - Build: `npm run build` (exit code)
+   - Lint: `npm run lint` (exit code, if exists)
+   - Endpoints: `curl` checks (status codes)
+
+2. Check all exit codes:
+   - If ALL = 0: Verification passed
+   - If ANY != 0: Verification failed
+
+3. Apply POLICY-07:
+   IF all pass:
+   ```
+   Auto-decided: approved -- All verification checks passed [POLICY-07, tests: {pass}/{total}, build: success]
+   ```
+   Continue to next task.
+
+   IF any fail:
+   Fall back to human even in autonomous mode.
+   Present failure details and wait.
+
+**If AUTONOMOUS=false:**
+[Existing checkpoint:human-verify handling - unchanged]
+</step>
+```
+
+### Pattern 4: Config-Gated Policy (POLICY-02)
+
+For policies that check configuration flags first.
+
+```markdown
+<step name="config_gated_decision">
+Check AUTONOMOUS flag from workflow start.
+
+**If AUTONOMOUS=true:**
+
+1. Read config flag:
+   ```bash
+   CONFIG_VALUE=$(cat .planning/config.json 2>/dev/null | grep -o '"[flag]"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "default")
+   ```
+
+2. Check secondary conditions if needed:
+   ```bash
+   [additional condition checks]
+   ```
+
+3. Apply POLICY-XX based on config + conditions:
+   ```
+   Auto-decided: [choice] -- [reason] [POLICY-XX, config: {flag}={value}]
+   ```
+
+**If AUTONOMOUS=false:**
+[Existing interactive flow - unchanged]
+</step>
+```
+
+---
+
+## Anti-Patterns
+
+Patterns to avoid when integrating policies into workflows.
+
+### DON'T: Define Policies Inline in Workflows
+
+**Wrong:**
+```markdown
+<step name="brownfield_check">
+If code files exist AND no codebase map:
+  Decide to map codebase because it helps planning.
+</step>
+```
+
+**Right:**
+```markdown
+<step name="brownfield_check">
+Apply POLICY-01 (Brownfield Detection).
+See decision-policies.md for policy rule.
+</step>
+```
+
+**Why:** Inline policies fragment the source of truth. Policy changes require updating multiple files.
+
+### DON'T: Use Reasoning-Based Conditions
+
+**Wrong:**
+```markdown
+If the project seems complex...
+If the domain appears unfamiliar...
+If research would probably help...
+```
+
+**Right:**
+```markdown
+If code files exist (find returns results)...
+If config.research = true...
+If checker output contains "VERIFICATION PASSED"...
+```
+
+**Why:** Reasoning-based conditions are non-deterministic. Different runs may produce different decisions.
+
+### DON'T: Skip Trace Output
+
+**Wrong:**
+```markdown
+**If AUTONOMOUS=true:**
+  [Check conditions]
+  [Make decision]
+  [Continue without trace]
+```
+
+**Right:**
+```markdown
+**If AUTONOMOUS=true:**
+  [Check conditions]
+  [Make decision]
+  Auto-decided: [choice] -- [reason] [POLICY-XX, {details}]
+  [Continue]
+```
+
+**Why:** Without traces, decisions cannot be audited or debugged.
+
+### DON'T: Apply Policy Without Checking Conditions
+
+**Wrong:**
+```markdown
+**If AUTONOMOUS=true:**
+  Auto-approve roadmap per POLICY-04.
+```
+
+**Right:**
+```markdown
+**If AUTONOMOUS=true:**
+  Check: UNMAPPED=$(grep -c "Pending" .planning/REQUIREMENTS.md || echo "0")
+  Check: V1_COUNT=$(grep -c "^\- \[ \] \*\*" .planning/REQUIREMENTS.md || echo "0")
+
+  If UNMAPPED = 0 AND V1_COUNT matched:
+    Auto-decided: approve roadmap -- 100% requirement coverage [POLICY-04, {count}/{count}]
+```
+
+**Why:** Policies exist because conditions determine choices. Skipping conditions defeats the purpose.
+
+### DON'T: Modify Interactive Flow When Adding Autonomy
+
+**Wrong:**
+```markdown
+**If AUTONOMOUS=true:**
+  [New autonomous handling]
+
+**If AUTONOMOUS=false:**
+  [Modified interactive handling]  # Changed from original
+```
+
+**Right:**
+```markdown
+**If AUTONOMOUS=true:**
+  [New autonomous handling]
+
+**If AUTONOMOUS=false:**
+  [Original interactive handling - unchanged]
+```
+
+**Why:** Interactive mode must work exactly as before. Autonomy is additive, not a replacement.
+
+---
+
 ## Quick Reference Table
 
 | Policy | Decision Point | Observable Condition | Choice |
