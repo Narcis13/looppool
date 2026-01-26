@@ -68,6 +68,18 @@ git check-ignore -q .planning 2>/dev/null && COMMIT_PLANNING_DOCS=false
 Store `COMMIT_PLANNING_DOCS` for use in git operations.
 </step>
 
+<step name="check_autonomous_mode">
+Read autonomous mode setting:
+
+```bash
+AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
+```
+
+Store for use in checkpoint handling. When `AUTONOMOUS=true`, checkpoints will be handled automatically using documented patterns.
+
+Reference: @~/.claude/get-shit-done/references/autonomous.md
+</step>
+
 <step name="identify_plan">
 Find the next plan to execute:
 - Check roadmap for "In progress" phase
