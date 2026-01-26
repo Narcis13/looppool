@@ -61,10 +61,12 @@ Plans:
   3. Feature scoping auto-classifies requirements as v1 (table stakes + explicit mentions) or v2
   4. Roadmap approval auto-proceeds when 100% coverage and deps satisfied
   5. Plan approval auto-proceeds when checker passes
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Create decision-policies.md reference with all 7 policy definitions
+- [ ] 03-02-PLAN.md — Integrate POLICY-01/02/03/04 into new-project.md
+- [ ] 03-03-PLAN.md — Integrate POLICY-05 into plan-phase.md and POLICY-06/07 references into execute-plan.md
 
 ### Phase 4: Workflow Integration
 **Goal**: All GSD workflows respect autonomous flag and route decisions appropriately
@@ -115,9 +117,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inner Voice Foundation | 2/2 | ✓ Complete | 2026-01-26 |
-| 2. Context-Aware Reasoning | 2/2 | ✓ Complete | 2026-01-26 |
-| 3. Decision Policies | 0/TBD | Ready to execute | - |
+| 1. Inner Voice Foundation | 2/2 | Complete | 2026-01-26 |
+| 2. Context-Aware Reasoning | 2/2 | Complete | 2026-01-26 |
+| 3. Decision Policies | 0/3 | Ready to execute | - |
 | 4. Workflow Integration | 0/TBD | Not started | - |
 | 5. Architecture Refactoring | 0/TBD | Not started | - |
 | 6. Safety Features | 0/TBD | Not started | - |
