@@ -38,6 +38,14 @@ MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"
 
 Default to "balanced" if not set.
 
+**Read autonomous mode:**
+
+```bash
+AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
+```
+
+Store for use in checkpoint handling below.
+
 **Model lookup table:**
 
 | Agent | quality | balanced | budget |
@@ -115,6 +123,22 @@ Task(
   - "Manual fix" - done
 
 **If `## CHECKPOINT REACHED`:**
+
+**If AUTONOMOUS=true:**
+
+Auto-respond based on checkpoint type:
+- human-verify: Approve and continue
+- decision: Select safest/default option
+- human-action: Cannot auto-complete, fall back to human
+
+```
+Auto-decided: {response} -- Checkpoint {type} auto-handled [autonomous-defaults.md]
+```
+
+Spawn continuation agent (see step 5)
+
+**If AUTONOMOUS=false:**
+
 - Present checkpoint details to user
 - Get user response
 - Spawn continuation agent (see step 5)
