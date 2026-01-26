@@ -16,6 +16,7 @@ allowed-tools:
 
 <execution_context>
 @~/.claude/get-shit-done/references/ui-brand.md
+@~/.claude/get-shit-done/references/decision-policies.md
 </execution_context>
 
 <objective>
@@ -57,6 +58,14 @@ MODEL_PROFILE=$(cat .planning/config.json 2>/dev/null | grep -o '"model_profile"
 ```
 
 Default to "balanced" if not set.
+
+**Check autonomous mode:**
+
+```bash
+AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:space:]]*:[[:space:]]*[^,}]*' | grep -o 'true\|false' || echo "false")
+```
+
+Store for use in plan approval.
 
 **Model lookup table:**
 
@@ -396,13 +405,60 @@ Task(
 
 ## 11. Handle Checker Return
 
+**If AUTONOMOUS=true:**
+
+Apply POLICY-05 (Plan Approval):
+
+1. Check checker output:
+   ```bash
+   echo "$CHECKER_OUTPUT" | grep -q "## VERIFICATION PASSED"
+   CHECKER_PASSED=$?
+   ```
+
+2. Apply policy:
+   - If CHECKER_PASSED=0 (grep found match):
+     ```
+     Auto-decided: approve plans -- Checker passed verification [POLICY-05, VERIFICATION PASSED]
+     ```
+     Proceed to completion. Display:
+     ```
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      GSD PLANNING COMPLETE
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+     Phase: {phase_number}: {phase_name}
+     Plans: {count} plan(s) in {wave_count} wave(s)
+     ```
+
+   - If checker returns "## ISSUES FOUND":
+     ```
+     Auto-decided: revision required -- Checker found issues, iteration {N}/{max} [POLICY-05]
+     ```
+     Trigger revision loop (spawn planner in revision mode).
+     After max iterations (3), fall back to human:
+     ```
+     Auto-decided: human review -- Max revision iterations reached [POLICY-05, fallback]
+     ```
+
+   - If checker returns neither (unexpected output):
+     ```
+     Auto-decided: human review -- Unexpected checker output [POLICY-05, fallback]
+     ```
+     Fall back to human review.
+
+**If AUTONOMOUS=false:**
+
 **If `## VERIFICATION PASSED`:**
 - Display: `Plans verified. Ready for execution.`
+- Offer: 1) Execute phase now (`/gsd:execute-phase`), 2) Review plans first, 3) Exit
+- Wait for user choice
 - Proceed to step 13
 
 **If `## ISSUES FOUND`:**
 - Display: `Checker found issues:`
 - List issues from checker output
+- Offer: 1) Auto-fix (trigger planner revision), 2) Manual review, 3) Proceed anyway
+- Wait for user choice
 - Check iteration count
 - Proceed to step 12
 
