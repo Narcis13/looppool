@@ -30,10 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Every autonomous decision outputs `Auto-decided: [choice] — [reason]` trace
   3. When enabled, ALL decision points are auto-decided (no partial autonomy)
   4. When context is insufficient, system uses documented defaults and logs assumptions
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Create autonomous reference documentation (patterns, defaults)
+- [ ] 01-02-PLAN.md — Integrate autonomous handling into execute-plan.md
 
 ### Phase 2: Context-Aware Reasoning
 **Goal**: Decisions are grounded in project context and tracked for consistency
@@ -113,7 +114,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inner Voice Foundation | 0/TBD | Not started | - |
+| 1. Inner Voice Foundation | 0/2 | Planned | - |
 | 2. Context-Aware Reasoning | 0/TBD | Not started | - |
 | 3. Decision Policies | 0/TBD | Not started | - |
 | 4. Workflow Integration | 0/TBD | Not started | - |
