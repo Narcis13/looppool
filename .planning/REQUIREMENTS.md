@@ -91,38 +91,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VOICE-01 | TBD | Pending |
-| VOICE-02 | TBD | Pending |
-| VOICE-03 | TBD | Pending |
-| VOICE-04 | TBD | Pending |
-| VOICE-05 | TBD | Pending |
-| VOICE-06 | TBD | Pending |
-| VOICE-07 | TBD | Pending |
-| POLICY-01 | TBD | Pending |
-| POLICY-02 | TBD | Pending |
-| POLICY-03 | TBD | Pending |
-| POLICY-04 | TBD | Pending |
-| POLICY-05 | TBD | Pending |
-| POLICY-06 | TBD | Pending |
-| POLICY-07 | TBD | Pending |
-| FLOW-01 | TBD | Pending |
-| FLOW-02 | TBD | Pending |
-| FLOW-03 | TBD | Pending |
-| FLOW-04 | TBD | Pending |
-| DEBT-01 | TBD | Pending |
-| DEBT-02 | TBD | Pending |
-| DEBT-03 | TBD | Pending |
-| DEBT-04 | TBD | Pending |
-| DEBT-05 | TBD | Pending |
-| DEBT-06 | TBD | Pending |
-| FEAT-01 | TBD | Pending |
-| FEAT-02 | TBD | Pending |
+| VOICE-01 | Phase 1 | Pending |
+| VOICE-02 | Phase 1 | Pending |
+| VOICE-03 | Phase 2 | Pending |
+| VOICE-04 | Phase 2 | Pending |
+| VOICE-05 | Phase 1 | Pending |
+| VOICE-06 | Phase 2 | Pending |
+| VOICE-07 | Phase 1 | Pending |
+| POLICY-01 | Phase 3 | Pending |
+| POLICY-02 | Phase 3 | Pending |
+| POLICY-03 | Phase 3 | Pending |
+| POLICY-04 | Phase 3 | Pending |
+| POLICY-05 | Phase 3 | Pending |
+| POLICY-06 | Phase 3 | Pending |
+| POLICY-07 | Phase 3 | Pending |
+| FLOW-01 | Phase 4 | Pending |
+| FLOW-02 | Phase 4 | Pending |
+| FLOW-03 | Phase 4 | Pending |
+| FLOW-04 | Phase 4 | Pending |
+| DEBT-01 | Phase 5 | Pending |
+| DEBT-02 | Phase 5 | Pending |
+| DEBT-03 | Phase 5 | Pending |
+| DEBT-04 | Phase 5 | Pending |
+| DEBT-05 | Phase 5 | Pending |
+| DEBT-06 | Phase 5 | Pending |
+| FEAT-01 | Phase 6 | Pending |
+| FEAT-02 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 (pending roadmap)
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after initial definition*
+*Last updated: 2026-01-26 after roadmap creation*
