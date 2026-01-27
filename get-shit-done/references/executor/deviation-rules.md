@@ -139,3 +139,54 @@ When multiple rules could apply:
 
 - **YES** - Rules 1-3 (fix automatically)
 - **MAYBE** - Rule 4 (return checkpoint for user decision)
+
+---
+
+## Inline Task Declaration
+
+When Rules 1-3 trigger significant work (more than a quick fix), declare an inline task:
+
+```xml
+<task type="inline" deviation-rule="2">
+  <name>Add missing input validation</name>
+  <reason>Form accepts invalid email format, security vulnerability</reason>
+  <files>src/components/LoginForm.tsx</files>
+  <action>Add email validation regex, show error message on invalid input</action>
+  <verify>Invalid emails rejected, valid emails accepted</verify>
+</task>
+```
+
+**Required attributes:**
+
+- `type="inline"` - Marks as inline task (not planned)
+- `deviation-rule="N"` - Which rule (1, 2, or 3) triggered this task
+
+**When to use inline tasks:**
+
+- Fix is substantial (more than a few lines)
+- Fix affects multiple concerns within the file
+- Documentation benefit outweighs overhead
+- Helps future debugging/understanding
+
+**When NOT to use inline tasks:**
+
+- Quick one-liner fixes (just fix and track in deviations)
+- Rule 4 situations (these require returning checkpoint, not inline tasks)
+
+**Inline task characteristics:**
+
+- Part of current task commit (not separate commit)
+- Documented in SUMMARY.md Deviations section
+- Does NOT require user approval (follows deviation rules)
+- Does NOT count against plan task limit
+
+**Process:**
+
+1. Encounter issue during task execution
+2. Determine which rule applies (1-3)
+3. If substantial: declare inline task with XML format
+4. Execute the inline task work
+5. Verify inline task done
+6. Continue with parent task
+7. Include in parent task commit
+8. Document in SUMMARY.md
