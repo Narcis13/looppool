@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 5 of 6 (Architecture Refactoring)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 05-04-PLAN.md (state schema and atomic JSON)
+Last activity: 2026-01-27 — Completed 05-02-PLAN.md (gsd-executor modular extraction)
 
-Progress: [████████░░] ~73%
+Progress: [████████░░] ~80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 2.2 min
-- Total execution time: 26.5 min
+- Total plans completed: 13
+- Average duration: 2.3 min
+- Total execution time: 30.5 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [████████░░] ~73%
 | 02-context-aware-reasoning | 2 | 4 min | 2 min |
 | 03-decision-policies | 3 | 7 min | 2.3 min |
 | 04-workflow-integration | 4 | 8 min | 2 min |
-| 05-architecture-refactoring | 1 | 3 min | 3 min |
+| 05-architecture-refactoring | 2 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (2 min), 04-02 (2 min), 04-03 (2 min), 04-04 (2 min), 05-04 (3 min)
+- Last 5 plans: 04-02 (2 min), 04-03 (2 min), 04-04 (2 min), 05-04 (3 min), 05-02 (4 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -78,6 +78,9 @@ Recent decisions affecting current work:
 - [05-04]: Required vs optional field distinction for STATE.md schema
 - [05-04]: Auto-recovery from ROADMAP.md when STATE.md missing
 - [05-04]: Atomic JSON pattern (write-temp-verify-move) for config.json
+- [05-02]: Deviation rules extracted as standalone reference (141 lines)
+- [05-02]: Checkpoint protocol consolidates types, format, continuation, auth gates (202 lines)
+- [05-02]: Keep inline: role, execution_flow, tdd, commit, summary, state, completion sections
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-27T03:51:34Z
-Stopped at: Completed 05-04-PLAN.md (state schema and atomic JSON)
+Last session: 2026-01-27T03:52:49Z
+Stopped at: Completed 05-02-PLAN.md (gsd-executor modular extraction)
 Resume file: None
