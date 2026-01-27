@@ -2,23 +2,23 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-26)
+See: .planning/PROJECT.md (updated 2026-01-27)
 
-**Core value:** Full autonomous execution from `/gsd:new-project` through `/gsd:execute-phase` with zero human input
-**Current focus:** Phase 6 - Safety Features
+**Core value:** Full autonomous execution with zero human input
+**Current focus:** v1.0 complete — planning next milestone
 
 ## Current Position
 
-Phase: 6 of 6 (Safety Features)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 06-01-PLAN.md (Rollback Phase Command)
+Phase: - of - (No active milestone)
+Plan: -
+Status: Ready for next milestone
+Last activity: 2026-01-27 — v1.0 milestone complete
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (v1.0)
 
 ## Performance Metrics
 
-**Velocity:**
+**v1.0 Velocity:**
 - Total plans completed: 17
 - Average duration: 3.3 min
 - Total execution time: 56.5 min
@@ -34,76 +34,26 @@ Progress: [██████████] 100%
 | 05-architecture-refactoring | 4 | 26 min | 6.5 min |
 | 06-safety-features | 2 | 7 min | 3.5 min |
 
-**Recent Trend:**
-- Last 5 plans: 05-03 (10 min), 05-04 (3 min), 06-02 (2 min), 06-01 (5 min)
-- Trend: Stable
-
-*Updated after each plan completion*
-
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- [Roadmap]: 6 phases derived from 24 requirements covering inner voice, policies, workflows, tech debt, safety
-- [01-01]: Em-dash (---) in trace format for visual clarity
-- [01-01]: Full commitment mode - all decisions auto-decided when enabled
-- [01-01]: Safest option heuristic for decisions without policies
-- [01-02]: Autonomous flag read once at workflow start, not per-decision
-- [01-02]: Verification failures get retry (max 2) before human fallback
-- [02-01]: Context cap guideline of ~2000 tokens per decision
-- [02-01]: Session-scoped IDs (S001) for in-session, date-prefixed for cross-session
-- [02-02]: Context gathering follows priority order from context-assembly.md
-- [02-02]: Both checkpoint types persist to DECISIONS.md when auto-decided
-- [02-02]: Confidence levels (HIGH/MEDIUM/LOW) based on context availability
-- [03-01]: Policies are declarative rules (IF/THEN/BECAUSE), not reasoning processes
-- [03-01]: Observable conditions only (file checks, counts, pattern matches)
-- [03-01]: Four integration patterns: binary, context-based, verification-based, config-gated
-- [03-02]: AUTONOMOUS flag read once in Phase 1 Setup, used at all decision points
-- [03-02]: Interactive paths remain unchanged (autonomy is additive)
-- [03-02]: Roadmap revision retry (max 2 iterations) before human fallback
-- [03-03]: Interactive paths preserved unchanged when adding autonomous handling
-- [03-03]: All trace outputs include explicit [POLICY-XX] reference for auditability
-- [04-01]: Failure recovery uses recoverable vs systemic heuristic
-- [04-01]: human_needed verification proceeds with logged items when autonomous
-- [04-02]: Discussion skips entirely in autonomous mode (not auto-answer)
-- [04-02]: Autonomous skip pattern: workflows requiring human input exit early with guidance
-- [04-03]: POLICY-02 uses config.workflow.research for milestone research toggle
-- [04-03]: POLICY-04 verifies coverage before auto-approving roadmap
-- [04-03]: Coverage incomplete triggers one retry before human fallback
-- [04-04]: Discovery proceeds regardless of confidence level when autonomous -- informational not blocking
-- [04-04]: Debug checkpoint auto-response: approve human-verify, select safest for decisions
-- [04-04]: Resume-work auto-selects most recent session when autonomous
-- [05-04]: Required vs optional field distinction for STATE.md schema
-- [05-04]: Auto-recovery from ROADMAP.md when STATE.md missing
-- [05-04]: Atomic JSON pattern (write-temp-verify-move) for config.json
-- [05-02]: Deviation rules extracted as standalone reference (141 lines)
-- [05-02]: Checkpoint protocol consolidates types, format, continuation, auth gates (202 lines)
-- [05-02]: Keep inline: role, execution_flow, tdd, commit, summary, state, completion sections
-- [05-01]: Scope estimation merged into task-breakdown.md for cohesion
-- [05-01]: Each planner reference is self-contained with purpose header
-- [05-01]: Line count target (500) unachievable with specified extractions - plan estimation issue
-- [05-03]: Condensed verbose examples to achieve line count target
-- [05-03]: Reference executor modules for shared deviation/checkpoint content
-- [05-03]: Keep autonomous checkpoint handling inline (workflow-specific POLICY-06/07)
-- [06-02]: Inline tasks use XML format with type="inline" and deviation-rule="N" attributes
-- [06-02]: Inline tasks are part of parent task commit, not separate commits
-- [06-01]: git revert used instead of git reset for safe rollback
-- [06-01]: Phase commit recorded after first task commit of plan 01
-- [06-01]: Rollback blocked during active execution
+Key decisions are logged in PROJECT.md Key Decisions table.
+v1.0 decisions archived in milestones/v1.0-ROADMAP.md.
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
+None.
 
 ## Session Continuity
 
-Last session: 2026-01-27T04:48:33Z
-Stopped at: Completed 06-01-PLAN.md (Rollback Phase Command) - Phase 6 complete
+Last session: 2026-01-27T05:30:00Z
+Stopped at: v1.0 milestone complete
 Resume file: None
+
+---
+*Updated: 2026-01-27 after v1.0 milestone*

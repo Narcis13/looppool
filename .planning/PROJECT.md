@@ -1,87 +1,86 @@
-# GSD Autonomous Mode
+# GSD (Get Shit Done)
 
 ## What This Is
 
-A milestone to make GSD fully autonomous by adding an "inner voice" system that answers its own questions based on project context, while resolving technical debt and adding missing features identified in the codebase analysis. When enabled via config, Claude reasons through every decision point without human intervention.
+A meta-prompting and context engineering system for Claude Code that enables fully autonomous software development. GSD solves context rot (quality degradation as Claude fills its context window) through atomic plans and fresh subagent contexts. When `autonomous: true` is set, Claude reasons through every decision point without human intervention.
 
 ## Core Value
 
-Full autonomous execution from `/gsd:new-project` through `/gsd:execute-phase` with zero human input — Claude decides everything based on context.
+Full autonomous execution from `/gsd:new-project` through `/gsd:execute-phase` with zero human input — Claude decides everything based on project context.
 
 ## Requirements
 
 ### Validated
 
-- ✓ Multi-layer command/workflow/agent architecture — existing
-- ✓ Context isolation via subagent spawning (fresh 200k contexts) — existing
-- ✓ File-based state management (.planning/ directory) — existing
-- ✓ Model profile system (quality/balanced/budget) — existing
-- ✓ Git integration for committing artifacts — existing
-- ✓ Parallel execution via wave-based agent spawning — existing
-- ✓ Document-driven state (PROJECT.md, ROADMAP.md, PLAN.md, STATE.md) — existing
-- ✓ Installation system for Claude Code and OpenCode — existing
-- ✓ Hooks system (statusline, update checking) — existing
+- ✓ Multi-layer command/workflow/agent architecture — v1.0
+- ✓ Context isolation via subagent spawning (fresh 200k contexts) — v1.0
+- ✓ File-based state management (.planning/ directory) — v1.0
+- ✓ Model profile system (quality/balanced/budget) — v1.0
+- ✓ Git integration for committing artifacts — v1.0
+- ✓ Parallel execution via wave-based agent spawning — v1.0
+- ✓ Document-driven state (PROJECT.md, ROADMAP.md, PLAN.md, STATE.md) — v1.0
+- ✓ Installation system for Claude Code and OpenCode — v1.0
+- ✓ Hooks system (statusline, update checking) — v1.0
+- ✓ Config flag to enable autonomous mode — v1.0
+- ✓ Inner voice reasoning with context assembly — v1.0
+- ✓ Decision traces: `Auto-decided: [choice] — [reason]` — v1.0
+- ✓ Decision history tracking within session — v1.0
+- ✓ Audit trail in DECISIONS.md — v1.0
+- ✓ 7 decision policies (POLICY-01 through POLICY-07) — v1.0
+- ✓ All workflows respect autonomous flag — v1.0
+- ✓ Modular architecture with reference extraction — v1.0
+- ✓ STATE.md schema and auto-recovery — v1.0
+- ✓ Atomic JSON operations — v1.0
+- ✓ Rollback mechanism with `/gsd:rollback-phase` — v1.0
+- ✓ Inline task modifications during execution — v1.0
 
 ### Active
 
-**Inner Voice System:**
-- [ ] Config flag to enable autonomous mode (`autonomous: true` in config.json)
-- [ ] Inner voice reasoning that answers AskUserQuestion calls based on context
-- [ ] Context sources: PROJECT.md, REQUIREMENTS.md, research outputs, codebase state, decision history
-- [ ] Brief decision traces: `Auto-decided: [choice] — [reason]`
-- [ ] Decision history tracking for consistency across session
-- [ ] All workflows respect autonomous flag (commands, workflows, agents)
-
-**Tech Debt (from CONCERNS.md):**
-- [ ] Extract monolithic agent files into smaller focused modules
-- [ ] Refactor install.js — extract path utils, config manager, file ops
-- [ ] State file validation with schema and auto-recovery
-- [ ] Atomic file operations (write-temp, verify, move) for JSON files
-
-**Missing Features (from CONCERNS.md):**
-- [ ] Rollback mechanism — revert phase commits if verification fails
-- [ ] Plan revision without full re-planning — inline task modifications
-- [ ] Cross-phase dependency tracking — cascade invalidation warnings
-- [ ] Automated environment setup validation — check env vars before execution
+(To be defined in next milestone)
 
 ### Out of Scope
 
-- Known bugs (Windows paths, orphaned hooks, JSON parse failures) — lower priority than architecture changes
-- Security hardening (path validation, schema validation) — future milestone
-- Performance optimizations (agent-history pruning, verifier grep filtering) — future milestone
-- Test coverage gaps — future milestone after architecture stabilizes
+- Learning from outcomes — requires outcome tracking infrastructure, high complexity
+- Autonomous tool expansion — autonomy applies to decisions, not expanding tool permissions
+- Memory across sessions — each session fresh unless explicitly loaded
+- Partial autonomy mode — anti-pattern, creates unpredictable UX
 
 ## Context
 
-GSD is a meta-prompting system for Claude Code. The codebase analysis (`.planning/codebase/`) identified significant technical debt in monolithic files and missing features that prevent truly autonomous operation.
+GSD is a meta-prompting system for Claude Code. v1.0 delivered full autonomous execution capability.
 
 Current state:
-- Workflows use AskUserQuestion at every decision point
-- Users must approve roadmaps, plans, and execution checkpoints
-- No way to run end-to-end without human input
-- Large files (execute-plan.md at 1844 lines, gsd-planner.md at 1386 lines) are hard to maintain
-
-Target state:
+- 35,000+ lines of markdown across workflows, references, templates
+- 6 phases completed, 17 plans executed, ~60 tasks
 - Config flag enables full autonomy
 - Inner voice reasons through every question using full project context
-- Modular architecture with focused files
-- Critical missing features (rollback, plan revision) enable safer autonomous operation
+- Modular architecture with 9 extracted reference modules
+- Safety features: rollback capability, inline task modifications
+
+Tech stack:
+- JavaScript/Node.js (installer only)
+- Zero production dependencies
+- Works with Claude Code and OpenCode
 
 ## Constraints
 
-- **Tech stack**: JavaScript/Node.js only, zero production dependencies — maintain this philosophy
+- **Tech stack**: JavaScript/Node.js only, zero production dependencies
 - **Compatibility**: Must work with both Claude Code and OpenCode installations
-- **Context budget**: Agents must stay under 50% context usage for quality — affects how inner voice is implemented
+- **Context budget**: Agents must stay under 50% context usage for quality
 - **Backwards compatible**: Interactive mode must still work when autonomous is disabled
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Inner voice as reasoning layer, not rule engine | Context-based reasoning is more flexible than predefined rules | — Pending |
-| Brief traces over verbose logging | Users need visibility without noise | — Pending |
-| Config-driven, not flag-driven | Consistent with existing config.json pattern | — Pending |
-| Skip known bugs for this milestone | Architecture changes may obsolete some bugs | — Pending |
+| Inner voice as reasoning layer | Context-based reasoning more flexible than rules | ✓ Good — enables nuanced decisions |
+| Brief traces over verbose logging | Users need visibility without noise | ✓ Good — auditable without clutter |
+| Config-driven, not flag-driven | Consistent with existing config.json pattern | ✓ Good — clean integration |
+| Policies as declarative rules | IF/THEN/BECAUSE ensures deterministic decisions | ✓ Good — auditable and predictable |
+| Observable conditions only | File checks, counts, patterns — no "seems like" | ✓ Good — reproducible decisions |
+| git revert over git reset | Preserves history, safe for shared repos | ✓ Good — no lost commits |
+| Full commitment mode | All or nothing autonomy | ✓ Good — predictable UX |
+| Skip known bugs for v1 | Architecture changes may obsolete some | — Pending review |
 
 ---
-*Last updated: 2026-01-26 after initialization*
+*Last updated: 2026-01-27 after v1.0 milestone*
