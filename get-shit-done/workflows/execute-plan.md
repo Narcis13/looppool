@@ -234,6 +234,7 @@ Execute each task in the prompt. **Deviations are normal** - handle them automat
    - Work toward task completion
    - **If CLI/API returns authentication error:** Handle as authentication gate (see below)
    - **When you discover additional work not in plan:** Apply deviation rules (see below) automatically
+   - **For substantial Rule 1-3 work:** Declare inline task using format from deviation-rules.md. Inline tasks are part of current task commit and documented in Summary.
    - Continue implementing, applying rules as needed
    - Run the verification
    - Confirm done criteria met
@@ -265,6 +266,11 @@ See @~/.claude/get-shit-done/references/executor/checkpoint-protocol.md for auth
 <deviation_documentation>
 Document all deviations in Summary using format from @~/.claude/get-shit-done/references/executor/deviation-rules.md.
 Track: rule applied, issue, fix, files modified, commit hash.
+
+For inline tasks specifically:
+- Track task name, deviation rule, reason
+- Include in parent task commit (not separate)
+- Document in SUMMARY.md Deviations > Inline Tasks section
 </deviation_documentation>
 
 <tdd_plan_execution>
@@ -327,6 +333,53 @@ See `~/.claude/get-shit-done/references/tdd.md` for TDD plan structure.
 <task_commit>
 See @~/.claude/agents/gsd-executor.md <task_commit_protocol> section for commit protocol.
 </task_commit>
+
+<step name="record_phase_commit">
+**Record phase commit after first task of each phase for rollback capability.**
+
+**Trigger:** After first task commit in a phase (check if this is plan 01 AND task 1).
+
+**Logic:**
+
+```bash
+# Check if this is the first plan of the phase (plan number is 01)
+PLAN_NUM=$(echo "{plan}" | grep -oE '[0-9]+$')
+TASK_NUM=1  # Set during task execution
+
+if [ "$PLAN_NUM" = "01" ] && [ "$TASK_NUM" = "1" ]; then
+  COMMIT_HASH=$(git rev-parse --short HEAD)
+  PHASE_NUM=$(echo "{phase}" | grep -oE '^[0-9]+(\.[0-9]+)?')
+  PHASE_DIR=$(basename "$(dirname "$PLAN_PATH")")
+  TODAY=$(date +%Y-%m-%d)
+
+  # Check if Phase Commits section exists in STATE.md
+  if ! grep -q "## Phase Commits" .planning/STATE.md 2>/dev/null; then
+    # Add section before end of file or after Session Continuity
+    cat >> .planning/STATE.md << 'EOF'
+
+## Phase Commits
+
+| Phase | First Commit | Phase Directory | Recorded |
+|-------|--------------|-----------------|----------|
+EOF
+  fi
+
+  # Check if phase already recorded
+  if ! grep -q "| ${PHASE_NUM} |" .planning/STATE.md 2>/dev/null; then
+    # Append new row to Phase Commits table
+    # Find the table and append after header separator
+    sed -i '' "/## Phase Commits/,/^$/ {
+      /|-------|/a\\
+| ${PHASE_NUM} | ${COMMIT_HASH} | ${PHASE_DIR} | ${TODAY} |
+    }" .planning/STATE.md
+  fi
+fi
+```
+
+**Recording happens once:** Check if phase already in table before adding. Prevents duplicate entries.
+
+**Used by:** `/gsd:rollback-phase` command to identify commit range for reverting.
+</step>
 
 <step name="checkpoint_protocol">
 When encountering `type="checkpoint:*"`:

@@ -97,9 +97,22 @@ _Note: TDD tasks may have multiple commits (test → feat → refactor)_
 
 [... repeat for each auto-fix ...]
 
+### Inline Tasks Added
+
+[If inline tasks were declared during execution:]
+
+| Task | Rule | Reason | Files | Commit |
+|------|------|--------|-------|--------|
+| [name] | [1-3] | [why needed] | [files] | [hash] |
+
+**Total inline tasks:** [N]
+**Impact:** [Brief assessment - e.g., "Critical security fixes, within deviation rules scope"]
+
+[If no inline tasks: omit this subsection or show "None"]
+
 ---
 
-**Total deviations:** [N] auto-fixed ([breakdown by rule])
+**Total deviations:** [N] auto-fixed ([breakdown by rule]), [N] inline tasks
 **Impact on plan:** [Brief assessment - e.g., "All auto-fixes necessary for correctness/security. No scope creep."]
 
 ## Issues Encountered
