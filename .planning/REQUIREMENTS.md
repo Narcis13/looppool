@@ -45,8 +45,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Missing Features
 
-- [ ] **FEAT-01**: Rollback mechanism — record first commit of phase, provide `/gsd:rollback-phase` to revert
-- [ ] **FEAT-02**: Plan revision — allow inline task modifications via `<task type="inline">` during execution
+- [x] **FEAT-01**: Rollback mechanism — record first commit of phase, provide `/gsd:rollback-phase` to revert
+- [x] **FEAT-02**: Plan revision — allow inline task modifications via `<task type="inline">` during execution
 
 ## v2 Requirements
 
@@ -115,8 +115,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEBT-04 | Phase 5 | Complete |
 | DEBT-05 | Phase 5 | Complete |
 | DEBT-06 | Phase 5 | Complete |
-| FEAT-01 | Phase 6 | Pending |
-| FEAT-02 | Phase 6 | Pending |
+| FEAT-01 | Phase 6 | Complete |
+| FEAT-02 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 24 total
@@ -125,4 +125,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 after Phase 5 completion*
+*Last updated: 2026-01-27 after Phase 6 completion*
