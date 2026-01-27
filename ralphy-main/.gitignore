@@ -1,0 +1,33 @@
+# CLI Dependencies
+cli/node_modules/
+
+# CLI Build output
+cli/dist/
+cli/src/version.ts
+
+# Landing page
+landing/node_modules/
+landing/.next/
+landing/out/
+landing/bun.lock
+
+# Bun
+bun.lockb
+
+# Ralphy local config (used for testing)
+.ralphy/
+.ralphy-worktrees/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+cli/package-lock.json
