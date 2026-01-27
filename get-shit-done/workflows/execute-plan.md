@@ -56,6 +56,9 @@ Options:
 2. Continue without project state (may lose accumulated context)
 ```
 
+**For STATE.md schema and auto-recovery:**
+@~/.claude/get-shit-done/references/state-schema.md
+
 **If .planning/ doesn't exist:** Error - project not initialized.
 
 This ensures every execution has full project context.
@@ -70,6 +73,9 @@ git check-ignore -q .planning 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
 Store `COMMIT_PLANNING_DOCS` for use in git operations.
+
+**For atomic config.json operations:**
+See @~/.claude/get-shit-done/references/atomic-json.md
 </step>
 
 <step name="check_autonomous_mode">

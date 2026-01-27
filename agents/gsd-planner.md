@@ -1003,6 +1003,9 @@ Read `.planning/STATE.md` and parse:
 
 If STATE.md missing but .planning/ exists, offer to reconstruct or continue without.
 
+**For STATE.md schema and auto-recovery:**
+@~/.claude/get-shit-done/references/state-schema.md
+
 **Load planning config:**
 
 ```bash
@@ -1013,6 +1016,9 @@ git check-ignore -q .planning 2>/dev/null && COMMIT_PLANNING_DOCS=false
 ```
 
 Store `COMMIT_PLANNING_DOCS` for use in git operations.
+
+**For atomic config.json operations:**
+See @~/.claude/get-shit-done/references/atomic-json.md
 </step>
 
 <step name="load_codebase_context">
