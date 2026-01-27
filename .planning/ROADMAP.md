@@ -98,9 +98,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Extract gsd-planner.md into focused modules (<500 lines)
-- [ ] 05-02-PLAN.md — Extract gsd-executor.md into focused modules (<500 lines)
-- [ ] 05-03-PLAN.md — Extract execute-plan.md and deduplicate shared content (<800 lines)
+- [x] 05-01-PLAN.md — Extract gsd-planner.md into focused modules (<500 lines)
+- [x] 05-02-PLAN.md — Extract gsd-executor.md into focused modules (<500 lines)
+- [x] 05-03-PLAN.md — Extract execute-plan.md and deduplicate shared content (<800 lines)
 - [ ] 05-04-PLAN.md — Create STATE.md schema and auto-recovery, atomic JSON pattern
 
 ### Phase 6: Safety Features
@@ -127,5 +127,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Context-Aware Reasoning | 2/2 | Complete | 2026-01-26 |
 | 3. Decision Policies | 3/3 | Complete | 2026-01-26 |
 | 4. Workflow Integration | 4/4 | Complete | 2026-01-27 |
-| 5. Architecture Refactoring | 0/4 | Not started | - |
+| 5. Architecture Refactoring | 3/4 | In progress | - |
 | 6. Safety Features | 0/TBD | Not started | - |
