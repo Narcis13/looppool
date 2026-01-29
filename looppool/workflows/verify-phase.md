@@ -18,8 +18,8 @@ Then verify each level against the actual codebase.
 </core_principle>
 
 <required_reading>
-@~/.claude/get-shit-done/references/verification-patterns.md
-@~/.claude/get-shit-done/templates/verification-report.md
+@~/.claude/looppool/references/verification-patterns.md
+@~/.claude/looppool/templates/verification-report.md
 </required_reading>
 
 <process>
@@ -96,7 +96,7 @@ If no must_haves in frontmatter, derive using goal-backward process:
 
 5. **Document derived must-haves** before proceeding to verification.
 
-<!-- Goal-backward derivation expertise is baked into the gsd-verifier agent -->
+<!-- Goal-backward derivation expertise is baked into the lpl-verifier agent -->
 </step>
 
 <step name="verify_truths">
@@ -564,7 +564,7 @@ Fill template sections:
 9. **Recommended Fix Plans:** If gaps_found
 10. **Verification Metadata:** Approach, timing, counts
 
-See ~/.claude/get-shit-done/templates/verification-report.md for complete template.
+See ~/.claude/looppool/templates/verification-report.md for complete template.
 </step>
 
 <step name="return_to_orchestrator">

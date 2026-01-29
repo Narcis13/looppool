@@ -7,11 +7,11 @@ You are a thinking partner, not an interviewer. The user is the visionary — yo
 <downstream_awareness>
 **CONTEXT.md feeds into:**
 
-1. **gsd-phase-researcher** — Reads CONTEXT.md to know WHAT to research
+1. **lpl-phase-researcher** — Reads CONTEXT.md to know WHAT to research
    - "User wants card-based layout" → researcher investigates card component patterns
    - "Infinite scroll decided" → researcher looks into virtualization libraries
 
-2. **gsd-planner** — Reads CONTEXT.md to know WHAT decisions are locked
+2. **lpl-planner** — Reads CONTEXT.md to know WHAT decisions are locked
    - "Pull-to-refresh on mobile" → planner includes that in task specs
    - "Claude's Discretion: loading skeleton" → planner can decide approach
 
@@ -125,7 +125,7 @@ Auto-decided: skip discussion -- Autonomous mode enabled, discussion requires hu
 Output to user:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DISCUSS SKIPPED (Autonomous Mode)
+ LPL ► DISCUSS SKIPPED (Autonomous Mode)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Discussion requires human input. In autonomous mode, proceed directly to planning.
@@ -139,7 +139,7 @@ The planner will use:
 
 ## ▶ Next Up
 
-/gsd:plan-phase {phase}
+/lpl:plan-phase {phase}
 
 <sub>/clear first → fresh context window</sub>
 
@@ -165,7 +165,7 @@ Load and validate:
 ```
 Phase [X] not found in roadmap.
 
-Use /gsd:progress to see available phases.
+Use /lpl:progress to see available phases.
 ```
 Exit workflow.
 
@@ -422,14 +422,14 @@ Created: .planning/phases/${PADDED_PHASE}-${SLUG}/${PADDED_PHASE}-CONTEXT.md
 
 **Phase ${PHASE}: [Name]** — [Goal from ROADMAP.md]
 
-`/gsd:plan-phase ${PHASE}`
+`/lpl:plan-phase ${PHASE}`
 
 <sub>`/clear` first → fresh context window</sub>
 
 ---
 
 **Also available:**
-- `/gsd:plan-phase ${PHASE} --skip-research` — plan without research
+- `/lpl:plan-phase ${PHASE} --skip-research` — plan without research
 - Review/edit CONTEXT.md before continuing
 
 ---

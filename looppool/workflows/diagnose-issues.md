@@ -180,7 +180,7 @@ git commit -m "docs({phase}): add root causes from diagnosis"
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DIAGNOSIS COMPLETE
+ LPL ► DIAGNOSIS COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Gap (Truth) | Root Cause | Files |
@@ -213,7 +213,7 @@ Agents only diagnose—plan-phase --gaps handles fixes (no fix application).
 
 **Agent times out:**
 - Check DEBUG-{slug}.md for partial progress
-- Can resume with /gsd:debug
+- Can resume with /lpl:debug
 
 **All agents fail:**
 - Something systemic (permissions, git, etc.)

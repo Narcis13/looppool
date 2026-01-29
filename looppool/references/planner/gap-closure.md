@@ -1,6 +1,6 @@
 # Gap Closure Planning Reference
 
-Reference for GSD planner gap closure mode that creates plans from verification failures.
+Reference for LPL planner gap closure mode that creates plans from verification failures.
 
 **Purpose:** Defines how to parse verification/UAT gaps and create targeted fix plans.
 

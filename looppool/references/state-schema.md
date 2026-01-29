@@ -73,11 +73,11 @@ Progress: [visual bar] [N]%
 
 | Status | Meaning | Next Action |
 |--------|---------|-------------|
-| `Ready to plan` | Phase exists, no plans yet | `/gsd:plan-phase` |
+| `Ready to plan` | Phase exists, no plans yet | `/lpl:plan-phase` |
 | `Planning` | Planning in progress | Complete planning |
-| `Ready to execute` | Plans exist, not started | `/gsd:execute-phase` |
+| `Ready to execute` | Plans exist, not started | `/lpl:execute-phase` |
 | `In progress` | Execution underway | Continue execution |
-| `Phase complete` | All plans done | `/gsd:plan-phase` (next) or milestone complete |
+| `Phase complete` | All plans done | `/lpl:plan-phase` (next) or milestone complete |
 
 **Validation:**
 ```bash
@@ -181,7 +181,7 @@ Resume file: [Path to .continue-here*.md if exists, otherwise "None"]
 
 **When to add:** After first task commit of each phase. Execute-plan records this automatically.
 
-**Used by:** `/gsd:rollback-phase` to identify commit range for reverting phase.
+**Used by:** `/lpl:rollback-phase` to identify commit range for reverting phase.
 
 **Validation:**
 ```bash
@@ -210,7 +210,7 @@ Auto-recovery triggers when:
 ```bash
 if [ ! -f .planning/ROADMAP.md ]; then
   echo "ERROR: Cannot recover STATE.md - ROADMAP.md not found"
-  echo "Run /gsd:new-project to initialize project"
+  echo "Run /lpl:new-project to initialize project"
   exit 1
 fi
 ```
@@ -239,7 +239,7 @@ PHASE_NAME=$(grep -E "^###? Phase ${CURRENT_PHASE}:" .planning/ROADMAP.md | sed 
 if [ -f .planning/PROJECT.md ]; then
   CORE_VALUE=$(grep -A 1 "## Core Value" .planning/PROJECT.md | tail -1 | sed 's/^[[:space:]]*//')
 else
-  CORE_VALUE="[Run /gsd:progress to refresh]"
+  CORE_VALUE="[Run /lpl:progress to refresh]"
 fi
 ```
 
@@ -271,7 +271,7 @@ Progress: [$(printf '░%.0s' $(seq 1 10))] 0%
 
 ### Decisions
 
-Auto-recovered. Run /gsd:progress to refresh.
+Auto-recovered. Run /lpl:progress to refresh.
 
 ### Pending Todos
 
@@ -293,7 +293,7 @@ EOF
 
 ```bash
 echo "STATE.md auto-recovered from ROADMAP.md."
-echo "Run /gsd:progress to validate and refresh project state."
+echo "Run /lpl:progress to validate and refresh project state."
 ```
 
 ### Recovery Template
@@ -323,7 +323,7 @@ Progress: [░░░░░░░░░░] 0%
 
 ### Decisions
 
-Auto-recovered. Run /gsd:progress to refresh.
+Auto-recovered. Run /lpl:progress to refresh.
 
 ### Pending Todos
 
@@ -418,9 +418,9 @@ Required fields affect all workflows. Addition requires coordination:
 
 1. **Document the new field** in this schema reference
 2. **Update all affected workflows:**
-   - Search for STATE.md reads: `grep -r "STATE.md" get-shit-done/`
+   - Search for STATE.md reads: `grep -r "STATE.md" looppool/`
    - Update each workflow to handle/use new field
-3. **Update the state template:** `get-shit-done/templates/state.md`
+3. **Update the state template:** `looppool/templates/state.md`
 4. **Update auto-recovery:** Add field extraction to recovery algorithm
 5. **Test:** Run a plan-phase and execute-phase cycle
 
@@ -429,7 +429,7 @@ Required fields affect all workflows. Addition requires coordination:
 Optional fields are additive and don't require coordination:
 
 1. **Document the new field** in this schema reference
-2. **Update the state template:** `get-shit-done/templates/state.md`
+2. **Update the state template:** `looppool/templates/state.md`
 3. **Update workflows that will write the field** (e.g., execute-plan for metrics)
 4. **No changes needed for readers** - they already handle missing optional fields
 

@@ -51,7 +51,7 @@ If no actionable task found (dependency blocked, unclear):
 
 ## Execution
 
-Execute the selected task following GSD executor conventions:
+Execute the selected task following LPL executor conventions:
 
 1. **Read context files** listed in PLAN.md `<context>` section
 2. **Search codebase first** — understand existing patterns before writing code
@@ -173,7 +173,7 @@ The loop iteration template is the unit of work in the autonomous loop. Each ite
 
 **Key principle:** One task per context. Load state, execute, commit, exit. The loop orchestrator handles continuity between iterations.
 
-**Relationship to Ralph's PROMPT_build.md:** This replaces Ralph's iteration prompt with GSD-aware task selection, structured validation, and LEARNINGS.md integration.
+**Relationship to Ralph's PROMPT_build.md:** This replaces Ralph's iteration prompt with LPL-aware task selection, structured validation, and LEARNINGS.md integration.
 </purpose>
 
 <placeholder_reference>

@@ -2,7 +2,7 @@
 
 This reference covers the agent-level checkpoint execution protocol: how to handle checkpoints during plan execution, format checkpoint returns, handle continuations, and manage authentication gates.
 
-For workflow-level checkpoint patterns (automation-first, server lifecycle), see `@~/.claude/get-shit-done/references/checkpoints.md`.
+For workflow-level checkpoint patterns (automation-first, server lifecycle), see `@~/.claude/looppool/references/checkpoints.md`.
 
 ## Checkpoint Types
 

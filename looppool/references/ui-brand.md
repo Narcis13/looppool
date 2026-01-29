@@ -1,6 +1,6 @@
 <ui_patterns>
 
-Visual patterns for user-facing GSD output. Orchestrators @-reference this file.
+Visual patterns for user-facing LPL output. Orchestrators @-reference this file.
 
 ## Stage Banners
 
@@ -8,7 +8,7 @@ Use for major workflow transitions.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► {STAGE NAME}
+ LPL ► {STAGE NAME}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -115,8 +115,8 @@ Always at end of major completions.
 ───────────────────────────────────────────────────────────────
 
 **Also available:**
-- `/gsd:alternative-1` — description
-- `/gsd:alternative-2` — description
+- `/lpl:alternative-1` — description
+- `/lpl:alternative-2` — description
 
 ───────────────────────────────────────────────────────────────
 ```
@@ -153,7 +153,7 @@ Always at end of major completions.
 
 - Varying box/banner widths
 - Mixing banner styles (`===`, `---`, `***`)
-- Skipping `GSD ►` prefix in banners
+- Skipping `LPL ►` prefix in banners
 - Random emoji (`🚀`, `✨`, `💫`)
 - Missing Next Up block after completions
 

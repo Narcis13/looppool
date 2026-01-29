@@ -6,11 +6,11 @@ Execute a phase prompt (PLAN.md) and create the outcome summary (SUMMARY.md).
 Read STATE.md before any operation to load project context.
 Read config.json for planning behavior settings.
 
-@~/.claude/get-shit-done/references/git-integration.md
-@~/.claude/get-shit-done/references/autonomous.md
-@~/.claude/get-shit-done/references/autonomous-defaults.md
-@~/.claude/get-shit-done/references/checkpoints.md
-@~/.claude/get-shit-done/references/decision-policies.md
+@~/.claude/looppool/references/git-integration.md
+@~/.claude/looppool/references/autonomous.md
+@~/.claude/looppool/references/autonomous-defaults.md
+@~/.claude/looppool/references/checkpoints.md
+@~/.claude/looppool/references/decision-policies.md
 </required_reading>
 
 <process>
@@ -28,7 +28,7 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-executor | opus | sonnet | sonnet |
+| lpl-executor | opus | sonnet | sonnet |
 
 Store resolved model for use in Task calls below.
 </step>
@@ -57,7 +57,7 @@ Options:
 ```
 
 **For STATE.md schema and auto-recovery:**
-@~/.claude/get-shit-done/references/state-schema.md
+@~/.claude/looppool/references/state-schema.md
 
 **If .planning/ doesn't exist:** Error - project not initialized.
 
@@ -75,7 +75,7 @@ git check-ignore -q .planning 2>/dev/null && COMMIT_PLANNING_DOCS=false
 Store `COMMIT_PLANNING_DOCS` for use in git operations.
 
 **For atomic config.json operations:**
-See @~/.claude/get-shit-done/references/atomic-json.md
+See @~/.claude/looppool/references/atomic-json.md
 </step>
 
 <step name="check_autonomous_mode">
@@ -88,13 +88,13 @@ AUTONOMOUS=$(cat .planning/config.json 2>/dev/null | grep -o '"autonomous"[[:spa
 When `AUTONOMOUS=true`: checkpoint:human-verify uses POLICY-07, checkpoint:decision uses POLICY-06, checkpoint:human-action always requires human.
 
 **If AUTONOMOUS=true:** Initialize session decision tracking:
-1. Create DECISIONS.md if not exists (header + format table per @~/.claude/get-shit-done/references/autonomous.md)
+1. Create DECISIONS.md if not exists (header + format table per @~/.claude/looppool/references/autonomous.md)
 2. Start new session section with timestamp and decision table header
 3. Load recent decisions: `tail -30 .planning/DECISIONS.md`
 4. Initialize `DECISION_ID=0` counter for session
 
-Reference: @~/.claude/get-shit-done/references/decision-policies.md
-Reference: @~/.claude/get-shit-done/references/context-assembly.md
+Reference: @~/.claude/looppool/references/decision-policies.md
+Reference: @~/.claude/looppool/references/context-assembly.md
 </step>
 
 <step name="identify_plan">
@@ -183,7 +183,7 @@ Store in shell variables for duration calculation at completion.
 <step name="segment_routing">
 **Segment routing: Parse plan, route segments to optimal execution context (subagent vs main).**
 
-@~/.claude/get-shit-done/references/execute-plan/segment-routing.md
+@~/.claude/looppool/references/execute-plan/segment-routing.md
 </step>
 
 <step name="load_prompt">
@@ -256,15 +256,15 @@ Execute each task in the prompt. **Deviations are normal** - handle them automat
    </step>
 
 <authentication_gates>
-See @~/.claude/get-shit-done/references/executor/checkpoint-protocol.md for authentication gate handling.
+See @~/.claude/looppool/references/executor/checkpoint-protocol.md for authentication gate handling.
 </authentication_gates>
 
 <deviation_rules>
-@~/.claude/get-shit-done/references/executor/deviation-rules.md
+@~/.claude/looppool/references/executor/deviation-rules.md
 </deviation_rules>
 
 <deviation_documentation>
-Document all deviations in Summary using format from @~/.claude/get-shit-done/references/executor/deviation-rules.md.
+Document all deviations in Summary using format from @~/.claude/looppool/references/executor/deviation-rules.md.
 Track: rule applied, issue, fix, files modified, commit hash.
 
 For inline tasks specifically:
@@ -327,11 +327,11 @@ After TDD plan completion, ensure:
 - Standard plans: Multiple tasks, 1 commit per task, 2-4 commits total
 - TDD plans: Single feature, 2-3 commits for RED/GREEN/REFACTOR cycle
 
-See `~/.claude/get-shit-done/references/tdd.md` for TDD plan structure.
+See `~/.claude/looppool/references/tdd.md` for TDD plan structure.
 </tdd_plan_execution>
 
 <task_commit>
-See @~/.claude/agents/gsd-executor.md <task_commit_protocol> section for commit protocol.
+See @~/.claude/agents/lpl-executor.md <task_commit_protocol> section for commit protocol.
 </task_commit>
 
 <step name="record_phase_commit">
@@ -378,7 +378,7 @@ fi
 
 **Recording happens once:** Check if phase already in table before adding. Prevents duplicate entries.
 
-**Used by:** `/gsd:rollback-phase` command to identify commit range for reverting.
+**Used by:** `/lpl:rollback-phase` command to identify commit range for reverting.
 </step>
 
 <step name="checkpoint_protocol">
@@ -390,7 +390,7 @@ When encountering `type="checkpoint:*"`:
 
 **If AUTONOMOUS=true:**
 
-Reference: @~/.claude/get-shit-done/references/autonomous-defaults.md
+Reference: @~/.claude/looppool/references/autonomous-defaults.md
 
 **For checkpoint:human-verify:**
 
@@ -506,7 +506,7 @@ This enables later decisions to reference this decision via S### format.
 
 **If AUTONOMOUS=false:**
 
-Display checkpoint using format from @~/.claude/get-shit-done/references/checkpoints.md.
+Display checkpoint using format from @~/.claude/looppool/references/checkpoints.md.
 WAIT for user response. Do NOT hallucinate completion. Do NOT continue to next task.
 After user responds: verify if specified, then continue or wait for resolution.
 </step>
@@ -514,7 +514,7 @@ After user responds: verify if specified, then continue or wait for resolution.
 <step name="checkpoint_return_for_orchestrator">
 **When spawned by an orchestrator (execute-phase or execute-plan command):**
 
-If spawned via Task tool and you hit a checkpoint, RETURN to orchestrator with structured checkpoint state. Use format from @~/.claude/get-shit-done/references/executor/checkpoint-protocol.md (Checkpoint Return Format section).
+If spawned via Task tool and you hit a checkpoint, RETURN to orchestrator with structured checkpoint state. Use format from @~/.claude/looppool/references/executor/checkpoint-protocol.md (Checkpoint Return Format section).
 
 Required: Completed Tasks table, Current Task + blocker, Checkpoint Details, Awaiting.
 
@@ -594,7 +594,7 @@ Pass timing data to SUMMARY.md creation.
 grep -A 50 "^user_setup:" .planning/phases/XX-name/{phase}-{plan}-PLAN.md | head -50
 ```
 
-**If user_setup exists:** Create `.planning/phases/XX-name/{phase}-USER-SETUP.md` using template from `~/.claude/get-shit-done/templates/user-setup.md`.
+**If user_setup exists:** Create `.planning/phases/XX-name/{phase}-USER-SETUP.md` using template from `~/.claude/looppool/templates/user-setup.md`.
 
 Parse each service in `user_setup` array. Generate: Environment Variables table, Account Setup checklist, Dashboard Configuration steps, Local Development notes, Verification section. Set status to "Incomplete".
 
@@ -605,7 +605,7 @@ Parse each service in `user_setup` array. Generate: Environment Variables table,
 
 <step name="create_summary">
 Create `{phase}-{plan}-SUMMARY.md` as specified in the prompt's `<output>` section.
-Use ~/.claude/get-shit-done/templates/summary.md for structure.
+Use ~/.claude/looppool/templates/summary.md for structure.
 
 **File location:** `.planning/phases/XX-name/{phase}-{plan}-SUMMARY.md`
 
@@ -775,7 +775,7 @@ EOF
 )"
 ```
 
-See @~/.claude/get-shit-done/references/git-integration.md for commit conventions.
+See @~/.claude/looppool/references/git-integration.md for commit conventions.
 </step>
 
 <step name="update_codebase_map">
@@ -822,7 +822,7 @@ Skip this step.
 <step name="offer_next">
 **Completion routing: Determine next step based on plan/phase/milestone status.**
 
-@~/.claude/get-shit-done/references/execute-plan/offer-next.md
+@~/.claude/looppool/references/execute-plan/offer-next.md
 </step>
 
 </process>

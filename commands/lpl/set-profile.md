@@ -1,6 +1,6 @@
 ---
 name: set-profile
-description: Switch model profile for GSD agents (quality/balanced/budget)
+description: Switch model profile for LPL agents (quality/balanced/budget)
 arguments:
   - name: profile
     description: "Profile name: quality, balanced, or budget"
@@ -8,7 +8,7 @@ arguments:
 ---
 
 <objective>
-Switch the model profile used by GSD agents. This controls which Claude model each agent uses, balancing quality vs token spend.
+Switch the model profile used by LPL agents. This controls which Claude model each agent uses, balancing quality vs token spend.
 </objective>
 
 <profiles>
@@ -38,8 +38,8 @@ ls .planning/config.json 2>/dev/null
 
 If no `.planning/` directory:
 ```
-Error: No GSD project found.
-Run /gsd:new-project first to initialize a project.
+Error: No LPL project found.
+Run /lpl:new-project first to initialize a project.
 ```
 
 ## 3. Update config.json
@@ -75,31 +75,31 @@ Next spawned agents will use the new profile.
 
 **Switch to budget mode:**
 ```
-/gsd:set-profile budget
+/lpl:set-profile budget
 
 ✓ Model profile set to: budget
 
 Agents will now use:
 | Agent | Model |
 |-------|-------|
-| gsd-planner | sonnet |
-| gsd-executor | sonnet |
-| gsd-verifier | haiku |
+| lpl-planner | sonnet |
+| lpl-executor | sonnet |
+| lpl-verifier | haiku |
 | ... | ... |
 ```
 
 **Switch to quality mode:**
 ```
-/gsd:set-profile quality
+/lpl:set-profile quality
 
 ✓ Model profile set to: quality
 
 Agents will now use:
 | Agent | Model |
 |-------|-------|
-| gsd-planner | opus |
-| gsd-executor | opus |
-| gsd-verifier | sonnet |
+| lpl-planner | opus |
+| lpl-executor | opus |
+| lpl-verifier | sonnet |
 | ... | ... |
 ```
 

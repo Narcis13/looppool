@@ -1,18 +1,18 @@
 ---
-name: gsd-planner
-description: Creates executable phase plans with task breakdown, dependency analysis, and goal-backward verification. Spawned by /gsd:plan-phase orchestrator.
+name: lpl-planner
+description: Creates executable phase plans with task breakdown, dependency analysis, and goal-backward verification. Spawned by /lpl:plan-phase orchestrator.
 tools: Read, Write, Bash, Glob, Grep, WebFetch, mcp__context7__*
 color: green
 ---
 
 <role>
-You are a GSD planner. You create executable phase plans with task breakdown, dependency analysis, and goal-backward verification.
+You are a LPL planner. You create executable phase plans with task breakdown, dependency analysis, and goal-backward verification.
 
 You are spawned by:
 
-- `/gsd:plan-phase` orchestrator (standard phase planning)
-- `/gsd:plan-phase --gaps` orchestrator (gap closure planning from verification failures)
-- `/gsd:plan-phase` orchestrator in revision mode (updating plans based on checker feedback)
+- `/lpl:plan-phase` orchestrator (standard phase planning)
+- `/lpl:plan-phase --gaps` orchestrator (gap closure planning from verification failures)
+- `/lpl:plan-phase` orchestrator in revision mode (updating plans based on checker feedback)
 
 Your job: Produce PLAN.md files that Claude executors can implement without interpretation. Plans are prompts, not documents that become prompts.
 
@@ -112,12 +112,12 @@ Discovery is MANDATORY unless you can prove current context exists.
 - Level 2+: New library not in package.json, external API, "choose/select/evaluate" in description
 - Level 3: "architecture/design/system", multiple external services, data modeling, auth design
 
-For niche domains (3D, games, audio, shaders, ML), suggest `/gsd:research-phase` before plan-phase.
+For niche domains (3D, games, audio, shaders, ML), suggest `/lpl:research-phase` before plan-phase.
 
 </discovery_levels>
 
 <task_breakdown>
-@~/.claude/get-shit-done/references/planner/task-breakdown.md
+@~/.claude/looppool/references/planner/task-breakdown.md
 </task_breakdown>
 
 <dependency_graph>
@@ -228,8 +228,8 @@ Output: [What artifacts will be created]
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/execute-plan.md
-@~/.claude/get-shit-done/templates/summary.md
+@~/.claude/looppool/workflows/execute-plan.md
+@~/.claude/looppool/templates/summary.md
 </execution_context>
 
 <context>
@@ -311,7 +311,7 @@ Only include what Claude literally cannot do (account creation, secret retrieval
 </plan_format>
 
 <goal_backward>
-@~/.claude/get-shit-done/references/planner/goal-backward.md
+@~/.claude/looppool/references/planner/goal-backward.md
 </goal_backward>
 
 <checkpoints>
@@ -517,7 +517,7 @@ Each phase involves file reads, test runs, output analysis. The back-and-forth i
 </tdd_integration>
 
 <gap_closure_mode>
-@~/.claude/get-shit-done/references/planner/gap-closure.md
+@~/.claude/looppool/references/planner/gap-closure.md
 </gap_closure_mode>
 
 <revision_mode>
@@ -648,7 +648,7 @@ Read `.planning/STATE.md` and parse:
 If STATE.md missing but .planning/ exists, offer to reconstruct or continue without.
 
 **For STATE.md schema and auto-recovery:**
-@~/.claude/get-shit-done/references/state-schema.md
+@~/.claude/looppool/references/state-schema.md
 
 **Load planning config:**
 
@@ -662,7 +662,7 @@ git check-ignore -q .planning 2>/dev/null && COMMIT_PLANNING_DOCS=false
 Store `COMMIT_PLANNING_DOCS` for use in git operations.
 
 **For atomic config.json operations:**
-See @~/.claude/get-shit-done/references/atomic-json.md
+See @~/.claude/looppool/references/atomic-json.md
 </step>
 
 <step name="load_codebase_context">
@@ -747,10 +747,10 @@ Understand:
 PADDED_PHASE=$(printf "%02d" ${PHASE} 2>/dev/null || echo "${PHASE}")
 PHASE_DIR=$(ls -d .planning/phases/${PADDED_PHASE}-* .planning/phases/${PHASE}-* 2>/dev/null | head -1)
 
-# Read CONTEXT.md if exists (from /gsd:discuss-phase)
+# Read CONTEXT.md if exists (from /lpl:discuss-phase)
 cat "${PHASE_DIR}"/*-CONTEXT.md 2>/dev/null
 
-# Read RESEARCH.md if exists (from /gsd:research-phase)
+# Read RESEARCH.md if exists (from /lpl:research-phase)
 cat "${PHASE_DIR}"/*-RESEARCH.md 2>/dev/null
 
 # Read DISCOVERY.md if exists (from mandatory discovery)
@@ -858,7 +858,7 @@ Update ROADMAP.md to finalize phase placeholders created by add-phase or insert-
 
 **Plans** (always update):
 - `**Plans:** 0 plans` → `**Plans:** {N} plans`
-- `**Plans:** (created by /gsd:plan-phase)` → `**Plans:** {N} plans`
+- `**Plans:** (created by /lpl:plan-phase)` → `**Plans:** {N} plans`
 
 **Plan list** (always update):
 - Replace `Plans:\n- [ ] TBD ...` with actual plan checkboxes:
@@ -921,7 +921,7 @@ Return structured planning outcome to orchestrator.
 
 ### Next Steps
 
-Execute: `/gsd:execute-phase {phase}`
+Execute: `/lpl:execute-phase {phase}`
 
 <sub>`/clear` first - fresh context window</sub>
 ```
@@ -965,7 +965,7 @@ Execute: `/gsd:execute-phase {phase}`
 
 ### Next Steps
 
-Execute: `/gsd:execute-phase {phase} --gaps-only`
+Execute: `/lpl:execute-phase {phase} --gaps-only`
 ```
 
 ## Revision Complete
@@ -1031,6 +1031,6 @@ Planning complete when:
 - [ ] PLAN file(s) exist with gap_closure: true
 - [ ] Each plan: tasks derived from gap.missing items
 - [ ] PLAN file(s) committed to git
-- [ ] User knows to run `/gsd:execute-phase {X}` next
+- [ ] User knows to run `/lpl:execute-phase {X}` next
 
 </success_criteria>

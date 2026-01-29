@@ -1,10 +1,21 @@
 # Changelog
 
-All notable changes to GSD will be documented in this file.
+All notable changes to Looppool will be documented in this file.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+
+### Changed
+- **REBRAND**: Renamed from "Get Shit Done" (GSD) to "Looppool" (LPL)
+  - Package renamed from `get-shit-done-cc` to `looppool-cc`
+  - Command prefix changed from `gsd:` to `lpl:` (e.g., `/lpl:help`)
+  - Agent files renamed from `gsd-*` to `lpl-*`
+  - Directory renamed from `get-shit-done/` to `looppool/`
+  - Commands directory renamed from `commands/gsd/` to `commands/lpl/`
+  - Repository moved to https://github.com/Narcis13/looppool
+  - Removed Discord references
+  - Added acknowledgment section for original GSD author (TÂCHES)
 
 ## [1.9.12] - 2025-01-23
 

@@ -1,5 +1,5 @@
 <purpose>
-Orchestrate the autonomous loop for /gsd:loop start. Spawns iteration agents with fresh context, monitors exit signals, triggers verification on phase completion, handles gap closure.
+Orchestrate the autonomous loop for /lpl:loop start. Spawns iteration agents with fresh context, monitors exit signals, triggers verification on phase completion, handles gap closure.
 </purpose>
 
 <core_principle>
@@ -13,9 +13,9 @@ Read STATE.md before any operation to load project context.
 Read config.json for loop settings.
 Read LOOP-STATE.md for current loop position.
 
-@~/.claude/get-shit-done/references/loop-mechanics.md
-@~/.claude/get-shit-done/references/autonomous.md
-@~/.claude/get-shit-done/templates/loop-iteration.md
+@~/.claude/looppool/references/loop-mechanics.md
+@~/.claude/looppool/references/autonomous.md
+@~/.claude/looppool/templates/loop-iteration.md
 </required_reading>
 
 <process>
@@ -33,9 +33,9 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| loop-iteration (gsd-executor) | opus | sonnet | sonnet |
-| gsd-verifier | sonnet | sonnet | haiku |
-| gsd-planner (gap closure) | opus | opus | sonnet |
+| loop-iteration (lpl-executor) | opus | sonnet | sonnet |
+| lpl-verifier | sonnet | sonnet | haiku |
+| lpl-planner (gap closure) | opus | opus | sonnet |
 
 Store resolved models for use in Task calls below.
 </step>
@@ -61,7 +61,7 @@ Extract:
 If `STATUS = stopping` or `STATUS = stopped`: Exit immediately.
 
 ```
-Loop stopped. Run /gsd:loop start to resume.
+Loop stopped. Run /lpl:loop start to resume.
 ```
 </step>
 
@@ -192,7 +192,7 @@ After outputting exit signal: EXIT IMMEDIATELY.
 Commit format: {type}(${PHASE}-${PLAN}): {task description}
 Include: Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ",
-  subagent_type="gsd-executor",
+  subagent_type="lpl-executor",
   model="${iteration_model}",
   description="Loop iter ${ITERATION}: ${PHASE}"
 )
@@ -245,7 +245,7 @@ Phase goal: ${PHASE_GOAL}
 
 Check must_haves against actual codebase. Create VERIFICATION.md.
 Verify what actually exists in the code — do not trust SUMMARY claims.",
-  subagent_type="gsd-verifier",
+  subagent_type="lpl-verifier",
   model="${verifier_model}",
   description="Verify phase ${PHASE}"
 )
@@ -299,7 +299,7 @@ Existing plans: ${PLAN_COUNT}
 Create new plans (numbered sequentially after existing) with gap_closure: true in frontmatter.
 Each plan targets specific gaps from verification report.
 Plans should have 1-2 tasks each — focused and atomic.",
-  subagent_type="gsd-planner",
+  subagent_type="lpl-planner",
   model="${planner_model}",
   description="Gap closure plans: phase ${PHASE}"
 )
@@ -362,7 +362,7 @@ EOF
 ```
 ---
 
-GSD > LOOP PHASE COMPLETE
+LPL > LOOP PHASE COMPLETE
 
 Phase: ${PHASE} — ${PHASE_NAME}
 Iterations: ${ITERATION}
@@ -374,10 +374,10 @@ Verification: passed
 ## Next Up
 
 [If more phases in milestone:]
-/gsd:loop start [next phase]
+/lpl:loop start [next phase]
 
 [If milestone complete:]
-/gsd:complete-milestone
+/lpl:complete-milestone
 
 ---
 ```
@@ -398,7 +398,7 @@ Stuck reason: ${REASON}
 ```
 ---
 
-GSD > LOOP STUCK
+LPL > LOOP STUCK
 
 Phase: ${PHASE} — ${PHASE_NAME}
 Iteration: ${ITERATION}
@@ -415,7 +415,7 @@ Consecutive failures: ${CONSECUTIVE_FAILURES}
 2. Check LEARNINGS.md for related constraints
 3. Fix the root cause (code, tests, or plan)
 4. Reset: Edit LOOP-STATE.md → Status: running, Consecutive failures: 0
-5. Resume: /gsd:loop start ${PHASE}
+5. Resume: /lpl:loop start ${PHASE}
 
 ---
 ```
@@ -428,7 +428,7 @@ Consecutive failures: ${CONSECUTIVE_FAILURES}
 - Exit signals parsed and routed correctly
 - TASK_COMPLETE continues loop
 - PLAN_COMPLETE transitions to next plan or phase verification
-- PHASE_COMPLETE triggers gsd-verifier
+- PHASE_COMPLETE triggers lpl-verifier
 - Gap closure creates new plans and re-enters loop
 - Stuck detection halts loop with actionable report
 - Max iterations enforced as safety limit

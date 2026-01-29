@@ -1,10 +1,10 @@
 # Autonomous Mode Reference
 
-Reference documentation for implementing autonomous decision-making in GSD workflows.
+Reference documentation for implementing autonomous decision-making in LPL workflows.
 
 ## Overview
 
-Autonomous mode enables GSD to execute from `/gsd:new-project` through `/gsd:execute-phase` with zero human input. When `autonomous: true` in config, Claude makes all decisions automatically, outputting traces for visibility.
+Autonomous mode enables LPL to execute from `/lpl:new-project` through `/lpl:execute-phase` with zero human input. When `autonomous: true` in config, Claude makes all decisions automatically, outputting traces for visibility.
 
 **Core principle:** Full commitment. When autonomous mode is enabled, ALL decision points are auto-decided. No partial autonomy. This creates predictable behavior - either fully interactive or fully autonomous.
 
@@ -306,8 +306,8 @@ After autonomous mode is fully implemented, these files will use the pattern:
 - `plan-phase.md` - Planning decision points
 
 **Agents:**
-- `gsd-executor.md` - Deviation decisions during execution
-- `gsd-planner.md` - Planning decisions
+- `lpl-executor.md` - Deviation decisions during execution
+- `lpl-planner.md` - Planning decisions
 
 **Note:** This list will expand as Phase 4 (Workflow Integration) implements FLOW-01 through FLOW-04.
 

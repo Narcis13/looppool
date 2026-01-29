@@ -1,5 +1,5 @@
 ---
-name: gsd:loop
+name: lpl:loop
 description: Autonomous execution loop with fresh-context iterations
 argument-hint: "<init|start|stop|status> [phase] [--max N]"
 allowed-tools:
@@ -14,7 +14,7 @@ allowed-tools:
 ---
 
 <objective>
-Run GSD's structured workflow through an autonomous loop where each iteration gets fresh context. Combines Ralph's fresh-context iteration pattern with GSD's goal-backward verification.
+Run LPL's structured workflow through an autonomous loop where each iteration gets fresh context. Combines Ralph's fresh-context iteration pattern with LPL's goal-backward verification.
 
 Each loop iteration: load context → select next task → execute → validate → commit → exit. Fresh context on next iteration prevents context rot.
 
@@ -26,9 +26,9 @@ Subcommands:
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/loop-orchestrator.md
-@~/.claude/get-shit-done/references/loop-mechanics.md
-@~/.claude/get-shit-done/references/autonomous.md
+@~/.claude/looppool/workflows/loop-orchestrator.md
+@~/.claude/looppool/references/loop-mechanics.md
+@~/.claude/looppool/references/autonomous.md
 </execution_context>
 
 <context>
@@ -47,7 +47,7 @@ Extract subcommand: `init`, `start`, `stop`, or `status`.
 If no argument provided:
 
 ```
-Usage: /gsd:loop <init|start|stop|status> [phase] [--max N]
+Usage: /lpl:loop <init|start|stop|status> [phase] [--max N]
 
   init           Generate LEARNINGS.md and loop config
   start [phase]  Begin autonomous loop for phase
@@ -66,7 +66,7 @@ Parse optional flags:
 </step>
 
 <step name="verify_project">
-**Verify GSD project exists.**
+**Verify LPL project exists.**
 
 ```bash
 test -d .planning && test -f .planning/ROADMAP.md && echo "exists" || echo "missing"
@@ -75,8 +75,8 @@ test -d .planning && test -f .planning/ROADMAP.md && echo "exists" || echo "miss
 If missing:
 
 ```
-No active GSD project found.
-Run /gsd:new-project first.
+No active LPL project found.
+Run /lpl:new-project first.
 ```
 
 Exit.
@@ -145,7 +145,7 @@ Build validation command list from detected scripts.
 
 **Step 3: Generate LEARNINGS.md**
 
-Use template: @~/.claude/get-shit-done/templates/learnings.md
+Use template: @~/.claude/looppool/templates/learnings.md
 
 Write to `.planning/LEARNINGS.md` with:
 - Detected validation commands
@@ -175,7 +175,7 @@ Validation commands populated from Step 2 detection.
 **Step 5: Report**
 
 ```
-GSD > LOOP INITIALIZED
+LPL > LOOP INITIALIZED
 
 LEARNINGS.md: .planning/LEARNINGS.md
 Config: .planning/config.json (loop section added)
@@ -186,7 +186,7 @@ Detected stack:
 - Build: [detected command]
 - Lint: [detected command]
 
-Next: /gsd:loop start [phase]
+Next: /lpl:loop start [phase]
 ```
 
 </step>
@@ -195,7 +195,7 @@ Next: /gsd:loop start [phase]
 **Begin autonomous loop execution.**
 
 Delegates to loop orchestrator workflow:
-@~/.claude/get-shit-done/workflows/loop-orchestrator.md
+@~/.claude/looppool/workflows/loop-orchestrator.md
 
 **Step 1: Resolve phase**
 
@@ -220,7 +220,7 @@ If no plans exist:
 ```
 No plans found for phase [N].
 
-Run /gsd:plan-phase [N] first, or use /gsd:loop init if starting fresh.
+Run /lpl:plan-phase [N] first, or use /lpl:loop init if starting fresh.
 ```
 
 Exit.
@@ -234,7 +234,7 @@ test -f .planning/LEARNINGS.md && echo "exists" || echo "missing"
 If missing, warn and offer to run init:
 
 ```
-LEARNINGS.md not found. Run /gsd:loop init first for optimal results.
+LEARNINGS.md not found. Run /lpl:loop init first for optimal results.
 Continuing without operational learnings...
 ```
 
@@ -270,13 +270,13 @@ Execute loop orchestrator workflow. The orchestrator handles:
 Report:
 
 ```
-GSD > LOOP STARTED
+LPL > LOOP STARTED
 
 Phase: [N] — [phase name]
 Plans: [count]
 Max iterations: [MAX_ITER]
 
-Loop running... (Ctrl+C or /gsd:loop stop to halt)
+Loop running... (Ctrl+C or /lpl:loop stop to halt)
 ```
 
 </step>
@@ -311,10 +311,10 @@ The loop orchestrator checks this before each iteration and exits gracefully aft
 **Step 3: Report**
 
 ```
-GSD > LOOP STOP REQUESTED
+LPL > LOOP STOP REQUESTED
 
 Loop will stop after current task completes.
-Run /gsd:loop status to check final state.
+Run /lpl:loop status to check final state.
 ```
 
 </step>
@@ -331,7 +331,7 @@ test -f .planning/LOOP-STATE.md && echo "exists" || echo "missing"
 If missing:
 
 ```
-No loop state found. Run /gsd:loop start to begin.
+No loop state found. Run /lpl:loop start to begin.
 ```
 
 Exit.
@@ -341,7 +341,7 @@ Exit.
 Read `.planning/LOOP-STATE.md` and `.planning/STATE.md`.
 
 ```
-GSD > LOOP STATUS
+LPL > LOOP STATUS
 
 Phase: [N] — [phase name]
 Status: [running | stopping | stopped | complete]

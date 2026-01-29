@@ -1,5 +1,5 @@
 ---
-name: gsd:new-milestone
+name: lpl:new-milestone
 description: Start a new milestone cycle — update PROJECT.md and route to requirements
 argument-hint: "[milestone name, e.g., 'v1.1 Notifications']"
 allowed-tools:
@@ -22,16 +22,16 @@ This is the brownfield equivalent of new-project. The project exists, PROJECT.md
 - `.planning/ROADMAP.md` — phase structure (continues numbering)
 - `.planning/STATE.md` — reset for new milestone
 
-**After this command:** Run `/gsd:plan-phase [N]` to start execution.
+**After this command:** Run `/lpl:plan-phase [N]` to start execution.
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/references/questioning.md
-@~/.claude/get-shit-done/references/ui-brand.md
-@~/.claude/get-shit-done/templates/project.md
-@~/.claude/get-shit-done/templates/requirements.md
-@~/.claude/get-shit-done/references/autonomous.md
-@~/.claude/get-shit-done/references/decision-policies.md
+@~/.claude/looppool/references/questioning.md
+@~/.claude/looppool/references/ui-brand.md
+@~/.claude/looppool/templates/project.md
+@~/.claude/looppool/templates/requirements.md
+@~/.claude/looppool/references/autonomous.md
+@~/.claude/looppool/references/decision-policies.md
 </execution_context>
 
 <context>
@@ -43,7 +43,7 @@ Milestone name: $ARGUMENTS (optional - will prompt if not provided)
 @.planning/MILESTONES.md
 @.planning/config.json
 
-**Load milestone context (if exists, from /gsd:discuss-milestone):**
+**Load milestone context (if exists, from /lpl:discuss-milestone):**
 @.planning/MILESTONE-CONTEXT.md
 </context>
 
@@ -54,7 +54,7 @@ Milestone name: $ARGUMENTS (optional - will prompt if not provided)
 - Read PROJECT.md (existing project, Validated requirements, decisions)
 - Read MILESTONES.md (what shipped previously)
 - Read STATE.md (pending todos, blockers)
-- Check for MILESTONE-CONTEXT.md (from /gsd:discuss-milestone)
+- Check for MILESTONE-CONTEXT.md (from /lpl:discuss-milestone)
 
 **Read autonomous mode:**
 
@@ -146,9 +146,9 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-project-researcher | opus | sonnet | haiku |
-| gsd-research-synthesizer | sonnet | sonnet | haiku |
-| gsd-roadmapper | opus | sonnet | sonnet |
+| lpl-project-researcher | opus | sonnet | haiku |
+| lpl-research-synthesizer | sonnet | sonnet | haiku |
+| lpl-roadmapper | opus | sonnet | sonnet |
 
 Store resolved models for use in Task calls below.
 
@@ -194,7 +194,7 @@ Use AskUserQuestion:
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCHING
+ LPL ► RESEARCHING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Researching [new features] ecosystem...
@@ -214,7 +214,7 @@ Display spawning indicator:
   → Pitfalls research
 ```
 
-Spawn 4 parallel gsd-project-researcher agents with milestone-aware context:
+Spawn 4 parallel lpl-project-researcher agents with milestone-aware context:
 
 ```
 Task(prompt="
@@ -254,9 +254,9 @@ Your STACK.md feeds into roadmap creation. Be prescriptive:
 
 <output>
 Write to: .planning/research/STACK.md
-Use template: ~/.claude/get-shit-done/templates/research-project/STACK.md
+Use template: ~/.claude/looppool/templates/research-project/STACK.md
 </output>
-", subagent_type="gsd-project-researcher", model="{researcher_model}", description="Stack research")
+", subagent_type="lpl-project-researcher", model="{researcher_model}", description="Stack research")
 
 Task(prompt="
 <research_type>
@@ -295,9 +295,9 @@ Your FEATURES.md feeds into requirements definition. Categorize clearly:
 
 <output>
 Write to: .planning/research/FEATURES.md
-Use template: ~/.claude/get-shit-done/templates/research-project/FEATURES.md
+Use template: ~/.claude/looppool/templates/research-project/FEATURES.md
 </output>
-", subagent_type="gsd-project-researcher", model="{researcher_model}", description="Features research")
+", subagent_type="lpl-project-researcher", model="{researcher_model}", description="Features research")
 
 Task(prompt="
 <research_type>
@@ -337,9 +337,9 @@ Your ARCHITECTURE.md informs phase structure in roadmap. Include:
 
 <output>
 Write to: .planning/research/ARCHITECTURE.md
-Use template: ~/.claude/get-shit-done/templates/research-project/ARCHITECTURE.md
+Use template: ~/.claude/looppool/templates/research-project/ARCHITECTURE.md
 </output>
-", subagent_type="gsd-project-researcher", model="{researcher_model}", description="Architecture research")
+", subagent_type="lpl-project-researcher", model="{researcher_model}", description="Architecture research")
 
 Task(prompt="
 <research_type>
@@ -375,9 +375,9 @@ Your PITFALLS.md prevents mistakes in roadmap/planning. For each pitfall:
 
 <output>
 Write to: .planning/research/PITFALLS.md
-Use template: ~/.claude/get-shit-done/templates/research-project/PITFALLS.md
+Use template: ~/.claude/looppool/templates/research-project/PITFALLS.md
 </output>
-", subagent_type="gsd-project-researcher", model="{researcher_model}", description="Pitfalls research")
+", subagent_type="lpl-project-researcher", model="{researcher_model}", description="Pitfalls research")
 ```
 
 After all 4 agents complete, spawn synthesizer to create SUMMARY.md:
@@ -398,16 +398,16 @@ Read these files:
 
 <output>
 Write to: .planning/research/SUMMARY.md
-Use template: ~/.claude/get-shit-done/templates/research-project/SUMMARY.md
+Use template: ~/.claude/looppool/templates/research-project/SUMMARY.md
 Commit after writing.
 </output>
-", subagent_type="gsd-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
+", subagent_type="lpl-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
 ```
 
 Display research complete banner and key findings:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCH COMPLETE ✓
+ LPL ► RESEARCH COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Key Findings
@@ -426,7 +426,7 @@ Files: `.planning/research/`
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DEFINING REQUIREMENTS
+ LPL ► DEFINING REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -560,7 +560,7 @@ EOF
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► CREATING ROADMAP
+ LPL ► CREATING ROADMAP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning roadmapper...
@@ -571,7 +571,7 @@ Display stage banner:
 Read MILESTONES.md to find the last phase number from previous milestone.
 New phases continue from there (e.g., if v1.0 ended at phase 5, v1.1 starts at phase 6).
 
-Spawn gsd-roadmapper agent with context:
+Spawn lpl-roadmapper agent with context:
 
 ```
 Task(prompt="
@@ -606,7 +606,7 @@ Create roadmap for milestone v[X.Y]:
 
 Write files first, then return. This ensures artifacts persist even if context is lost.
 </instructions>
-", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Create roadmap")
+", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Create roadmap")
 ```
 
 **Handle roadmapper return:**
@@ -678,7 +678,7 @@ If coverage incomplete, retry once:
   Ensure all requirements are mapped to phases. Edit files in place.
   Return ROADMAP REVISED with changes made.
   </revision>
-  ", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
+  ", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
   ```
 - Check again
 - If still incomplete after retry: fall back to human approval
@@ -713,7 +713,7 @@ Use AskUserQuestion:
   Update the roadmap based on feedback. Edit files in place.
   Return ROADMAP REVISED with changes made.
   </revision>
-  ", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
+  ", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
   ```
 - Present revised roadmap
 - Loop until user approves
@@ -746,7 +746,7 @@ Present completion with next steps:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► MILESTONE INITIALIZED ✓
+ LPL ► MILESTONE INITIALIZED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Milestone v[X.Y]: [Name]**
@@ -766,14 +766,14 @@ Present completion with next steps:
 
 **Phase [N]: [Phase Name]** — [Goal from ROADMAP.md]
 
-`/gsd:discuss-phase [N]` — gather context and clarify approach
+`/lpl:discuss-phase [N]` — gather context and clarify approach
 
 <sub>`/clear` first → fresh context window</sub>
 
 ---
 
 **Also available:**
-- `/gsd:plan-phase [N]` — skip discussion, plan directly
+- `/lpl:plan-phase [N]` — skip discussion, plan directly
 
 ───────────────────────────────────────────────────────────────
 ```
@@ -788,12 +788,12 @@ Present completion with next steps:
 - [ ] Requirements gathered (from research or conversation)
 - [ ] User scoped each category
 - [ ] REQUIREMENTS.md created with REQ-IDs
-- [ ] gsd-roadmapper spawned with phase numbering context
+- [ ] lpl-roadmapper spawned with phase numbering context
 - [ ] Roadmap files written immediately (not draft)
 - [ ] User feedback incorporated (if any)
 - [ ] ROADMAP.md created with phases continuing from previous milestone
 - [ ] All commits made (if planning docs committed)
-- [ ] User knows next step is `/gsd:discuss-phase [N]`
+- [ ] User knows next step is `/lpl:discuss-phase [N]`
 
 **Atomic commits:** Each phase commits its artifacts immediately. If context is lost, artifacts persist.
 </success_criteria>

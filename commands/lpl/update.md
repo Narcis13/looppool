@@ -1,12 +1,12 @@
 ---
-name: gsd:update
-description: Update GSD to latest version with changelog display
+name: lpl:update
+description: Update LPL to latest version with changelog display
 ---
 
 <objective>
-Check for GSD updates, install if available, and display what changed.
+Check for LPL updates, install if available, and display what changed.
 
-Provides a better update experience than raw `npx get-shit-done-cc` by showing version diff and changelog entries.
+Provides a better update experience than raw `npx looppool-cc` by showing version diff and changelog entries.
 </objective>
 
 <process>
@@ -15,12 +15,12 @@ Provides a better update experience than raw `npx get-shit-done-cc` by showing v
 Read installed version:
 
 ```bash
-cat ~/.claude/get-shit-done/VERSION 2>/dev/null
+cat ~/.claude/looppool/VERSION 2>/dev/null
 ```
 
 **If VERSION file missing:**
 ```
-## GSD Update
+## LPL Update
 
 **Installed version:** Unknown
 
@@ -36,14 +36,14 @@ Proceed to install step (treat as version 0.0.0 for comparison).
 Check npm for latest version:
 
 ```bash
-npm view get-shit-done-cc version 2>/dev/null
+npm view looppool-cc version 2>/dev/null
 ```
 
 **If npm check fails:**
 ```
 Couldn't check for updates (offline or npm unavailable).
 
-To update manually: `npx get-shit-done-cc --global`
+To update manually: `npx looppool-cc --global`
 ```
 
 STOP here if npm unavailable.
@@ -54,7 +54,7 @@ Compare installed vs latest:
 
 **If installed == latest:**
 ```
-## GSD Update
+## LPL Update
 
 **Installed:** X.Y.Z
 **Latest:** X.Y.Z
@@ -66,7 +66,7 @@ STOP here if already up to date.
 
 **If installed > latest:**
 ```
-## GSD Update
+## LPL Update
 
 **Installed:** X.Y.Z
 **Latest:** A.B.C
@@ -85,7 +85,7 @@ STOP here if ahead.
 3. Display preview and ask for confirmation:
 
 ```
-## GSD Update Available
+## LPL Update Available
 
 **Installed:** 1.5.10
 **Latest:** 1.5.15
@@ -105,18 +105,18 @@ STOP here if ahead.
 
 ────────────────────────────────────────────────────────────
 
-⚠️  **Note:** The installer performs a clean install of GSD folders:
-- `~/.claude/commands/gsd/` will be wiped and replaced
-- `~/.claude/get-shit-done/` will be wiped and replaced
-- `~/.claude/agents/gsd-*` files will be replaced
+⚠️  **Note:** The installer performs a clean install of LPL folders:
+- `~/.claude/commands/lpl/` will be wiped and replaced
+- `~/.claude/looppool/` will be wiped and replaced
+- `~/.claude/agents/lpl-*` files will be replaced
 
 Your custom files in other locations are preserved:
 - Custom commands in `~/.claude/commands/your-stuff/` ✓
-- Custom agents not prefixed with `gsd-` ✓
+- Custom agents not prefixed with `lpl-` ✓
 - Custom hooks ✓
 - Your CLAUDE.md files ✓
 
-If you've modified any GSD files directly, back them up first.
+If you've modified any LPL files directly, back them up first.
 ```
 
 Use AskUserQuestion:
@@ -132,7 +132,7 @@ Use AskUserQuestion:
 Run the update:
 
 ```bash
-npx get-shit-done-cc --global
+npx looppool-cc --global
 ```
 
 Capture output. If install fails, show error and STOP.
@@ -140,7 +140,7 @@ Capture output. If install fails, show error and STOP.
 Clear the update cache so statusline indicator disappears:
 
 ```bash
-rm -f ~/.claude/cache/gsd-update-check.json
+rm -f ~/.claude/cache/lpl-update-check.json
 ```
 </step>
 
@@ -149,12 +149,12 @@ Format completion message (changelog was already shown in confirmation step):
 
 ```
 ╔═══════════════════════════════════════════════════════════╗
-║  GSD Updated: v1.5.10 → v1.5.15                           ║
+║  LPL Updated: v1.5.10 → v1.5.15                           ║
 ╚═══════════════════════════════════════════════════════════╝
 
 ⚠️  Restart Claude Code to pick up the new commands.
 
-[View full changelog](https://github.com/glittercowboy/get-shit-done/blob/main/CHANGELOG.md)
+[View full changelog](https://github.com/Narcis13/looppool/blob/main/CHANGELOG.md)
 ```
 </step>
 

@@ -1,6 +1,6 @@
 ---
-name: gsd:research-phase
-description: Research how to implement a phase (standalone - usually use /gsd:plan-phase instead)
+name: lpl:research-phase
+description: Research how to implement a phase (standalone - usually use /lpl:plan-phase instead)
 argument-hint: "[phase]"
 allowed-tools:
   - Read
@@ -9,9 +9,9 @@ allowed-tools:
 ---
 
 <objective>
-Research how to implement a phase. Spawns gsd-phase-researcher agent with phase context.
+Research how to implement a phase. Spawns lpl-phase-researcher agent with phase context.
 
-**Note:** This is a standalone research command. For most workflows, use `/gsd:plan-phase` which integrates research automatically.
+**Note:** This is a standalone research command. For most workflows, use `/lpl:plan-phase` which integrates research automatically.
 
 **Use this command when:**
 - You want to research without planning yet
@@ -45,7 +45,7 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-phase-researcher | opus | sonnet | haiku |
+| lpl-phase-researcher | opus | sonnet | haiku |
 
 Store resolved model for use in Task calls below.
 
@@ -87,7 +87,7 @@ grep -A30 "### Decisions Made" .planning/STATE.md 2>/dev/null
 
 Present summary with phase description, requirements, prior decisions.
 
-## 4. Spawn gsd-phase-researcher Agent
+## 4. Spawn lpl-phase-researcher Agent
 
 Research modes: ecosystem (default), feasibility, implementation, comparison.
 
@@ -122,7 +122,7 @@ Mode: ecosystem
 </context>
 
 <downstream_consumer>
-Your RESEARCH.md will be loaded by `/gsd:plan-phase` which uses specific sections:
+Your RESEARCH.md will be loaded by `/lpl:plan-phase` which uses specific sections:
 - `## Standard Stack` → Plans use these libraries
 - `## Architecture Patterns` → Task structure follows these
 - `## Don't Hand-Roll` → Tasks NEVER build custom solutions for listed problems
@@ -148,7 +148,7 @@ Write to: .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + filled_prompt,
+  prompt="First, read ~/.claude/agents/lpl-phase-researcher.md for your role and instructions.\n\n" + filled_prompt,
   subagent_type="general-purpose",
   model="{researcher_model}",
   description="Research Phase {phase}"
@@ -182,7 +182,7 @@ Research file: @.planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + continuation_prompt,
+  prompt="First, read ~/.claude/agents/lpl-phase-researcher.md for your role and instructions.\n\n" + continuation_prompt,
   subagent_type="general-purpose",
   model="{researcher_model}",
   description="Continue research Phase {phase}"
@@ -194,7 +194,7 @@ Task(
 <success_criteria>
 - [ ] Phase validated against roadmap
 - [ ] Existing research checked
-- [ ] gsd-phase-researcher spawned with context
+- [ ] lpl-phase-researcher spawned with context
 - [ ] Checkpoints handled correctly
 - [ ] User knows next steps
 </success_criteria>

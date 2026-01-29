@@ -62,7 +62,7 @@ fi
 - Add `--no-ignore` to broad rg searches that should include `.planning/`
 - Only needed when searching entire repo and expecting `.planning/` matches
 
-**Note:** Most GSD operations use direct file reads or explicit paths, which work regardless of gitignore status.
+**Note:** Most LPL operations use direct file reads or explicit paths, which work regardless of gitignore status.
 
 </search_behavior>
 

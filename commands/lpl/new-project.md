@@ -1,5 +1,5 @@
 ---
-name: gsd:new-project
+name: lpl:new-project
 description: Initialize a new project with deep context gathering and PROJECT.md
 allowed-tools:
   - Read
@@ -23,18 +23,18 @@ This is the most leveraged moment in any project. Deep questioning here means be
 - `.planning/ROADMAP.md` — phase structure
 - `.planning/STATE.md` — project memory
 
-**After this command:** Run `/gsd:plan-phase 1` to start execution.
+**After this command:** Run `/lpl:plan-phase 1` to start execution.
 
 </objective>
 
 <execution_context>
 
-@~/.claude/get-shit-done/references/questioning.md
-@~/.claude/get-shit-done/references/ui-brand.md
-@~/.claude/get-shit-done/references/decision-policies.md
-@~/.claude/get-shit-done/references/autonomous.md
-@~/.claude/get-shit-done/templates/project.md
-@~/.claude/get-shit-done/templates/requirements.md
+@~/.claude/looppool/references/questioning.md
+@~/.claude/looppool/references/ui-brand.md
+@~/.claude/looppool/references/decision-policies.md
+@~/.claude/looppool/references/autonomous.md
+@~/.claude/looppool/templates/project.md
+@~/.claude/looppool/templates/requirements.md
 
 </execution_context>
 
@@ -46,7 +46,7 @@ This is the most leveraged moment in any project. Deep questioning here means be
 
 1. **Abort if project exists:**
    ```bash
-   [ -f .planning/PROJECT.md ] && echo "ERROR: Project already initialized. Use /gsd:progress" && exit 1
+   [ -f .planning/PROJECT.md ] && echo "ERROR: Project already initialized. Use /lpl:progress" && exit 1
    ```
 
 2. **Initialize git repo in THIS directory** (required even if inside a parent repo):
@@ -88,7 +88,7 @@ Apply POLICY-01 (Brownfield Detection):
 ```
 Auto-decided: map codebase -- Code exists without map, mapping required [POLICY-01, file: {CODE_FILES first match}]
 ```
-Run `/gsd:map-codebase`, then return to `/gsd:new-project`.
+Run `/lpl:map-codebase`, then return to `/lpl:new-project`.
 Exit command.
 
 **If AUTONOMOUS=false:**
@@ -97,12 +97,12 @@ Use AskUserQuestion:
 - header: "Existing Code"
 - question: "I detected existing code in this directory. Would you like to map the codebase first?"
 - options:
-  - "Map codebase first" — Run /gsd:map-codebase to understand existing architecture (Recommended)
+  - "Map codebase first" — Run /lpl:map-codebase to understand existing architecture (Recommended)
   - "Skip mapping" — Proceed with project initialization
 
 **If "Map codebase first":**
 ```
-Run `/gsd:map-codebase` first, then return to `/gsd:new-project`
+Run `/lpl:map-codebase` first, then return to `/lpl:new-project`
 ```
 Exit command.
 
@@ -116,7 +116,7 @@ Exit command.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUESTIONING
+ LPL ► QUESTIONING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -393,7 +393,7 @@ EOF
 )"
 ```
 
-**Note:** Run `/gsd:settings` anytime to update these preferences.
+**Note:** Run `/lpl:settings` anytime to update these preferences.
 
 ## Phase 5.5: Resolve Model Profile
 
@@ -409,9 +409,9 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-project-researcher | opus | sonnet | haiku |
-| gsd-research-synthesizer | sonnet | sonnet | haiku |
-| gsd-roadmapper | opus | sonnet | sonnet |
+| lpl-project-researcher | opus | sonnet | haiku |
+| lpl-research-synthesizer | sonnet | sonnet | haiku |
+| lpl-roadmapper | opus | sonnet | sonnet |
 
 Store resolved models for use in Task calls below.
 
@@ -464,7 +464,7 @@ Use AskUserQuestion:
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCHING
+ LPL ► RESEARCHING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Researching [domain] ecosystem...
@@ -490,10 +490,10 @@ Display spawning indicator:
   → Pitfalls research
 ```
 
-Spawn 4 parallel gsd-project-researcher agents with rich context:
+Spawn 4 parallel lpl-project-researcher agents with rich context:
 
 ```
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.claude/agents/lpl-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Stack dimension for [domain].
@@ -529,11 +529,11 @@ Your STACK.md feeds into roadmap creation. Be prescriptive:
 
 <output>
 Write to: .planning/research/STACK.md
-Use template: ~/.claude/get-shit-done/templates/research-project/STACK.md
+Use template: ~/.claude/looppool/templates/research-project/STACK.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Stack research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.claude/agents/lpl-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Features dimension for [domain].
@@ -569,11 +569,11 @@ Your FEATURES.md feeds into requirements definition. Categorize clearly:
 
 <output>
 Write to: .planning/research/FEATURES.md
-Use template: ~/.claude/get-shit-done/templates/research-project/FEATURES.md
+Use template: ~/.claude/looppool/templates/research-project/FEATURES.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Features research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.claude/agents/lpl-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Architecture dimension for [domain].
@@ -609,11 +609,11 @@ Your ARCHITECTURE.md informs phase structure in roadmap. Include:
 
 <output>
 Write to: .planning/research/ARCHITECTURE.md
-Use template: ~/.claude/get-shit-done/templates/research-project/ARCHITECTURE.md
+Use template: ~/.claude/looppool/templates/research-project/ARCHITECTURE.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Architecture research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.claude/agents/lpl-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Pitfalls dimension for [domain].
@@ -649,7 +649,7 @@ Your PITFALLS.md prevents mistakes in roadmap/planning. For each pitfall:
 
 <output>
 Write to: .planning/research/PITFALLS.md
-Use template: ~/.claude/get-shit-done/templates/research-project/PITFALLS.md
+Use template: ~/.claude/looppool/templates/research-project/PITFALLS.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Pitfalls research")
 ```
@@ -672,16 +672,16 @@ Read these files:
 
 <output>
 Write to: .planning/research/SUMMARY.md
-Use template: ~/.claude/get-shit-done/templates/research-project/SUMMARY.md
+Use template: ~/.claude/looppool/templates/research-project/SUMMARY.md
 Commit after writing.
 </output>
-", subagent_type="gsd-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
+", subagent_type="lpl-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
 ```
 
 Display research complete banner and key findings:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCH COMPLETE ✓
+ LPL ► RESEARCH COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Key Findings
@@ -700,7 +700,7 @@ Files: `.planning/research/`
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DEFINING REQUIREMENTS
+ LPL ► DEFINING REQUIREMENTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -887,13 +887,13 @@ EOF
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► CREATING ROADMAP
+ LPL ► CREATING ROADMAP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning roadmapper...
 ```
 
-Spawn gsd-roadmapper agent with context:
+Spawn lpl-roadmapper agent with context:
 
 ```
 Task(prompt="
@@ -924,7 +924,7 @@ Create roadmap:
 
 Write files first, then return. This ensures artifacts persist even if context is lost.
 </instructions>
-", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Create roadmap")
+", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Create roadmap")
 ```
 
 **Handle roadmapper return:**
@@ -1016,7 +1016,7 @@ Apply POLICY-04 (Roadmap Approval):
      Ensure all v1 requirements are mapped to phases. Update files in place.
      Return ROADMAP REVISED with changes made.
      </revision>
-     ", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
+     ", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
      ```
      After 2 failed iterations, fall back to human review.
 
@@ -1046,7 +1046,7 @@ Use AskUserQuestion:
   Update the roadmap based on feedback. Edit files in place.
   Return ROADMAP REVISED with changes made.
   </revision>
-  ", subagent_type="gsd-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
+  ", subagent_type="lpl-roadmapper", model="{roadmapper_model}", description="Revise roadmap")
   ```
 - Present revised roadmap
 - Loop until user approves
@@ -1076,7 +1076,7 @@ Present completion with next steps:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PROJECT INITIALIZED ✓
+ LPL ► PROJECT INITIALIZED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **[Project Name]**
@@ -1097,14 +1097,14 @@ Present completion with next steps:
 
 **Phase 1: [Phase Name]** — [Goal from ROADMAP.md]
 
-/gsd:discuss-phase 1 — gather context and clarify approach
+/lpl:discuss-phase 1 — gather context and clarify approach
 
 <sub>/clear first → fresh context window</sub>
 
 ---
 
 **Also available:**
-- /gsd:plan-phase 1 — skip discussion, plan directly
+- /lpl:plan-phase 1 — skip discussion, plan directly
 
 ───────────────────────────────────────────────────────────────
 ```
@@ -1139,13 +1139,13 @@ Present completion with next steps:
 - [ ] Requirements gathered (from research or conversation)
 - [ ] User scoped each category (v1/v2/out of scope)
 - [ ] REQUIREMENTS.md created with REQ-IDs → **committed**
-- [ ] gsd-roadmapper spawned with context
+- [ ] lpl-roadmapper spawned with context
 - [ ] Roadmap files written immediately (not draft)
 - [ ] User feedback incorporated (if any)
 - [ ] ROADMAP.md created with phases, requirement mappings, success criteria
 - [ ] STATE.md initialized
 - [ ] REQUIREMENTS.md traceability updated
-- [ ] User knows next step is `/gsd:discuss-phase 1`
+- [ ] User knows next step is `/lpl:discuss-phase 1`
 
 **Atomic commits:** Each phase commits its artifacts immediately. If context is lost, artifacts persist.
 

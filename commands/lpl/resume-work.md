@@ -1,5 +1,5 @@
 ---
-name: gsd:resume-work
+name: lpl:resume-work
 description: Resume work from previous session with full context restoration
 allowed-tools:
   - Read
@@ -22,7 +22,7 @@ Routes to the resume-project workflow which handles:
   </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/resume-project.md
+@~/.claude/looppool/workflows/resume-project.md
 </execution_context>
 
 <process>
@@ -45,7 +45,7 @@ Then continue with the resume-project workflow logic.
 
 **If AUTONOMOUS=false:**
 
-**Follow the resume-project workflow** from `@~/.claude/get-shit-done/workflows/resume-project.md`.
+**Follow the resume-project workflow** from `@~/.claude/looppool/workflows/resume-project.md`.
 
 The workflow handles all resumption logic including:
 

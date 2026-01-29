@@ -1,6 +1,6 @@
 # Goal-Backward Methodology Reference
 
-Reference for GSD planner goal-backward planning approach that derives must_haves from outcomes.
+Reference for LPL planner goal-backward planning approach that derives must_haves from outcomes.
 
 **Purpose:** Transforms phase goals into observable truths, required artifacts, and key links that plans must satisfy.
 

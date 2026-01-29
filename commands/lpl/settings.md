@@ -1,6 +1,6 @@
 ---
-name: gsd:settings
-description: Configure GSD workflow toggles and model profile
+name: lpl:settings
+description: Configure LPL workflow toggles and model profile
 allowed-tools:
   - Read
   - Write
@@ -21,7 +21,7 @@ Updates `.planning/config.json` with workflow preferences and model profile sele
 ls .planning/config.json 2>/dev/null
 ```
 
-**If not found:** Error - run `/gsd:new-project` first.
+**If not found:** Error - run `/lpl:new-project` first.
 
 ## 2. Read Current Config
 
@@ -107,7 +107,7 @@ Display:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► SETTINGS UPDATED
+ LPL ► SETTINGS UPDATED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Setting              | Value |
@@ -117,13 +117,13 @@ Display:
 | Plan Checker         | {On/Off} |
 | Execution Verifier   | {On/Off} |
 
-These settings apply to future /gsd:plan-phase and /gsd:execute-phase runs.
+These settings apply to future /lpl:plan-phase and /lpl:execute-phase runs.
 
 Quick commands:
-- /gsd:set-profile <profile> — switch model profile
-- /gsd:plan-phase --research — force research
-- /gsd:plan-phase --skip-research — skip research
-- /gsd:plan-phase --skip-verify — skip plan check
+- /lpl:set-profile <profile> — switch model profile
+- /lpl:plan-phase --research — force research
+- /lpl:plan-phase --skip-research — skip research
+- /lpl:plan-phase --skip-verify — skip plan check
 ```
 
 </process>

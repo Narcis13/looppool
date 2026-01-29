@@ -9,7 +9,7 @@ Template for `.planning/DECISIONS.md` - persistent audit trail of autonomous dec
 ```markdown
 # Decision Log
 
-This file tracks all autonomous decisions made across GSD sessions. Each session has its own section. Decisions are append-only; corrections are new decisions that explicitly override prior decisions.
+This file tracks all autonomous decisions made across LPL sessions. Each session has its own section. Decisions are append-only; corrections are new decisions that explicitly override prior decisions.
 
 ## Format
 

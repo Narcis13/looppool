@@ -4,11 +4,11 @@ Deep-dive reference on how the autonomous loop works, why each design decision w
 
 <overview>
 
-The GSD loop combines two proven patterns:
+The LPL loop combines two proven patterns:
 
 1. **Ralph's fresh-context iteration** — Exit after each task, restart with clean 200k context. Prevents context rot (quality degradation as context fills).
 
-2. **GSD's goal-backward verification** — After phase completion, verify outcomes not just task completion. Create gap-closure plans if verification reveals gaps.
+2. **LPL's goal-backward verification** — After phase completion, verify outcomes not just task completion. Create gap-closure plans if verification reveals gaps.
 
 The loop is the execution engine. Plans define what to build. LEARNINGS.md defines how to build it. The loop connects them through autonomous iteration.
 
@@ -128,7 +128,7 @@ consecutive_failures counter in LOOP-STATE.md
 |--------|-------|------------|
 | `STUCK: N consecutive validation failures` | Code changes keep breaking tests/build | Human reviews LEARNINGS.md constraints, fixes root cause |
 | `STUCK: No actionable task found` | Task dependencies unclear or all tasks blocked | Human reviews PLAN.md, clarifies task order |
-| `STUCK: Plan structure invalid` | PLAN.md malformed or missing sections | Human regenerates plan via `/gsd:plan-phase` |
+| `STUCK: Plan structure invalid` | PLAN.md malformed or missing sections | Human regenerates plan via `/lpl:plan-phase` |
 
 **Recovery from stuck:**
 
@@ -136,7 +136,7 @@ consecutive_failures counter in LOOP-STATE.md
 2. Read LEARNINGS.md Discovered Issues for context
 3. Fix the root cause (update code, LEARNINGS.md, or PLAN.md)
 4. Reset consecutive failures to 0 in LOOP-STATE.md
-5. Resume with `/gsd:loop start`
+5. Resume with `/lpl:loop start`
 
 **Stuck threshold tuning:**
 
@@ -182,7 +182,7 @@ All tasks in current PLAN.md completed. SUMMARY.md created.
 
 All plans in current phase completed. All SUMMARYs created.
 
-**Orchestrator action:** Spawn gsd-verifier agent for goal-backward verification. If verification passes, mark phase complete. If gaps found, create gap-closure plans and re-enter loop.
+**Orchestrator action:** Spawn lpl-verifier agent for goal-backward verification. If verification passes, mark phase complete. If gaps found, create gap-closure plans and re-enter loop.
 
 ### STUCK: [reason]
 
@@ -228,8 +228,8 @@ In the loop pattern, the human sits ON the loop, not IN it. The human's job is e
 | Control | Effect |
 |---------|--------|
 | Ctrl+C | Immediate stop. May leave uncommitted changes. |
-| `/gsd:loop stop` | Graceful stop after current task commits. |
-| Edit LOOP-STATE.md `Status: stopping` | Same as `/gsd:loop stop`. |
+| `/lpl:loop stop` | Graceful stop after current task commits. |
+| Edit LOOP-STATE.md `Status: stopping` | Same as `/lpl:loop stop`. |
 | `git reset --hard` | Revert uncommitted changes from interrupted iteration. |
 
 </human_observation_role>
@@ -238,7 +238,7 @@ In the loop pattern, the human sits ON the loop, not IN it. The human's job is e
 
 ## Gap Closure Loop
 
-When gsd-verifier reports gaps after PHASE_COMPLETE, the loop creates gap-closure plans and re-enters the iteration cycle.
+When lpl-verifier reports gaps after PHASE_COMPLETE, the loop creates gap-closure plans and re-enters the iteration cycle.
 
 **Flow:**
 
@@ -246,7 +246,7 @@ When gsd-verifier reports gaps after PHASE_COMPLETE, the loop creates gap-closur
 PHASE_COMPLETE
     │
     ▼
-Spawn gsd-verifier
+Spawn lpl-verifier
     │
     ├── PASS → Phase complete, update ROADMAP.md
     │
@@ -254,7 +254,7 @@ Spawn gsd-verifier
             │
             ▼
         Create gap-closure plans
-        (spawn gsd-planner with gap descriptions)
+        (spawn lpl-planner with gap descriptions)
             │
             ▼
         Re-enter loop with gap-closure plans

@@ -1,5 +1,5 @@
 ---
-name: gsd:rollback-phase
+name: lpl:rollback-phase
 description: Revert all commits in a phase
 argument-hint: "<phase-number>"
 allowed-tools:
@@ -31,7 +31,7 @@ Parse the phase number from arguments:
 PHASE="$ARGUMENTS"
 if [ -z "$PHASE" ]; then
   echo "Error: Phase number required"
-  echo "Usage: /gsd:rollback-phase <phase-number>"
+  echo "Usage: /lpl:rollback-phase <phase-number>"
   exit 1
 fi
 ```
@@ -86,7 +86,7 @@ if [ -z "$PHASE_ROW" ]; then
   echo ""
   echo "Possible causes:"
   echo "- Phase has not been executed yet"
-  echo "- Phase commits were not recorded (older GSD version)"
+  echo "- Phase commits were not recorded (older LPL version)"
   echo ""
   echo "Manual rollback: Review git log and use git revert manually"
   exit 1
@@ -193,7 +193,7 @@ Rolled back ${COMMIT_COUNT} commits.
 Phase start: ${PHASE_START}
 Phase end: ${CURRENT_HEAD}
 
-Triggered by: /gsd:rollback-phase ${PHASE}
+Triggered by: /lpl:rollback-phase ${PHASE}
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 
@@ -312,7 +312,7 @@ Current position: Phase ${PREV_PHASE} complete
 
 Next steps:
 - Review the reverted changes with: git show ${REVERT_COMMIT}
-- Re-plan the phase with: /gsd:plan-phase ${PHASE}
+- Re-plan the phase with: /lpl:plan-phase ${PHASE}
 - Or continue to next phase if this phase is no longer needed
 ```
 </step>
@@ -341,7 +341,7 @@ Error: No commit recorded for phase ${PHASE}
 [Show Phase Commits table]
 Possible causes:
 - Phase has not been executed yet
-- Phase commits were not recorded (older GSD version)
+- Phase commits were not recorded (older LPL version)
 Manual rollback: Review git log and use git revert manually
 ```
 

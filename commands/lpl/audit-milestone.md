@@ -1,5 +1,5 @@
 ---
-name: gsd:audit-milestone
+name: lpl:audit-milestone
 description: Audit milestone completion against original intent before archiving
 argument-hint: "[version]"
 allowed-tools:
@@ -18,7 +18,7 @@ Verify milestone achieved its definition of done. Check requirements coverage, c
 </objective>
 
 <execution_context>
-<!-- Spawns gsd-integration-checker agent which has all audit expertise baked in -->
+<!-- Spawns lpl-integration-checker agent which has all audit expertise baked in -->
 </execution_context>
 
 <context>
@@ -53,7 +53,7 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-integration-checker | sonnet | sonnet | haiku |
+| lpl-integration-checker | sonnet | sonnet | haiku |
 
 Store resolved model for use in Task call below.
 
@@ -101,7 +101,7 @@ Phase exports: {from SUMMARYs}
 API routes: {routes created}
 
 Verify cross-phase wiring and E2E user flows.",
-  subagent_type="gsd-integration-checker",
+  subagent_type="lpl-integration-checker",
   model="{integration_checker_model}"
 )
 ```
@@ -181,7 +181,7 @@ All requirements covered. Cross-phase integration verified. E2E flows complete.
 
 **Complete milestone** — archive and tag
 
-/gsd:complete-milestone {version}
+/lpl:complete-milestone {version}
 
 <sub>/clear first → fresh context window</sub>
 
@@ -218,7 +218,7 @@ All requirements covered. Cross-phase integration verified. E2E flows complete.
 
 **Plan gap closure** — create phases to complete milestone
 
-/gsd:plan-milestone-gaps
+/lpl:plan-milestone-gaps
 
 <sub>/clear first → fresh context window</sub>
 
@@ -226,7 +226,7 @@ All requirements covered. Cross-phase integration verified. E2E flows complete.
 
 **Also available:**
 - cat .planning/v{version}-MILESTONE-AUDIT.md — see full report
-- /gsd:complete-milestone {version} — proceed anyway (accept tech debt)
+- /lpl:complete-milestone {version} — proceed anyway (accept tech debt)
 
 ───────────────────────────────────────────────────────────────
 
@@ -256,11 +256,11 @@ All requirements met. No critical blockers. Accumulated tech debt needs review.
 
 **A. Complete milestone** — accept debt, track in backlog
 
-/gsd:complete-milestone {version}
+/lpl:complete-milestone {version}
 
 **B. Plan cleanup phase** — address debt before completing
 
-/gsd:plan-milestone-gaps
+/lpl:plan-milestone-gaps
 
 <sub>/clear first → fresh context window</sub>
 

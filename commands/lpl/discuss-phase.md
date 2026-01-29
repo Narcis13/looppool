@@ -1,5 +1,5 @@
 ---
-name: gsd:discuss-phase
+name: lpl:discuss-phase
 description: Gather phase context through adaptive questioning before planning
 argument-hint: "<phase>"
 allowed-tools:
@@ -24,9 +24,9 @@ Extract implementation decisions that downstream agents need — researcher and 
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/discuss-phase.md
-@~/.claude/get-shit-done/templates/context.md
-@~/.claude/get-shit-done/references/autonomous.md
+@~/.claude/looppool/workflows/discuss-phase.md
+@~/.claude/looppool/templates/context.md
+@~/.claude/looppool/references/autonomous.md
 </execution_context>
 
 <context>

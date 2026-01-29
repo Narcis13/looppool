@@ -1,6 +1,6 @@
 ---
-name: gsd:quick
-description: Execute a quick task with GSD guarantees (atomic commits, state tracking) but skip optional agents
+name: lpl:quick
+description: Execute a quick task with LPL guarantees (atomic commits, state tracking) but skip optional agents
 argument-hint: ""
 allowed-tools:
   - Read
@@ -14,11 +14,11 @@ allowed-tools:
 ---
 
 <objective>
-Execute small, ad-hoc tasks with GSD guarantees (atomic commits, STATE.md tracking) while skipping optional agents (research, plan-checker, verifier).
+Execute small, ad-hoc tasks with LPL guarantees (atomic commits, STATE.md tracking) while skipping optional agents (research, plan-checker, verifier).
 
 Quick mode is the same system with a shorter path:
-- Spawns gsd-planner (quick mode) + gsd-executor(s)
-- Skips gsd-phase-researcher, gsd-plan-checker, gsd-verifier
+- Spawns lpl-planner (quick mode) + lpl-executor(s)
+- Skips lpl-phase-researcher, lpl-plan-checker, lpl-verifier
 - Quick tasks live in `.planning/quick/` separate from planned phases
 - Updates STATE.md "Quick Tasks Completed" table (NOT ROADMAP.md)
 
@@ -26,7 +26,7 @@ Use when: You know exactly what to do and the task is small enough to not need r
 </objective>
 
 <execution_context>
-Orchestration is inline - no separate workflow file. Quick mode is deliberately simpler than full GSD.
+Orchestration is inline - no separate workflow file. Quick mode is deliberately simpler than full LPL.
 </execution_context>
 
 <context>
@@ -48,8 +48,8 @@ Default to "balanced" if not set.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-planner | opus | opus | sonnet |
-| gsd-executor | opus | sonnet | sonnet |
+| lpl-planner | opus | opus | sonnet |
+| lpl-executor | opus | sonnet | sonnet |
 
 Store resolved models for use in Task calls below.
 
@@ -57,12 +57,12 @@ Store resolved models for use in Task calls below.
 
 **Step 1: Pre-flight validation**
 
-Check that an active GSD project exists:
+Check that an active LPL project exists:
 
 ```bash
 if [ ! -f .planning/ROADMAP.md ]; then
   echo "Quick mode requires an active project with ROADMAP.md."
-  echo "Run /gsd:new-project first."
+  echo "Run /lpl:new-project first."
   exit 1
 fi
 ```
@@ -137,7 +137,7 @@ Store `$QUICK_DIR` for use in orchestration.
 
 **Step 5: Spawn planner (quick mode)**
 
-Spawn gsd-planner with quick mode context:
+Spawn lpl-planner with quick mode context:
 
 ```
 Task(
@@ -165,7 +165,7 @@ Write plan to: ${QUICK_DIR}/${next_num}-PLAN.md
 Return: ## PLANNING COMPLETE with plan path
 </output>
 ",
-  subagent_type="gsd-planner",
+  subagent_type="lpl-planner",
   model="{planner_model}",
   description="Quick plan: ${DESCRIPTION}"
 )
@@ -182,7 +182,7 @@ If plan not found, error: "Planner failed to create ${next_num}-PLAN.md"
 
 **Step 6: Spawn executor**
 
-Spawn gsd-executor with plan reference:
+Spawn lpl-executor with plan reference:
 
 ```
 Task(
@@ -199,7 +199,7 @@ Project state: @.planning/STATE.md
 - Do NOT update ROADMAP.md (quick tasks are separate from planned phases)
 </constraints>
 ",
-  subagent_type="gsd-executor",
+  subagent_type="lpl-executor",
   model="{executor_model}",
   description="Execute: ${DESCRIPTION}"
 )
@@ -282,7 +282,7 @@ Display completion output:
 ```
 ---
 
-GSD > QUICK TASK COMPLETE
+LPL > QUICK TASK COMPLETE
 
 Quick Task ${next_num}: ${DESCRIPTION}
 
@@ -291,7 +291,7 @@ Commit: ${commit_hash}
 
 ---
 
-Ready for next task: /gsd:quick
+Ready for next task: /lpl:quick
 ```
 
 </process>

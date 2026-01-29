@@ -71,7 +71,7 @@ Spawn subagent → execute all tasks → SUMMARY → commit → report back
 **Implementation:**
 
 1. Run init_agent_tracking step first
-2. Use Task tool with subagent_type="gsd-executor"
+2. Use Task tool with subagent_type="lpl-executor"
 3. Prompt includes: full plan path, deviation rules reference, summary/commit instructions
 4. Track agent_id in current-agent-id.txt and agent-history.json
 5. Wait for subagent completion
@@ -231,7 +231,7 @@ If agent-history.json has more than `max_entries`:
    A. Determine routing (apply rules above)
 
    B. If routing = Subagent:
-      - Spawn Task tool with gsd-executor
+      - Spawn Task tool with lpl-executor
       - Write agent_id to tracking
       - Wait for completion
       - Update tracking on completion

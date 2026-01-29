@@ -1,8 +1,8 @@
 ---
-name: gsd:plan-phase
+name: lpl:plan-phase
 description: Create detailed execution plan for a phase (PLAN.md) with verification loop
 argument-hint: "[phase] [--research] [--skip-research] [--gaps] [--skip-verify]"
-agent: gsd-planner
+agent: lpl-planner
 allowed-tools:
   - Read
   - Write
@@ -15,8 +15,8 @@ allowed-tools:
 ---
 
 <execution_context>
-@~/.claude/get-shit-done/references/ui-brand.md
-@~/.claude/get-shit-done/references/decision-policies.md
+@~/.claude/looppool/references/ui-brand.md
+@~/.claude/looppool/references/decision-policies.md
 </execution_context>
 
 <objective>
@@ -24,7 +24,7 @@ Create executable phase prompts (PLAN.md files) for a roadmap phase with integra
 
 **Default flow:** Research (if needed) → Plan → Verify → Done
 
-**Orchestrator role:** Parse arguments, validate phase, research domain (unless skipped or exists), spawn gsd-planner agent, verify plans with gsd-plan-checker, iterate until plans pass or max iterations reached, present results.
+**Orchestrator role:** Parse arguments, validate phase, research domain (unless skipped or exists), spawn lpl-planner agent, verify plans with lpl-plan-checker, iterate until plans pass or max iterations reached, present results.
 
 **Why subagents:** Research and planning burn context fast. Verification uses fresh context. User sees the flow between agents in main context.
 </objective>
@@ -49,7 +49,7 @@ Normalize phase input in step 2 before any directory lookups.
 ls .planning/ 2>/dev/null
 ```
 
-**If not found:** Error - user should run `/gsd:new-project` first.
+**If not found:** Error - user should run `/lpl:new-project` first.
 
 **Resolve model profile for agent spawning:**
 
@@ -71,9 +71,9 @@ Store for use in plan approval.
 
 | Agent | quality | balanced | budget |
 |-------|---------|----------|--------|
-| gsd-phase-researcher | opus | sonnet | haiku |
-| gsd-planner | opus | opus | sonnet |
-| gsd-plan-checker | sonnet | sonnet | haiku |
+| lpl-phase-researcher | opus | sonnet | haiku |
+| lpl-planner | opus | opus | sonnet |
+| lpl-plan-checker | sonnet | sonnet | haiku |
 
 Store resolved models for use in Task calls below.
 
@@ -159,7 +159,7 @@ ls "${PHASE_DIR}"/*-RESEARCH.md 2>/dev/null
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCHING PHASE {X}
+ LPL ► RESEARCHING PHASE {X}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning researcher...
@@ -167,7 +167,7 @@ Display stage banner:
 
 Proceed to spawn researcher
 
-### Spawn gsd-phase-researcher
+### Spawn lpl-phase-researcher
 
 Gather context for research prompt:
 
@@ -215,7 +215,7 @@ Write research findings to: {phase_dir}/{phase}-RESEARCH.md
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + research_prompt,
+  prompt="First, read ~/.claude/agents/lpl-phase-researcher.md for your role and instructions.\n\n" + research_prompt,
   subagent_type="general-purpose",
   model="{researcher_model}",
   description="Research Phase {phase}"
@@ -260,12 +260,12 @@ VERIFICATION_CONTENT=$(cat "${PHASE_DIR}"/*-VERIFICATION.md 2>/dev/null)
 UAT_CONTENT=$(cat "${PHASE_DIR}"/*-UAT.md 2>/dev/null)
 ```
 
-## 8. Spawn gsd-planner Agent
+## 8. Spawn lpl-planner Agent
 
 Display stage banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PLANNING PHASE {X}
+ LPL ► PLANNING PHASE {X}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning planner...
@@ -301,7 +301,7 @@ Fill prompt with inlined content and spawn:
 </planning_context>
 
 <downstream_consumer>
-Output consumed by /gsd:execute-phase
+Output consumed by /lpl:execute-phase
 Plans must be executable prompts with:
 
 - Frontmatter (wave, depends_on, files_modified, autonomous)
@@ -324,7 +324,7 @@ Before returning PLANNING COMPLETE:
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-planner.md for your role and instructions.\n\n" + filled_prompt,
+  prompt="First, read ~/.claude/agents/lpl-planner.md for your role and instructions.\n\n" + filled_prompt,
   subagent_type="general-purpose",
   model="{planner_model}",
   description="Plan Phase {phase}"
@@ -350,12 +350,12 @@ Parse planner output:
 - Offer: Add context, Retry, Manual
 - Wait for user response
 
-## 10. Spawn gsd-plan-checker Agent
+## 10. Spawn lpl-plan-checker Agent
 
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► VERIFYING PLANS
+ LPL ► VERIFYING PLANS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning plan checker...
@@ -397,7 +397,7 @@ Return one of:
 ```
 Task(
   prompt=checker_prompt,
-  subagent_type="gsd-plan-checker",
+  subagent_type="lpl-plan-checker",
   model="{checker_model}",
   description="Verify Phase {phase} plans"
 )
@@ -423,7 +423,7 @@ Apply POLICY-05 (Plan Approval):
      Proceed to completion. Display:
      ```
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      GSD PLANNING COMPLETE
+      LPL PLANNING COMPLETE
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
      Phase: {phase_number}: {phase_name}
@@ -450,7 +450,7 @@ Apply POLICY-05 (Plan Approval):
 
 **If `## VERIFICATION PASSED`:**
 - Display: `Plans verified. Ready for execution.`
-- Offer: 1) Execute phase now (`/gsd:execute-phase`), 2) Review plans first, 3) Exit
+- Offer: 1) Execute phase now (`/lpl:execute-phase`), 2) Review plans first, 3) Exit
 - Wait for user choice
 - Proceed to step 13
 
@@ -476,7 +476,7 @@ Read current plans for revision context:
 PLANS_CONTENT=$(cat "${PHASE_DIR}"/*-PLAN.md 2>/dev/null)
 ```
 
-Spawn gsd-planner with revision prompt:
+Spawn lpl-planner with revision prompt:
 
 ```markdown
 <revision_context>
@@ -501,7 +501,7 @@ Return what changed.
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-planner.md for your role and instructions.\n\n" + revision_prompt,
+  prompt="First, read ~/.claude/agents/lpl-planner.md for your role and instructions.\n\n" + revision_prompt,
   subagent_type="general-purpose",
   model="{planner_model}",
   description="Revise Phase {phase} plans"
@@ -533,7 +533,7 @@ Route to `<offer_next>`.
 Output this markdown directly (not as a code block):
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {X} PLANNED ✓
+ LPL ► PHASE {X} PLANNED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {X}: {Name}** — {N} plan(s) in {M} wave(s)
@@ -552,7 +552,7 @@ Verification: {Passed | Passed with override | Skipped}
 
 **Execute Phase {X}** — run all {N} plans
 
-/gsd:execute-phase {X}
+/lpl:execute-phase {X}
 
 <sub>/clear first → fresh context window</sub>
 
@@ -560,7 +560,7 @@ Verification: {Passed | Passed with override | Skipped}
 
 **Also available:**
 - cat .planning/phases/{phase-dir}/*-PLAN.md — review plans
-- /gsd:plan-phase {X} --research — re-research first
+- /lpl:plan-phase {X} --research — re-research first
 
 ───────────────────────────────────────────────────────────────
 </offer_next>
@@ -570,11 +570,11 @@ Verification: {Passed | Passed with override | Skipped}
 - [ ] Phase validated against roadmap
 - [ ] Phase directory created if needed
 - [ ] Research completed (unless --skip-research or --gaps or exists)
-- [ ] gsd-phase-researcher spawned if research needed
+- [ ] lpl-phase-researcher spawned if research needed
 - [ ] Existing plans checked
-- [ ] gsd-planner spawned with context (including RESEARCH.md if available)
+- [ ] lpl-planner spawned with context (including RESEARCH.md if available)
 - [ ] Plans created (PLANNING COMPLETE or CHECKPOINT handled)
-- [ ] gsd-plan-checker spawned (unless --skip-verify)
+- [ ] lpl-plan-checker spawned (unless --skip-verify)
 - [ ] Verification passed OR user override OR max iterations with user decision
 - [ ] User sees status between agent spawns
 - [ ] User knows next steps (execute or review)

@@ -1,6 +1,6 @@
 # Decision Policies Reference
 
-Centralized policy definitions for autonomous decision-making in GSD workflows.
+Centralized policy definitions for autonomous decision-making in LPL workflows.
 
 ## Overview
 
@@ -59,7 +59,7 @@ Auto-decided: [choice] -- [reason] [POLICY-XX, {details}]
 
 ## POLICY-01: Brownfield Detection
 
-**Decision point:** `/gsd:new-project` Phase 2 (Brownfield Offer)
+**Decision point:** `/lpl:new-project` Phase 2 (Brownfield Offer)
 
 **Applies when:** Determining whether to map existing codebase
 
@@ -110,7 +110,7 @@ Auto-decided: use existing map -- Codebase map already exists [POLICY-01, .plann
 
 ## POLICY-02: Research Toggle
 
-**Decision point:** `/gsd:new-project` Phase 6 (Research Decision)
+**Decision point:** `/lpl:new-project` Phase 6 (Research Decision)
 
 **Applies when:** Deciding whether to research domain before requirements
 
@@ -169,7 +169,7 @@ Auto-decided: skip research -- Brownfield with codebase map [POLICY-02, .plannin
 
 ## POLICY-03: Feature Scoping
 
-**Decision point:** `/gsd:new-project` Phase 7 (Define Requirements)
+**Decision point:** `/lpl:new-project` Phase 7 (Define Requirements)
 
 **Applies when:** Categorizing features as v1 vs v2
 
@@ -238,7 +238,7 @@ Auto-decided: out of scope -- Not in FEATURES.md or PROJECT.md ({feature}) [POLI
 
 ## POLICY-04: Roadmap Approval
 
-**Decision point:** `/gsd:new-project` Phase 8 (after roadmapper creates ROADMAP.md)
+**Decision point:** `/lpl:new-project` Phase 8 (after roadmapper creates ROADMAP.md)
 
 **Applies when:** Deciding whether to approve roadmap
 
@@ -295,7 +295,7 @@ Auto-decided: request revision -- Incomplete requirement coverage [POLICY-04, {m
 
 ## POLICY-05: Plan Approval
 
-**Decision point:** `/gsd:plan-phase` Step 11 (after checker return)
+**Decision point:** `/lpl:plan-phase` Step 11 (after checker return)
 
 **Applies when:** Deciding whether to approve plans after checker review
 

@@ -3,7 +3,7 @@
 **Version:** 1.0
 **Last Updated:** 2026-01-27
 
-This reference documents the atomic write pattern for JSON files in GSD, ensuring config.json and other JSON files remain valid even if operations are interrupted.
+This reference documents the atomic write pattern for JSON files in LPL, ensuring config.json and other JSON files remain valid even if operations are interrupted.
 
 ## Problem Statement
 
@@ -13,7 +13,7 @@ JSON files (like `.planning/config.json`) can corrupt on interrupted writes:
 - Process interrupts mid-write result in unreadable files
 - Workflows fail on next read with parse errors
 
-**Impact:** A corrupted config.json breaks all GSD workflows that read it.
+**Impact:** A corrupted config.json breaks all LPL workflows that read it.
 
 ---
 
@@ -149,7 +149,7 @@ Workflows that modify config.json should reference this pattern:
 
 ```markdown
 **For atomic config.json operations:**
-See @~/.claude/get-shit-done/references/atomic-json.md
+See @~/.claude/looppool/references/atomic-json.md
 ```
 
 This ensures all config modifications follow the safe pattern.

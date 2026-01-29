@@ -1,6 +1,6 @@
 # Task Breakdown Reference
 
-Reference for GSD planner task decomposition, sizing, and scope estimation.
+Reference for LPL planner task decomposition, sizing, and scope estimation.
 
 **Purpose:** Defines how to break down phases into executable tasks with proper anatomy, sizing constraints, and TDD/user-setup detection.
 

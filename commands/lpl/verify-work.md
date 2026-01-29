@@ -1,5 +1,5 @@
 ---
-name: gsd:verify-work
+name: lpl:verify-work
 description: Validate built features through conversational UAT
 argument-hint: "[phase number, e.g., '4']"
 allowed-tools:
@@ -17,12 +17,12 @@ Validate built features through conversational testing with persistent state.
 
 Purpose: Confirm what Claude built actually works from user's perspective. One test at a time, plain text responses, no interrogation. When issues are found, automatically diagnose, plan fixes, and prepare for execution.
 
-Output: {phase}-UAT.md tracking all test results. If issues found: diagnosed gaps, verified fix plans ready for /gsd:execute-phase
+Output: {phase}-UAT.md tracking all test results. If issues found: diagnosed gaps, verified fix plans ready for /lpl:execute-phase
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/verify-work.md
-@~/.claude/get-shit-done/templates/UAT.md
+@~/.claude/looppool/workflows/verify-work.md
+@~/.claude/looppool/templates/UAT.md
 </execution_context>
 
 <context>
@@ -47,10 +47,10 @@ Phase: $ARGUMENTS (optional)
 7. On completion: commit, present summary
 8. If issues found:
    - Spawn parallel debug agents to diagnose root causes
-   - Spawn gsd-planner in --gaps mode to create fix plans
-   - Spawn gsd-plan-checker to verify fix plans
+   - Spawn lpl-planner in --gaps mode to create fix plans
+   - Spawn lpl-plan-checker to verify fix plans
    - Iterate planner ↔ checker until plans pass (max 3)
-   - Present ready status with `/clear` then `/gsd:execute-phase`
+   - Present ready status with `/clear` then `/lpl:execute-phase`
 </process>
 
 <anti_patterns>
@@ -76,7 +76,7 @@ Output this markdown directly (not as a code block). Route based on UAT results:
 **Route A: All tests pass, more phases remain**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {Z} VERIFIED ✓
+ LPL ► PHASE {Z} VERIFIED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {Z}: {Name}**
@@ -90,15 +90,15 @@ UAT complete ✓
 
 **Phase {Z+1}: {Name}** — {Goal from ROADMAP.md}
 
-/gsd:discuss-phase {Z+1} — gather context and clarify approach
+/lpl:discuss-phase {Z+1} — gather context and clarify approach
 
 <sub>/clear first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 
 **Also available:**
-- /gsd:plan-phase {Z+1} — skip discussion, plan directly
-- /gsd:execute-phase {Z+1} — skip to execution (if already planned)
+- /lpl:plan-phase {Z+1} — skip discussion, plan directly
+- /lpl:execute-phase {Z+1} — skip to execution (if already planned)
 
 ───────────────────────────────────────────────────────────────
 
@@ -107,7 +107,7 @@ UAT complete ✓
 **Route B: All tests pass, milestone complete**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {Z} VERIFIED ✓
+ LPL ► PHASE {Z} VERIFIED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {Z}: {Name}**
@@ -121,14 +121,14 @@ Final phase verified ✓
 
 **Audit milestone** — verify requirements, cross-phase integration, E2E flows
 
-/gsd:audit-milestone
+/lpl:audit-milestone
 
 <sub>/clear first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 
 **Also available:**
-- /gsd:complete-milestone — skip audit, archive directly
+- /lpl:complete-milestone — skip audit, archive directly
 
 ───────────────────────────────────────────────────────────────
 
@@ -137,7 +137,7 @@ Final phase verified ✓
 **Route C: Issues found, fix plans ready**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {Z} ISSUES FOUND ⚠
+ LPL ► PHASE {Z} ISSUES FOUND ⚠
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {Z}: {Name}**
@@ -156,7 +156,7 @@ Fix plans verified ✓
 
 **Execute fix plans** — run diagnosed fixes
 
-/gsd:execute-phase {Z} --gaps-only
+/lpl:execute-phase {Z} --gaps-only
 
 <sub>/clear first → fresh context window</sub>
 
@@ -164,7 +164,7 @@ Fix plans verified ✓
 
 **Also available:**
 - cat .planning/phases/{phase_dir}/*-PLAN.md — review fix plans
-- /gsd:plan-phase {Z} --gaps — regenerate fix plans
+- /lpl:plan-phase {Z} --gaps — regenerate fix plans
 
 ───────────────────────────────────────────────────────────────
 
@@ -173,7 +173,7 @@ Fix plans verified ✓
 **Route D: Issues found, planning blocked**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {Z} BLOCKED ✗
+ LPL ► PHASE {Z} BLOCKED ✗
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {Z}: {Name}**
@@ -199,8 +199,8 @@ Review the issues above and either:
 ───────────────────────────────────────────────────────────────
 
 **Options:**
-- /gsd:plan-phase {Z} --gaps — retry fix planning with guidance
-- /gsd:discuss-phase {Z} — gather more context before replanning
+- /lpl:plan-phase {Z} --gaps — retry fix planning with guidance
+- /lpl:discuss-phase {Z} — gather more context before replanning
 
 ───────────────────────────────────────────────────────────────
 </offer_next>
@@ -213,7 +213,7 @@ Review the issues above and either:
 - [ ] Batched writes: on issue, every 5 passes, or completion
 - [ ] Committed on completion
 - [ ] If issues: parallel debug agents diagnose root causes
-- [ ] If issues: gsd-planner creates fix plans from diagnosed gaps
-- [ ] If issues: gsd-plan-checker verifies fix plans (max 3 iterations)
-- [ ] Ready for `/gsd:execute-phase` when complete
+- [ ] If issues: lpl-planner creates fix plans from diagnosed gaps
+- [ ] If issues: lpl-plan-checker verifies fix plans (max 3 iterations)
+- [ ] Ready for `/lpl:execute-phase` when complete
 </success_criteria>

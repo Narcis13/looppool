@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GSD (Get Shit Done) is a meta-prompting and context engineering system for Claude Code. Every file is both implementation and specification—files teach Claude how to build software systematically. The system solves context rot (quality degradation as Claude fills its context window) through atomic plans and fresh subagent contexts.
+LPL (Looppool) is a meta-prompting and context engineering system for Claude Code. Every file is both implementation and specification—files teach Claude how to build software systematically. The system solves context rot (quality degradation as Claude fills its context window) through atomic plans and fresh subagent contexts.
 
 ## Build & Development Commands
 
@@ -17,7 +17,7 @@ npm run build:hooks
 
 # Local development testing
 npm link
-npx get-shit-done-cc
+npx looppool-cc
 
 # Test local installation
 node bin/install.js --claude --local
@@ -45,11 +45,11 @@ git push origin main --tags
 
 ### Layer Hierarchy (Progressive Disclosure)
 
-1. **Commands** (`commands/gsd/*.md`) — Thin wrappers with YAML frontmatter, delegate to workflows
-2. **Workflows** (`get-shit-done/workflows/*.md`) — Orchestration logic, spawn agents
+1. **Commands** (`commands/lpl/*.md`) — Thin wrappers with YAML frontmatter, delegate to workflows
+2. **Workflows** (`looppool/workflows/*.md`) — Orchestration logic, spawn agents
 3. **Agents** (`agents/*.md`) — Autonomous specialized prompts executed in fresh 200k contexts
-4. **Templates** (`get-shit-done/templates/*.md`) — Output structures with placeholders
-5. **References** (`get-shit-done/references/*.md`) — Deep dives on specific concepts
+4. **Templates** (`looppool/templates/*.md`) — Output structures with placeholders
+5. **References** (`looppool/references/*.md`) — Deep dives on specific concepts
 
 ### Multi-Agent Orchestration Pattern
 
@@ -68,7 +68,7 @@ Plans are capped at 2-3 tasks maximum. Quality curve: 0-30% context = peak, 50-7
 ### Command Structure
 ```yaml
 ---
-name: gsd:command-name
+name: lpl:command-name
 description: One-line description
 argument-hint: "<required>" or "[optional]"
 allowed-tools: [Read, Write, Bash, Glob, Grep, AskUserQuestion]
@@ -86,7 +86,7 @@ Sections: `<objective>` → `<execution_context>` → `<context>` → `<process>
 | Type | Convention | Example |
 |------|------------|---------|
 | Files | kebab-case | `execute-phase.md` |
-| Commands | `gsd:kebab-case` | `gsd:execute-phase` |
+| Commands | `lpl:kebab-case` | `lpl:execute-phase` |
 | Step names | snake_case | `name="load_project_state"` |
 
 ## Writing Style
@@ -113,6 +113,6 @@ During execution: one commit per task, stage files individually (never `git add 
 
 ## Branch Strategy
 
-- `main` — Production, always installable via `npx get-shit-done-cc`
+- `main` — Production, always installable via `npx looppool-cc`
 - Feature branches: `feat/description`, `fix/description`, `docs/description`, `hotfix/version-description`
 - Branch → PR → Merge (no `develop` branch, no release branches)
