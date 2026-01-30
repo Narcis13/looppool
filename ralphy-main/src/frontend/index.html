@@ -4,9 +4,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LPL IDE</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .top-bar {
+      height: 40px;
+      background: #f5f5f5;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .project-name {
+      font-weight: 500;
+    }
+    .connection-status {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .connection-status.connected {
+      background: #4caf50;
+      color: white;
+    }
+    .connection-status.disconnected {
+      background: #f44336;
+      color: white;
+    }
+    .connection-status.connecting,
+    .connection-status.reconnecting {
+      background: #ff9800;
+      color: white;
+    }
+    .connection-status.connection-failed {
+      background: #9e9e9e;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <h1>LPL IDE</h1>
-  <p>Minimal frontend for testing</p>
+  <div class="top-bar">
+    <div class="project-name">LPL IDE</div>
+    <div id="connection-status" class="connection-status">Disconnected</div>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
