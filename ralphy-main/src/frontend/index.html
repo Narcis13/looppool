@@ -50,7 +50,7 @@
     .main-content {
       flex: 1;
       display: grid;
-      grid-template-columns: 250px auto;
+      grid-template-columns: 250px auto 300px;
       overflow: hidden;
     }
     .sidebar {
@@ -59,6 +59,11 @@
       overflow-y: auto;
     }
     .editor-panel {
+      overflow: hidden;
+    }
+    .state-panel-container {
+      background: #f9f9f9;
+      border-left: 1px solid #e0e0e0;
       overflow: hidden;
     }
   </style>
@@ -75,9 +80,13 @@
     <div class="editor-panel" id="editor-panel">
       <!-- Editor will be mounted here -->
     </div>
+    <div class="state-panel-container" id="state-panel-container">
+      <!-- State panel will be mounted here -->
+    </div>
   </div>
   <script src="app.js"></script>
   <script src="editor.js"></script>
+  <script src="state-panel.js"></script>
   <script>
     // Initialize editor
     const editorPanel = document.getElementById('editor-panel');
@@ -86,6 +95,11 @@
 
     // Test the editor with a sample file
     editor.loadFile('test.md', '# Test Markdown\n\nThis is a test file for the find functionality.\n\nTry pressing Cmd/Ctrl+F to open the find bar.');
+    
+    // Initialize state panel
+    const statePanelContainer = document.getElementById('state-panel-container');
+    const statePanel = new StatePanel(statePanelContainer);
+    window.statePanel = statePanel;
   </script>
 </body>
 </html>
