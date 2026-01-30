@@ -571,3 +571,18 @@
 - All tests passed (12/12): class definition, force methods, SVG rendering, colors, interactions
 - Linting passed (no linting configured but command succeeds)
 - Updated ide_prd.md to mark task as complete
+
+## 2026-01-30 - Priority 6: Graph Visualization - Configure force simulation: charge -300, link distance by type
+- Verified force simulation is already configured with charge: -300 in graph-viewer.js (line 448)
+- Confirmed linkDistance function implementation with hierarchical distances (lines 449-455):
+  - delegates-to: 150px (commands to workflows)
+  - spawns: 120px (workflows to agents)
+  - uses: 100px (agents to templates)
+- Force simulation constructor accepts charge option and defaults to -300 (line 23)
+- applyForceCharge() method uses configured charge value for node repulsion (line 114)
+- Force calculation formula applies charge with inverse square law (line 126)
+- Configuration was already implemented as part of previous task "Implement d3-force or cytoscape.js"
+- Created test suite test-force-config.js with 8 tests verifying all configuration aspects
+- All tests passed: charge configuration, link distance function, specific distances by type
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
