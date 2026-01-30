@@ -586,3 +586,21 @@
 - All tests passed: charge configuration, link distance function, specific distances by type
 - Linting passed (no linting configured but command succeeds)
 - Updated ide_prd.md to mark task as complete
+
+## 2026-01-30 - Priority 6: Graph Visualization - Style command nodes as blue
+- Verified that command nodes are already styled as blue in graph-viewer.js
+- getNodeColor() method at line 562 returns '#2196f3' (blue) for command type nodes
+- Color is applied to SVG circle elements via fill attribute at line 502
+- Node styling implementation includes:
+  - Circle radius: 8px
+  - White stroke with 2px width
+  - Blue fill color #2196f3 for command nodes
+- Created comprehensive test suite test-command-node-blue.js with 6 tests
+- All tests passed: method existence, color values, usage in rendering, other node colors
+- Verified other node types have distinct colors:
+  - Workflow: #4caf50 (green)
+  - Agent: #ff9800 (orange)
+  - Template: #9e9e9e (gray)
+- Feature was already complete from previous force simulation implementation
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
