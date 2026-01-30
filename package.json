@@ -33,14 +33,16 @@
     "url": "https://github.com/Narcis13/looppool/issues"
   },
   "engines": {
-    "node": ">=16.7.0"
+    "node": ">=20.0.0"
   },
-  "dependencies": {},
   "devDependencies": {
-    "esbuild": "^0.24.0"
+    "chokidar": "^5.0.0",
+    "esbuild": "^0.24.0",
+    "open": "^11.0.0"
   },
   "scripts": {
     "build:hooks": "node scripts/build-hooks.js",
-    "prepublishOnly": "npm run build:hooks"
+    "prepublishOnly": "npm run build:hooks",
+    "ide": "node ide/server.js"
   }
 }
