@@ -1,320 +1,351 @@
-# Feature Landscape: Autonomous Agent Decision-Making
+# Feature Landscape: Web-Based IDE for Meta-Prompting
 
-**Domain:** Autonomous decision-making for AI coding agents (specifically: autonomous mode for GSD meta-prompting system)
-**Researched:** 2026-01-26
-**Overall Confidence:** MEDIUM-HIGH
+**Domain:** Web-based IDE for GSD meta-prompting system
+**Researched:** 2026-01-30
+**Overall Confidence:** HIGH (core IDE features), MEDIUM (meta-prompting specific differentiators)
 
 ## Context
 
-GSD currently asks users questions at decision points via `AskUserQuestion`:
-- "Does this roadmap structure work for you?"
-- "Which features are in v1?"
-- "Approve this plan?"
+GSD/LPL is a meta-prompting system for Claude Code. The IDE needs to help users:
+- Browse and edit command/workflow/agent markdown files
+- Understand relationships between components (Commands -> Workflows -> Agents -> Templates)
+- Track project state and progress through .planning/ directory
 
-With autonomous mode, Claude answers these itself based on PROJECT.md, REQUIREMENTS.md, research outputs, codebase state, and decision history.
+This research focuses on features for the web IDE milestone, categorizing what is table stakes vs differentiating for this specific domain.
 
 ---
 
 ## Table Stakes
 
-Features users expect. Missing = autonomy feels broken or unsafe.
+Features users expect from any web-based code/markdown editor. Missing these creates friction.
+
+### File Navigation
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| **Configuration flag** | Users must opt-in to autonomous behavior; default should be interactive | Low | Single flag in `config.json`: `"autonomous": true/false` |
-| **Decision traces** | Users need to know WHAT was decided and WHY, even if not asked | Low | Format: `Auto-decided: [choice] -- [reason]` |
-| **Context-aware decisions** | Decisions must use available context (PROJECT.md, REQUIREMENTS.md, codebase state) | Medium | Read all relevant context before deciding |
-| **Consistent decision logic** | Same inputs should produce same decisions; no random choices | Medium | Deterministic logic based on documented heuristics |
-| **Full commitment mode** | Once enabled, no pausing mid-execution to ask questions | Low | No "sometimes autonomous" half-measures |
-| **Audit trail** | Comprehensive log of all autonomous decisions for post-hoc review | Medium | Decision history persisted to file (e.g., `.planning/DECISIONS.md`) |
-| **Graceful degradation** | When context is insufficient to decide, use sensible defaults or flag for later | Medium | Don't fail silently; don't invent context |
+| **File tree with expand/collapse** | Standard IDE pattern (VS Code, JetBrains) | Low | Use hierarchical tree with folder/document icons |
+| **Click to open file** | Universal expectation | Low | Single click opens in editor |
+| **Visual unsaved indicator** | Users expect to know when changes exist | Low | Dot or asterisk in tab/tree |
+| **Keyboard navigation in tree** | Power users expect arrow keys | Medium | Up/down/enter/escape |
+
+### Editor Core
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| **Syntax highlighting** | Every modern editor has this | Low | Monaco or CodeMirror handles it |
+| **Line numbers** | Standard code editor feature | Low | Built into editor libraries |
+| **Auto-save with debounce** | Modern expectation (2s delay standard) | Low | Prevents data loss |
+| **Undo/redo** | Fundamental editing capability | Low | Built into editor libraries |
+| **Find in file (Ctrl/Cmd+F)** | Universal keyboard shortcut | Low | Built into editor libraries |
+| **Scroll sync with preview** | Expected for markdown editors | Medium | StackEdit pattern |
+
+### YAML Frontmatter Support
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| **Parse and display frontmatter** | Command files have YAML headers | Medium | gray-matter or similar parser |
+| **Syntax highlighting in YAML** | Part of markdown+frontmatter format | Low | Editor mode configuration |
+
+### Real-Time Updates
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| **File watcher with WebSocket/SSE** | External changes should reflect immediately | Medium | Spec requires <1 second latency |
+| **Save status indicator** | User needs feedback on save state | Low | "Saving...", "Saved", "Error" |
+
+### Performance
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| **<1 second initial load** | Modern web app expectation | Medium | Spec acceptance criteria |
+| **Responsive with 50+ files** | Typical project size | Low | Virtual scrolling if needed |
 
 ### Table Stakes Detail
 
-#### 1. Configuration Flag (Low Complexity)
+#### File Tree (Low Complexity)
 
-**What:** Single boolean flag to enable/disable autonomous mode.
+**What:** Hierarchical tree showing commands/, looppool/, agents/ directories.
 
-**Implementation:**
-```json
-// .planning/config.json
-{
-  "autonomous": true,
-  // ... existing config
-}
-```
+**Expected Behaviors:**
+- Click folder to expand/collapse
+- Click file to open in editor
+- Icons distinguish folders from files (folder icon, document icon)
+- Unsaved files show indicator (asterisk or dot)
 
-**Behavior:**
-- `false` (default): Current behavior - AskUserQuestion at decision points
-- `true`: Claude decides, logs decision trace, continues without pausing
+**Why Universal:** Every IDE (VS Code, JetBrains, Sublime) has this pattern. Users navigate by reflex.
 
-**Rationale:** Users must explicitly opt-in. Autonomous behavior without consent breaks trust.
+**Implementation Notes:**
+- Use consistent icons for every node (Carbon Design System guideline)
+- Arrow keys for navigation are expected by power users
+- Context menu on right-click is nice-to-have, not required for MVP
 
-#### 2. Decision Traces (Low Complexity)
+#### Auto-Save with Debounce (Low Complexity)
 
-**What:** Brief inline traces explaining each autonomous decision.
+**What:** Automatically save after 2 seconds of inactivity.
 
-**Format:**
-```
-Auto-decided: [CHOICE] -- [REASON based on context]
-```
+**Expected Behaviors:**
+- User types -> status shows "Editing"
+- User pauses 2+ seconds -> status shows "Saving..."
+- Save completes -> status shows "Saved"
+- If error -> status shows "Error saving" with retry option
 
-**Examples:**
-```
-Auto-decided: Research first -- PROJECT.md indicates greenfield project with unfamiliar domain
-Auto-decided: Approve roadmap -- All requirements mapped, phase ordering matches dependencies in REQUIREMENTS.md
-Auto-decided: YOLO mode -- User stated "fast iteration" as priority in PROJECT.md
-```
+**Why Universal:** Modern editors (Notion, Google Docs, VS Code with auto-save enabled) have trained users to expect this. Manual save feels archaic.
 
-**Rationale:** Visibility into agent reasoning is non-negotiable. Users must understand why the agent chose what it chose.
+**Implementation Notes:**
+- Debounce timeout: 2 seconds (industry standard)
+- Show clear visual feedback for each state
+- Queue saves if user types during save operation
 
-#### 3. Context-Aware Decisions (Medium Complexity)
+#### Syntax Highlighting (Low Complexity)
 
-**What:** Decisions based on documented context, not guesswork.
+**What:** Markdown and YAML highlighted with distinct colors.
 
-**Context Sources (priority order):**
-1. PROJECT.md - Core value, constraints, user preferences
-2. REQUIREMENTS.md - Scoped requirements, priorities
-3. ROADMAP.md - Phase structure, dependencies
-4. config.json - Workflow preferences already stated
-5. Research outputs - Domain knowledge, recommended approaches
-6. Codebase state - Existing code, detected patterns
-7. Decision history - Previous choices in this session
+**Expected Highlighting:**
+- Markdown headers in bold/different color
+- Code blocks with background
+- Links underlined
+- YAML keys vs values distinguished
+- XML tags (common in looppool files) highlighted
 
-**Decision Logic:**
-- For each decision point, identify relevant context sections
-- Apply documented heuristics (see Decision Policies below)
-- If no clear answer from context, use domain-appropriate defaults
-
-**Rationale:** Autonomous decisions must be traceable to documented preferences, not invented.
-
-#### 4. Consistent Decision Logic (Medium Complexity)
-
-**What:** Deterministic heuristics that produce predictable decisions.
-
-**Decision Policy Examples:**
-
-| Decision Point | Policy |
-|----------------|--------|
-| Research vs Skip | Research if: greenfield, unfamiliar domain, or config.workflow.research = true |
-| Feature scope (v1/v2) | v1 if: marked table stakes in FEATURES.md, or explicitly mentioned in PROJECT.md core value |
-| Roadmap approval | Approve if: 100% requirement coverage, no orphan requirements, phase dependencies satisfied |
-| Mode selection | Match config.mode (yolo/interactive), or infer from PROJECT.md language ("fast", "careful") |
-| Depth selection | Quick for experiment projects, Standard for normal, Comprehensive if "thorough" in constraints |
-
-**Rationale:** Autonomous mode should feel like a predictable assistant, not a random decision generator.
-
-#### 5. Full Commitment Mode (Low Complexity)
-
-**What:** No mid-execution pauses. Either fully autonomous or fully interactive.
-
-**Behavior:**
-- When `autonomous: true`, ALL decision points are auto-decided
-- No "pause here but not there" partial autonomy
-- User can still interrupt with `/gsd:pause-work`
-
-**Rationale:** Half-measures create unpredictable UX. Users need to know what to expect.
-
-#### 6. Audit Trail (Medium Complexity)
-
-**What:** Persistent log of all autonomous decisions for review.
-
-**Format (`.planning/DECISIONS.md`):**
-```markdown
-# Decision Log
-
-## Session: 2026-01-26T14:30:00
-
-| Timestamp | Decision Point | Choice | Reason | Context Refs |
-|-----------|---------------|--------|--------|--------------|
-| 14:30:15 | Research | Skip | Domain familiar (existing codebase mapped) | PROJECT.md:L45, codebase/ARCHITECTURE.md |
-| 14:31:02 | v1 Features | AUTH-01, AUTH-02, CONT-01 | Marked table stakes | FEATURES.md, PROJECT.md core value |
-| 14:35:44 | Roadmap | Approved | 100% coverage, deps satisfied | REQUIREMENTS.md traceability |
-```
-
-**Rationale:** Post-hoc review is essential. Users may want to understand why something went wrong or validate agent reasoning.
-
-#### 7. Graceful Degradation (Medium Complexity)
-
-**What:** When context is insufficient, use defaults rather than hallucinating or failing.
-
-**Degradation Hierarchy:**
-1. **Explicit context available:** Use it, cite it
-2. **Context missing but defaults exist:** Use default, note assumption
-3. **No context, no default, non-critical:** Use most conservative option
-4. **No context, critical decision:** Flag as "Needs Review" in decision log, proceed with conservative choice
-
-**Example:**
-```
-Auto-decided: Standard depth -- No explicit preference in PROJECT.md, using default for first project
-[Assumption: User would have specified if they wanted quick/comprehensive]
-```
-
-**Rationale:** Never stop execution waiting for context that doesn't exist. Never invent preferences.
+**Why Universal:** Every code editor has syntax highlighting. Raw text feels broken.
 
 ---
 
 ## Differentiators
 
-Features that set autonomous mode apart. Not expected, but valued.
+Features that make this IDE uniquely valuable for meta-prompting workflows. Not expected in general IDEs but provide significant value for GSD users.
+
+### Graph Visualization (Spec: ide-graph-view.md)
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| **Confidence scoring** | Show confidence level with each decision (HIGH/MEDIUM/LOW) | Low | Based on context availability and policy match |
-| **Decision explanation depth** | Verbose mode for detailed reasoning chains | Medium | Flag for debug/learning mode |
-| **Rollback markers** | Mark decisions that could be reversed if outcomes are bad | Medium | Useful for "undo" workflows |
-| **Learning from outcomes** | Adjust decision weights based on whether outcomes were good | High | Requires outcome tracking (deferred) |
-| **Risk-tiered autonomy** | Different thresholds for different risk levels (roadmap approval vs feature scoping) | Medium | Higher stakes = more conservative defaults |
-| **Context gap detection** | Proactively identify missing context before decisions | Medium | "Missing: user preference for [X], using default [Y]" |
-| **Multi-option presentation** | When confidence is low, present top 2-3 options in trace (agent picked option A, but B was close) | Medium | Transparency for borderline decisions |
+| **Relationship graph** (Commands, Workflows, Agents, Templates) | Visual understanding of system architecture | High | d3-force or cytoscape.js |
+| **Click node to navigate** | Rapid codebase exploration | Medium | Bidirectional: graph <-> editor |
+| **Filter by component type** | Focus on specific layer | Medium | Toggle visibility per type |
+| **Hierarchical layout** | Shows system structure at a glance | Medium | Commands -> Workflows -> Agents -> Templates |
 
-### Differentiator Detail
+**Why This Differentiates:** Meta-prompting systems have complex relationships. VS Code cannot show "which agents does this command spawn?" visually. This is the killer feature for understanding a looppool-cc codebase.
 
-#### 1. Confidence Scoring (Low Complexity)
+#### Graph View Detail
 
-**What:** Each decision trace includes confidence level.
+**What:** Interactive visualization showing how components connect.
 
-**Format:**
-```
-Auto-decided: [CHOICE] -- [REASON] [CONFIDENCE: HIGH/MEDIUM/LOW]
-```
+**Node Types:**
+- Commands (blue) - Entry points
+- Workflows (green) - Orchestration logic
+- Agents (orange) - Specialized prompts
+- Templates (gray) - Output structures
 
-**Scoring Logic:**
-- **HIGH:** Direct match to explicit user preference in context
-- **MEDIUM:** Inferred from multiple signals, no contradictions
-- **LOW:** Based on defaults or weak signals
+**Edge Types:**
+- Command delegates to Workflow
+- Workflow spawns Agent
+- Agent uses Template
 
-**Value:** Users know when to trust decisions vs when to review audit trail.
+**Interactions:**
+- Click node -> Highlight connections + scroll to file in tree
+- Double-click node -> Open file in editor
+- Zoom/pan for large graphs
+- Filter buttons to show/hide component types
 
-#### 2. Risk-Tiered Autonomy (Medium Complexity)
+**Why Differentiated:** No existing tool visualizes prompt engineering workflows this way. This makes the invisible visible.
 
-**What:** Different confidence thresholds for different decision types.
+### State Panel (Spec: ide-state-panel.md)
 
-**Risk Tiers:**
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| **Current milestone/phase display** | Know where you are in project | Low | Read from .planning/STATE.json |
+| **Task progress visualization** | Track completion status | Medium | Progress bars from PLAN.md |
+| **Roadmap view with phase status** | See full project trajectory | Medium | Parse ROADMAP.md |
+| **"Resume work" quick action** | Jump to CONTINUE_HERE.md | Low | Single click to context |
 
-| Tier | Decision Types | Confidence Threshold for Auto-decide |
-|------|---------------|--------------------------------------|
-| Low | Mode, depth, research toggle | Any confidence |
-| Medium | Feature scoping, phase ordering | MEDIUM or higher |
-| High | Roadmap approval, architecture decisions | HIGH only, else conservative default |
+**Why This Differentiates:** No general IDE shows project planning state. This turns the IDE into a project management view integrated with the code.
 
-**Behavior:** Low-risk decisions auto-decide freely. High-risk decisions require strong context or fall back to conservative defaults.
+#### State Panel Detail
 
-**Value:** Critical decisions get appropriate scrutiny without slowing routine choices.
+**What:** Dashboard showing current project state from .planning/ directory.
 
-#### 3. Context Gap Detection (Medium Complexity)
+**Displays:**
+- Current milestone name and phase
+- Task completion percentage (e.g., "3/5 tasks complete")
+- Phase progress bar
+- Link to CONTINUE_HERE.md if exists
 
-**What:** Proactively identify and log missing context.
+**Actions:**
+- Click phase -> Navigate to PLAN.md for that phase
+- Click "Resume" -> Open CONTINUE_HERE.md
+- Click "Decisions" -> Open DECISIONS.md
 
-**Format:**
-```
-[Context Gap] No explicit preference for deployment platform in PROJECT.md
-[Using Default] Vercel (most common for Next.js projects)
-```
+**Why Differentiated:** GSD projects have structured state in .planning/. Surfacing this in the IDE removes cognitive load of navigating planning files manually.
 
-**Value:** Users can review gaps and add context to PROJECT.md for future runs.
+### Command Viewer (Spec: ide-command-viewer.md)
 
-#### 4. Multi-Option Presentation (Medium Complexity)
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| **Structured frontmatter card** | See command metadata at a glance | Medium | Parse YAML, render card |
+| **Copy command button** | Quick `/lpl:command-name` copy | Low | Clipboard API |
+| **Related workflows/agents links** | Navigate the delegation chain | Medium | Parse file references |
+| **Visual badges for allowed-tools** | Understand command capabilities | Low | Badge components |
 
-**What:** For borderline decisions, show alternatives considered.
+**Why This Differentiates:** Commands are the entry points to the system. Structured view beats raw markdown for discoverability and usability.
 
-**Format:**
-```
-Auto-decided: Supabase -- Best fit for stated constraints [CONFIDENCE: MEDIUM]
-[Also considered] Planetscale (faster queries, but less ecosystem fit)
-[Also considered] Convex (real-time by default, but learning curve)
-```
+#### Command Viewer Detail
 
-**Value:** Transparency into decision process, helps users understand tradeoffs.
+**What:** When viewing a command file, show structured card alongside raw markdown.
+
+**Card Contents:**
+- Command name (large, prominent)
+- Description
+- Argument hint
+- Allowed tools (as badges)
+- Link to workflow it delegates to
+- List of agents it can spawn
+
+**Actions:**
+- "Copy Command" button -> `/lpl:command-name` to clipboard
+- Click workflow link -> Navigate to workflow file
+- Click agent link -> Navigate to agent file
+
+**Why Differentiated:** Command files are densely packed with metadata. A card view makes this instantly scannable.
+
+### Meta-Prompting Specific
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| **Prompt template variable highlighting** | See `{placeholders}` distinctly | Low | Custom syntax highlighting |
+| **XML tag folding** | Collapse `<objective>`, `<process>` sections | Medium | Editor fold configuration |
+| **Cross-file link validation** | Warn if referenced workflow/agent missing | High | Requires parsing all files |
 
 ---
 
 ## Anti-Features
 
-Features to explicitly NOT build. Common mistakes in autonomous agent design.
+Features that seem good but would add complexity without proportional value, or would harm the user experience.
+
+### Over-Engineered Editor Features
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|-------------------|
-| **Partial autonomy** | "Sometimes asks, sometimes doesn't" creates unpredictable UX and breaks user mental model | Full commitment: either all decisions auto-decided or none |
-| **Autonomous by default** | Users who haven't opted in will be surprised by agent acting without permission | Explicit opt-in required; default is interactive mode |
-| **Silent decisions** | Making decisions without any trace breaks trust and auditability | Always emit decision trace, even for "obvious" choices |
-| **Confidence theater** | Showing HIGH confidence when context is weak to seem competent | Honest confidence levels; admit when using defaults |
-| **Irreversible autonomy** | No way to review/change after the fact | Audit trail + ability to rerun with different choices |
-| **Context invention** | Making up user preferences that don't exist in documentation | Only use documented context; flag gaps explicitly |
-| **Retry loops** | Re-asking the same question hoping for different context | If context missing, use default once and move on |
-| **Explanation overload** | Verbose reasoning for every trivial decision | Brief traces; verbose mode only when enabled |
-| **Memory persistence** | Remembering decisions across sessions without clear mechanism | Each session starts fresh unless explicitly loaded |
-| **Autonomous tool invocation** | Running bash commands, making network calls without user knowledge in autonomous mode | Autonomy applies to decisions, not to expanding tool use beyond current permissions |
+| **Full VS Code extension support** | Massive complexity, feature bloat | Focus on markdown/YAML editing only |
+| **Multi-file tabs** | Adds UI complexity, cognitive load | Single file open at a time (use tree to switch) |
+| **Split editor views** | Scope creep for v1 | Single pane is sufficient for this use case |
+| **Git integration** | Out of scope, CLI handles this | User runs git in terminal |
+| **Terminal panel** | Complexity explosion | User has terminal open anyway |
+
+### Heavy IDE Patterns
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Language Server Protocol (LSP)** | Overkill for markdown files | Simple syntax highlighting suffices |
+| **IntelliSense/autocomplete** | Not needed for markdown prose | Focus on clean editing |
+| **Debugging support** | No code to debug | N/A |
+| **Build system integration** | Not a build tool | N/A |
+
+### Premature Optimization
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Offline-first PWA** | Adds complexity, unclear value | Online-only is fine for local dev tool |
+| **Complex caching strategies** | YAGNI for local file system | Simple file read/write |
+| **Microservice architecture** | Single user, local tool | Single Node.js server |
+
+### Gold Plating
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Customizable themes** | Nice-to-have, not core value | Ship one good dark theme |
+| **Plugin system** | Maintenance burden, complexity | Build core features well |
+| **Collaborative editing** | Single user tool | N/A |
+| **AI assistant integration** | Out of scope (Claude Code is the assistant) | Focus on visualization |
+| **Cloud sync** | Local-first tool | Files on disk |
+| **Mobile-responsive design** | Desktop tool for developers | Desktop-first is fine |
 
 ### Anti-Feature Detail
 
-#### Partial Autonomy (Critical to Avoid)
+#### Multi-File Tabs (Avoid)
 
-**The Trap:** "Autonomous for routine decisions, interactive for important ones" sounds reasonable but creates chaos.
-
-**Problems:**
-- Users never know when they'll be asked
-- Can't step away from keyboard
-- Mental model constantly shifts
-
-**Instead:** Binary choice. `autonomous: true` means ALL decisions are auto-decided. `autonomous: false` means ALL decisions are interactive.
-
-#### Context Invention (Critical to Avoid)
-
-**The Trap:** When context is missing, it's tempting to infer user preferences from general patterns.
-
-**Examples of Bad Inference:**
-- "Users typically want fast iteration" (not documented)
-- "Most projects use Next.js" (not their project)
-- "Based on the project name, they probably want..." (speculation)
-
-**Instead:** Only cite documented context. Use explicit defaults for gaps. Log assumptions.
-
-#### Autonomous by Default (Critical to Avoid)
-
-**The Trap:** Making autonomous mode the recommended or default option because it's "more efficient."
+**The Trap:** "Every IDE has tabs, we should too."
 
 **Problems:**
-- New users haven't built trust yet
-- Mistakes in early runs erode confidence
-- No opportunity to learn how the system thinks
+- Tabs add UI complexity (close buttons, overflow handling, reordering)
+- Users accumulate many tabs, lose track of what's open
+- Increases state management complexity
+- File tree already provides navigation
 
-**Instead:** Default is interactive. Autonomous mode is for users who:
-- Have run GSD interactively multiple times
-- Trust the decision policies
-- Want to "fire and forget"
+**Instead:** Single file view. Click file in tree to switch. Previous file saves automatically. Simple mental model.
+
+#### Git Integration (Avoid)
+
+**The Trap:** "Users need to commit from the IDE."
+
+**Problems:**
+- Git UX is complex (staging, conflicts, branches)
+- Claude Code already handles git operations
+- Users have terminal open alongside IDE
+- Adds significant development scope
+
+**Instead:** User runs git commands in terminal. IDE focuses on editing and visualization.
+
+#### Full Monaco/IntelliSense (Avoid)
+
+**The Trap:** "Monaco gives us VS Code features for free."
+
+**Problems:**
+- Monaco is 5-10MB uncompressed (vs 300KB for CodeMirror core)
+- IntelliSense is wasted on markdown prose
+- Slower initial load (violates <1 second requirement)
+- TypeScript services unnecessary
+
+**Instead:** Use CodeMirror 6. Lighter, faster, sufficient for markdown with syntax highlighting.
 
 ---
 
 ## Feature Dependencies
 
 ```
-Configuration Flag
+File Tree (core)
     |
     v
-Decision Policies (heuristics) <-- Context Sources (PROJECT.md, REQUIREMENTS.md, etc.)
+Editor Panel (core) ---------> Markdown Syntax Highlighting
+    |                                    |
+    v                                    v
+Auto-Save -----------------> Save Status Indicator
     |
     v
-Decision Traces (inline output)
+File Watcher --------------> WebSocket Updates --> Real-time Sync
+
+YAML Frontmatter Parsing
     |
-    v
-Audit Trail (persistent log)
+    +---> Command Viewer Card
     |
-    v
-[Optional] Confidence Scoring
+    +---> Graph View (edge extraction from frontmatter)
+
+Graph View
     |
-    v
-[Optional] Risk-Tiered Autonomy
+    +---> Requires: All files parsed for relationships
     |
-    v
-[Optional] Context Gap Detection
+    +---> Node click --> Editor navigation
+
+State Panel
+    |
+    +---> Requires: .planning/ directory structure
+    |
+    +---> Reads: STATE.json, ROADMAP.md, PLAN.md files
 ```
 
-**Build Order Implications:**
-1. **Phase 1:** Configuration flag + basic decision traces (can ship minimal autonomous mode)
-2. **Phase 2:** Decision policies for each decision point in GSD workflows
-3. **Phase 3:** Audit trail persistence + context-aware decisions
-4. **Phase 4:** Differentiators (confidence scoring, risk tiers, gap detection)
+### Build Order Recommendation
+
+1. **Phase 1: Core Editor** - File tree + editor + auto-save (foundation)
+2. **Phase 2: Real-time Updates** - File watcher + WebSocket (spec requirement)
+3. **Phase 3: Command Viewer** - YAML parsing + structured display (domain value)
+4. **Phase 4: State Panel** - Planning file parsing + progress display (domain value)
+5. **Phase 5: Graph View** - Relationship extraction + visualization (highest complexity, highest differentiation)
+
+**Rationale:**
+- Core editor must work before anything else
+- Real-time updates are spec requirement (<1 second file change reflection)
+- Command viewer is low-complexity differentiator, good early win
+- State panel depends on .planning/ structure being stable
+- Graph view is highest value but also highest complexity, save for last
 
 ---
 
@@ -322,84 +353,86 @@ Audit Trail (persistent log)
 
 For MVP, prioritize:
 
-1. **Configuration flag** - Single `autonomous: true/false` in config.json
-2. **Decision traces** - Brief inline output for every auto-decision
-3. **Decision policies** - Documented heuristics for each decision point
-4. **Full commitment mode** - No partial autonomy
+1. **File tree with navigation** (table stakes)
+2. **Markdown editor with syntax highlighting** (table stakes)
+3. **Auto-save with status indicator** (table stakes)
+4. **File watcher with WebSocket updates** (spec requirement: <1 second)
+5. **YAML frontmatter card for commands** (first differentiator, low complexity)
 
 Defer to post-MVP:
-- **Audit trail file** - Useful but not blocking for initial value
-- **Confidence scoring** - Nice to have, not essential for functionality
-- **Risk-tiered autonomy** - Can start with single threshold
-- **Context gap detection** - Can log assumptions inline without separate system
-- **Learning from outcomes** - Requires outcome tracking infrastructure
+- **Graph view** - High complexity, requires all relationship parsing
+- **State panel** - Depends on .planning/ structure being stable
+- **Cross-file validation** - Nice-to-have, not critical for initial value
 
-**MVP Scope:**
-- Works end-to-end for `/gsd:new-project` and `/gsd:plan-phase` workflows
-- Covers ~10-15 decision points currently using AskUserQuestion
-- Produces visible traces so user sees what happened
-- Can be disabled to return to interactive mode
+**MVP Acceptance Criteria (from specs):**
+- [ ] Interface loads <1 second
+- [ ] Can browse file tree
+- [ ] Can edit markdown files
+- [ ] Changes persist to disk
+- [ ] File changes reflected in <1 second
 
 ---
 
-## Decision Points Inventory
+## Technology Recommendations
 
-Current GSD decision points that would become autonomous:
+Based on research, for this use case:
 
-### In /gsd:new-project
+| Component | Recommendation | Rationale |
+|-----------|---------------|-----------|
+| **Editor** | CodeMirror 6 | Smaller bundle (300KB vs 5MB Monaco), better mobile support, sufficient for markdown |
+| **Graph** | cytoscape.js or d3-force | Lightweight, SVG-based, good for 50+ nodes |
+| **Server** | Express + chokidar | Minimal deps, mature file watching |
+| **Frontend** | Vanilla JS or Preact | Keep bundle small, <1 second load |
+| **YAML Parser** | gray-matter | Standard for frontmatter extraction |
 
-| Decision Point | Current Question | Autonomous Policy |
-|----------------|------------------|-------------------|
-| Brownfield offer | "Map codebase first?" | Yes if code detected and no map exists |
-| Ready for PROJECT.md | "Ready to create PROJECT.md?" | Yes when context checklist passes |
-| Research decision | "Research first?" | Yes if greenfield or unfamiliar domain |
-| Feature scoping | "Which features in v1?" | Table stakes + explicit mentions in PROJECT.md |
-| Roadmap approval | "Does this roadmap work?" | Yes if 100% coverage, deps satisfied |
+### Why CodeMirror over Monaco
 
-### In /gsd:plan-phase
+Monaco is overkill for this use case:
+- **Bundle size:** Monaco is 5-10MB uncompressed; CodeMirror 6 core is ~300KB
+- **Load time:** Sourcegraph saw 43% reduction in JS download by switching from Monaco to CodeMirror
+- **Features unused:** IntelliSense, TypeScript services, debugging - none needed for markdown
+- **Mobile support:** CodeMirror 6 has superior mobile support; Monaco is "unusable on mobile"
+- **Documentation:** CodeMirror has "fantastic documentation"; Monaco has "no official guides"
 
-| Decision Point | Current Question | Autonomous Policy |
-|----------------|------------------|-------------------|
-| Discovery depth | "Quick/Standard/Deep?" | Based on config.depth and phase complexity |
-| Plan approval | "Execute this plan?" | Yes if verification passed |
-
-### In /gsd:execute-phase
-
-| Decision Point | Current Question | Autonomous Policy |
-|----------------|------------------|-------------------|
-| Checkpoint:decision | Options presented | Policy-based selection |
-| Checkpoint:human-verify | "Approved?" | Auto-approve if automated tests pass |
-
-### In Other Workflows
-
-| Decision Point | Current Question | Autonomous Policy |
-|----------------|------------------|-------------------|
-| Settings changes | Multi-select options | Use context defaults |
-| Debug approach | "Which approach?" | Most comprehensive if unspecified |
+CodeMirror provides everything needed: syntax highlighting, line numbers, find/replace, undo/redo.
 
 ---
 
 ## Sources
 
-**Ecosystem Research:**
-- [Best Practices for AI Agent Implementations](https://onereach.ai/blog/best-practices-for-ai-agent-implementations/) - Enterprise patterns for autonomous agents
-- [AI Decision Governance 2026](https://www.cybersaint.io/blog/ai-decision-governance-how-to-prepare-for-the-top-challenge-of-2026) - Governance and audit requirements
-- [Guide for Guardrails Implementation 2026](https://www.wizsumo.ai/blog/how-to-implement-ai-guardrails-in-2026-the-complete-enterprise-guide) - Safety patterns for autonomous systems
-- [Guardrails for AI Agents](https://www.agno.com/blog/guardrails-for-ai-agents) - Risk-tiered autonomy patterns
-- [LLM Observability Guide 2026](https://portkey.ai/blog/the-complete-guide-to-llm-observability/) - Tracing and decision logging
-- [Confidence Threshold Calibration](https://www.conifers.ai/glossary/confidence-threshold-calibration) - When to escalate to humans
-- [AI Escalation Management](https://www.partnerhero.com/blog/ai-escalation-management) - Human-in-the-loop patterns
-- [Agent Decision Audit and Explainability](https://air-governance-framework.finos.org/mitigations/mi-21_agent-decision-audit-and-explainability.html) - Audit trail requirements
+### IDE/Editor Fundamentals
+- [Monaco Editor - GitHub](https://github.com/microsoft/monaco-editor)
+- [CodeMirror vs Monaco Comparison - PARA Garden](https://agenthicks.com/research/codemirror-vs-monaco-editor-comparison)
+- [Sourcegraph Migration from Monaco to CodeMirror](https://sourcegraph.com/blog/migrating-monaco-codemirror)
+- [Replit Code Editor Comparison](https://blog.replit.com/code-editors)
+- [VS Code UX Guidelines](https://code.visualstudio.com/api/ux-guidelines/overview)
 
-**Coding Agent Comparisons:**
-- [Claude Code vs Cursor Comparison 2026](https://northflank.com/blog/claude-code-vs-cursor-comparison) - Autonomy spectrum
-- [Devin vs Claude Code 2026](https://www.builder.io/blog/devin-vs-claude-code) - Different autonomy models
-- [Claude Code Autonomous Mode Guide](https://pasqualepillitteri.it/en/news/141/claude-code-dangerously-skip-permissions-guide-autonomous-mode) - Permission modes
+### Tree View Patterns
+- [Carbon Design System - Tree View](https://carbondesignsystem.com/components/tree-view/usage/)
+- [JetBrains IDE Navigation Best Practices](https://blog.jetbrains.com/webide/2013/02/navigating-between-files-in-the-ide-best-practices/)
+- [GitHub File Navigation Improvements](https://github.blog/changelog/2025-09-04-improved-file-navigation-and-editing-in-the-web-ui/)
 
-**Rollback and Recovery:**
-- [IBM STRATUS Undo Mechanism](https://research.ibm.com/blog/undo-agent-for-cloud) - Transactional rollback for agents
-- [Refact.ai Agent Rollback](https://docs.refact.ai/features/autonomous-agent/rollback/) - Repository state rollback
-- [Rubrik Agent Rewind](https://www.rubrik.com/products/agent-rewind) - Enterprise agent recovery
+### Graph Visualization
+- [Software Dependency Graphs - PuppyGraph](https://www.puppygraph.com/blog/software-dependency-graph)
+- [Code Visualization Types - CodeSee](https://www.codesee.io/learning-center/code-visualization)
+- [Dependency Graph Best Practices - Tom Sawyer](https://blog.tomsawyer.com/dependency-graph-visualization)
+
+### Markdown Editors
+- [StackEdit Features](https://stackedit.io/)
+- [Editor.md Capabilities](https://pandao.github.io/editor.md/en.html)
+
+### Anti-Patterns
+- [Coding Anti-Patterns - FreeCodeCamp](https://www.freecodecamp.org/news/antipatterns-to-avoid-in-code/)
+- [9 Anti-Patterns Programmers Should Know](https://sahandsaba.com/nine-anti-patterns-every-programmer-should-be-aware-of-with-examples.html)
+
+### File Watching
+- [Docker Compose Watch - File Sync Patterns](https://docs.docker.com/compose/how-tos/file-watch/)
+- [Browsersync Options](https://browsersync.io/docs/options)
+
+### Meta-Prompting Tools (Competitive Landscape)
+- [Promptmetheus - Prompt IDE](https://promptmetheus.com/)
+- [MetaPrompt Studio](https://metaprompt.pages.dev/)
+- [Meta Prompting Guide](https://www.promptingguide.ai/techniques/meta-prompting)
 
 ---
 
@@ -407,8 +440,8 @@ Current GSD decision points that would become autonomous:
 
 | Area | Level | Reason |
 |------|-------|--------|
-| Table Stakes | HIGH | Core patterns well-documented across multiple sources |
-| Decision Policies | MEDIUM | Context-specific; will need iteration based on actual GSD workflows |
-| Anti-Features | HIGH | Clear consensus in literature on what to avoid |
-| Differentiators | MEDIUM | Nice-to-have features vary by use case |
-| MVP Scope | HIGH | Minimal set is clear and achievable |
+| Table Stakes | HIGH | Universal IDE patterns well-documented, confirmed by spec requirements |
+| Differentiators | MEDIUM | Domain-specific value propositions; spec confirms features but real-world validation pending |
+| Anti-Features | HIGH | Clear consensus on complexity traps; aligns with "keep minimal" philosophy in specs |
+| MVP Scope | HIGH | Directly maps to spec acceptance criteria |
+| Technology Recommendations | HIGH | CodeMirror vs Monaco comparison well-documented with concrete numbers |
