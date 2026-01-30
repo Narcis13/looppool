@@ -1,3 +1,134 @@
+// Operation queue for handling operations during disconnection
+class OperationQueue {
+  constructor() {
+    this.queue = [];
+    this.processing = false;
+    this.maxQueueSize = 100;
+  }
+
+  enqueue(operation) {
+    if (this.queue.length >= this.maxQueueSize) {
+      console.warn('Operation queue is full, dropping oldest operation');
+      this.queue.shift();
+    }
+    
+    this.queue.push({
+      id: Date.now() + Math.random(),
+      timestamp: Date.now(),
+      ...operation
+    });
+    
+    return this.queue[this.queue.length - 1].id;
+  }
+
+  async processQueue() {
+    if (this.processing || this.queue.length === 0) {
+      return;
+    }
+
+    this.processing = true;
+    
+    while (this.queue.length > 0) {
+      const operation = this.queue[0];
+      
+      try {
+        console.log(`Processing queued operation: ${operation.type}`);
+        const result = await this.executeOperation(operation);
+        
+        // Operation succeeded, remove from queue
+        this.queue.shift();
+        
+        // Call success callback if provided
+        if (operation.onSuccess) {
+          operation.onSuccess(result);
+        }
+      } catch (error) {
+        console.error(`Failed to process operation: ${operation.type}`, error);
+        
+        // Check if we should retry
+        if (operation.retryCount >= (operation.maxRetries || 3)) {
+          // Max retries reached, remove from queue
+          this.queue.shift();
+          
+          // Call error callback if provided
+          if (operation.onError) {
+            operation.onError(error);
+          }
+        } else {
+          // Increment retry count and keep in queue
+          operation.retryCount = (operation.retryCount || 0) + 1;
+          
+          // Move to next operation (will retry this one later)
+          break;
+        }
+      }
+    }
+    
+    this.processing = false;
+  }
+
+  async executeOperation(operation) {
+    switch (operation.type) {
+      case 'saveFile':
+        const saveResponse = await fetch(`/api/file?path=${encodeURIComponent(operation.path)}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: operation.content
+        });
+        
+        if (!saveResponse.ok) {
+          throw new Error(`Failed to save file: ${saveResponse.status}`);
+        }
+        
+        return await saveResponse.json();
+        
+      case 'loadFile':
+        const loadResponse = await fetch(`/api/file?path=${encodeURIComponent(operation.path)}`);
+        
+        if (!loadResponse.ok) {
+          throw new Error(`Failed to load file: ${loadResponse.status}`);
+        }
+        
+        return await loadResponse.text();
+        
+      case 'loadTree':
+        const treeResponse = await fetch('/api/tree');
+        
+        if (!treeResponse.ok) {
+          throw new Error(`Failed to load tree: ${treeResponse.status}`);
+        }
+        
+        return await treeResponse.json();
+        
+      case 'loadState':
+        const stateResponse = await fetch('/api/state');
+        
+        if (!stateResponse.ok) {
+          throw new Error(`Failed to load state: ${stateResponse.status}`);
+        }
+        
+        return await stateResponse.text();
+        
+      default:
+        throw new Error(`Unknown operation type: ${operation.type}`);
+    }
+  }
+
+  clear() {
+    this.queue = [];
+  }
+
+  getQueueLength() {
+    return this.queue.length;
+  }
+
+  getQueue() {
+    return [...this.queue];
+  }
+}
+
 class EventSourceClient {
   constructor(url) {
     this.url = url;
@@ -9,6 +140,7 @@ class EventSourceClient {
     this.listeners = new Map();
     this.isConnected = false;
     this.connectionStatusElement = null;
+    this.operationQueue = new OperationQueue();
   }
 
   setConnectionStatusElement(element) {
@@ -35,6 +167,12 @@ class EventSourceClient {
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.updateConnectionStatus('Connected');
+      
+      // Process any queued operations when connection is restored
+      if (this.operationQueue.getQueueLength() > 0) {
+        console.log(`Processing ${this.operationQueue.getQueueLength()} queued operations`);
+        this.operationQueue.processQueue();
+      }
     };
 
     this.eventSource.onerror = (error) => {
@@ -109,12 +247,104 @@ class EventSourceClient {
       this.updateConnectionStatus('Disconnected');
     }
   }
+
+  // Queue an operation for execution
+  queueOperation(operation) {
+    return this.operationQueue.enqueue(operation);
+  }
+
+  // Get the operation queue for inspection
+  getOperationQueue() {
+    return this.operationQueue;
+  }
+}
+
+// API wrapper for handling operations with automatic queueing
+class API {
+  constructor(sseClient) {
+    this.sseClient = sseClient;
+  }
+
+  // Helper to execute or queue operation based on connection status
+  async executeOrQueue(operation) {
+    if (this.sseClient.isConnected) {
+      // Try to execute immediately
+      try {
+        const queue = this.sseClient.getOperationQueue();
+        return await queue.executeOperation(operation);
+      } catch (error) {
+        // If immediate execution fails, queue the operation
+        console.warn(`Failed to execute operation immediately, queueing: ${operation.type}`, error);
+        this.sseClient.queueOperation(operation);
+        throw error;
+      }
+    } else {
+      // Not connected, queue the operation
+      console.log(`Queueing operation while disconnected: ${operation.type}`);
+      this.sseClient.queueOperation(operation);
+      throw new Error('Operation queued - currently disconnected');
+    }
+  }
+
+  async saveFile(path, content, options = {}) {
+    return this.executeOrQueue({
+      type: 'saveFile',
+      path,
+      content,
+      maxRetries: options.maxRetries || 3,
+      onSuccess: options.onSuccess,
+      onError: options.onError
+    });
+  }
+
+  async loadFile(path, options = {}) {
+    return this.executeOrQueue({
+      type: 'loadFile',
+      path,
+      maxRetries: options.maxRetries || 3,
+      onSuccess: options.onSuccess,
+      onError: options.onError
+    });
+  }
+
+  async loadTree(options = {}) {
+    return this.executeOrQueue({
+      type: 'loadTree',
+      maxRetries: options.maxRetries || 3,
+      onSuccess: options.onSuccess,
+      onError: options.onError
+    });
+  }
+
+  async loadState(options = {}) {
+    return this.executeOrQueue({
+      type: 'loadState',
+      maxRetries: options.maxRetries || 3,
+      onSuccess: options.onSuccess,
+      onError: options.onError
+    });
+  }
+
+  getQueuedOperations() {
+    return this.sseClient.getOperationQueue().getQueue();
+  }
+
+  clearQueue() {
+    this.sseClient.getOperationQueue().clear();
+  }
+
+  isConnected() {
+    return this.sseClient.isConnected;
+  }
 }
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
   // Create EventSource client
   const sseClient = new EventSourceClient('/api/events');
+  
+  // Create API wrapper
+  const api = new API(sseClient);
   
   // Set up connection status indicator
   const connectionStatus = document.getElementById('connection-status');
@@ -135,4 +365,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Export for global access
   window.sseClient = sseClient;
+  window.api = api;
 });
