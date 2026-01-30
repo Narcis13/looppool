@@ -569,6 +569,9 @@ class StatePanel {
           <button class="quick-action-btn resume-work-btn" data-path="CONTINUE_HERE.md">
             ▶️ Resume work
           </button>
+          <button class="quick-action-btn view-decisions-btn" data-path="DECISIONS.md">
+            📋 View decisions
+          </button>
         </div>
       </div>
     `;
@@ -663,6 +666,13 @@ class StatePanel {
       
       // Resume work button
       if (e.target.classList.contains('resume-work-btn')) {
+        const path = e.target.dataset.path;
+        const event = new CustomEvent('open-file', { detail: { path } });
+        document.dispatchEvent(event);
+      }
+      
+      // View decisions button
+      if (e.target.classList.contains('view-decisions-btn')) {
         const path = e.target.dataset.path;
         const event = new CustomEvent('open-file', { detail: { path } });
         document.dispatchEvent(event);
@@ -1254,6 +1264,18 @@ const statePanelStyles = `
 
 .resume-work-btn:active {
   background: #065f46;
+}
+
+.view-decisions-btn {
+  background: #7c3aed;
+}
+
+.view-decisions-btn:hover {
+  background: #6d28d9;
+}
+
+.view-decisions-btn:active {
+  background: #5b21b6;
 }
 </style>
 `;

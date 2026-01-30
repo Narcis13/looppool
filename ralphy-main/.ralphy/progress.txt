@@ -396,3 +396,24 @@
 - Feature was already complete, no implementation needed
 - Linting passed (no linting configured but command succeeds)
 - Updated ide_prd.md to mark task as complete
+
+## 2026-01-30 - Priority 5: State Panel - Add "View decisions" button linking to DECISIONS.md
+- Added "View decisions" button to StatePanel component in renderResumeWorkButton() method
+- Button placed in quick actions section alongside existing "Resume work" button
+- Button has class "view-decisions-btn" and data-path="DECISIONS.md"
+- Added event listener in setupPlanningDocHandlers() to handle view decisions button clicks
+- Button dispatches 'open-file' event with path to DECISIONS.md for file tree integration
+- Implemented distinctive purple color scheme for the button:
+  - Base color: #7c3aed
+  - Hover color: #6d28d9
+  - Active color: #5b21b6
+- Button displays with clipboard emoji (📋) and "View decisions" text
+- Created test suite test-view-decisions-simple.js with 5 tests covering:
+  - Button HTML presence
+  - Event handler implementation
+  - CSS styling
+  - Quick actions section placement
+  - Button attributes
+- All tests passed successfully (5/5)
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
