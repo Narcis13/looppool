@@ -58,7 +58,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Implement Cmd/Ctrl+S manual save shortcut
 - [x] Add retry logic with exponential backoff for failed saves
 - [x] Handle external file change detection via SSE
-- [ ] Implement find functionality (Cmd/Ctrl+F)
+- [x] Implement find functionality (Cmd/Ctrl+F)
 - [ ] Implement replace functionality with regex support
 - [ ] Add syntax highlighting overlay for markdown
 - [ ] Add vim keybindings option

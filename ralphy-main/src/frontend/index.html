@@ -9,6 +9,9 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     .top-bar {
       height: 40px;
@@ -44,6 +47,20 @@
       background: #9e9e9e;
       color: white;
     }
+    .main-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 250px auto;
+      overflow: hidden;
+    }
+    .sidebar {
+      background: #f5f5f5;
+      border-right: 1px solid #e0e0e0;
+      overflow-y: auto;
+    }
+    .editor-panel {
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -51,6 +68,24 @@
     <div class="project-name">LPL IDE</div>
     <div id="connection-status" class="connection-status">Disconnected</div>
   </div>
+  <div class="main-content">
+    <div class="sidebar">
+      <!-- File tree will go here -->
+    </div>
+    <div class="editor-panel" id="editor-panel">
+      <!-- Editor will be mounted here -->
+    </div>
+  </div>
   <script src="app.js"></script>
+  <script src="editor.js"></script>
+  <script>
+    // Initialize editor
+    const editorPanel = document.getElementById('editor-panel');
+    const editor = new MarkdownEditor(editorPanel);
+    window.editor = editor;
+
+    // Test the editor with a sample file
+    editor.loadFile('test.md', '# Test Markdown\n\nThis is a test file for the find functionality.\n\nTry pressing Cmd/Ctrl+F to open the find bar.');
+  </script>
 </body>
 </html>
