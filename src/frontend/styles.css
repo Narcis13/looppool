@@ -631,6 +631,121 @@ a:focus-visible {
     outline-offset: 0;
 }
 
+/* Editor Styles */
+.editor-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 100%;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    background: var(--bg-primary);
+}
+
+.line-numbers {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    padding: 8px 0;
+    border-right: 1px solid var(--border-color);
+    text-align: right;
+    user-select: none;
+    overflow-y: hidden;
+    min-width: 50px;
+}
+
+.line-number {
+    padding: 0 16px 0 8px;
+}
+
+.editor-textarea {
+    grid-column: 2;
+    grid-row: 1;
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    overflow-y: auto;
+    white-space: pre;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.editor-highlight {
+    grid-column: 2;
+    grid-row: 1;
+    pointer-events: none;
+    padding: 8px 16px;
+    white-space: pre;
+    overflow-y: hidden;
+}
+
+/* Scrollbar styling for editor */
+.editor-textarea::-webkit-scrollbar {
+    width: 12px;
+}
+
+.editor-textarea::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+.editor-textarea::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 6px;
+    border: 2px solid var(--bg-primary);
+}
+
+.editor-textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Editor error messages */
+.editor-error {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: var(--status-error);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: var(--font-size);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Save status states */
+.save-indicator {
+    transition: color 0.3s ease-out;
+}
+
+.save-indicator.unsaved .save-text {
+    color: var(--status-warning);
+}
+
+.save-indicator.saving .save-text {
+    color: var(--status-info);
+}
+
+.save-indicator.saved .save-text {
+    color: var(--text-secondary);
+}
+
 /* Animations */
 @media (prefers-reduced-motion: no-preference) {
     .tree-arrow {

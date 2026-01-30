@@ -1,5 +1,6 @@
 // Import SSE client
 import { SSEClient } from './sse-client.js';
+import { MarkdownEditor } from './editor.js';
 
 // Main application module
 class LooppoolIDE {
@@ -9,6 +10,7 @@ class LooppoolIDE {
         this.sseClient = new SSEClient('/api/events');
         this.selectedFile = null;
         this.openFiles = new Map(); // path -> content
+        this.editor = null;
         
         this.init();
     }
@@ -51,22 +53,40 @@ class LooppoolIDE {
         });
         
         // Listen for file change events
-        this.sseClient.on('file-changed', (event) => {
+        this.sseClient.on('file-changed', async (event) => {
             const data = JSON.parse(event.data);
             console.log('File changed:', data.path);
-            // TODO: Reload file if currently open
+            
+            // Reload file if currently open and not dirty
+            if (this.selectedFile === data.path && this.editor && !this.editor.hasUnsavedChanges()) {
+                await this.editor.loadFile(data.path);
+            }
         });
         
-        this.sseClient.on('file-created', (event) => {
+        this.sseClient.on('file-created', async (event) => {
             const data = JSON.parse(event.data);
             console.log('File created:', data.path);
-            // TODO: Refresh file tree
+            
+            // Refresh file tree
+            await this.fileTree.refresh();
         });
         
-        this.sseClient.on('file-deleted', (event) => {
+        this.sseClient.on('file-deleted', async (event) => {
             const data = JSON.parse(event.data);
             console.log('File deleted:', data.path);
-            // TODO: Refresh file tree and close tab if open
+            
+            // Refresh file tree
+            await this.fileTree.refresh();
+            
+            // Clear editor if deleted file was open
+            if (this.selectedFile === data.path) {
+                this.selectedFile = null;
+                if (this.editor) {
+                    this.editor.destroy();
+                    this.editor = null;
+                }
+                document.getElementById('welcome').style.display = 'flex';
+            }
         });
     }
     
@@ -87,6 +107,20 @@ class LooppoolIDE {
         // Collapse all button
         document.getElementById('collapse-all').addEventListener('click', () => {
             this.fileTree.collapseAll();
+        });
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Cmd/Ctrl+S is already handled by the editor
+            // Add other global shortcuts here as needed
+        });
+        
+        // Handle beforeunload to warn about unsaved changes
+        window.addEventListener('beforeunload', (e) => {
+            if (this.editor && this.editor.hasUnsavedChanges()) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
         });
     }
     
@@ -229,8 +263,15 @@ class LooppoolIDE {
         // Hide welcome screen
         document.getElementById('welcome').style.display = 'none';
         
-        // TODO: Load file content and initialize editor
-        console.log('Selected file:', path);
+        // Initialize editor if not already created
+        if (!this.editor) {
+            const editorContainer = document.getElementById('editor-container');
+            this.editor = new MarkdownEditor(editorContainer);
+        }
+        
+        // Load file in editor
+        this.selectedFile = path;
+        await this.editor.loadFile(path);
     }
 }
 
@@ -243,17 +284,39 @@ class FileTree {
     }
     
     async init() {
-        // Fetch tree data from server
+        await this.loadTree();
+        this.render();
+        
+        // Set up virtual scrolling for performance
+        this.setupVirtualScrolling();
+    }
+    
+    async loadTree() {
         const response = await fetch('/api/tree');
         if (!response.ok) {
             throw new Error('Failed to load file tree');
         }
         
         this.treeData = await response.json();
-        this.render();
+    }
+    
+    async refresh() {
+        // Save current expanded paths
+        const wasExpanded = new Set(this.expandedPaths);
         
-        // Set up virtual scrolling for performance
-        this.setupVirtualScrolling();
+        // Reload tree data
+        await this.loadTree();
+        
+        // Restore expanded paths that still exist
+        this.expandedPaths = new Set();
+        for (const path of wasExpanded) {
+            if (this.findNode(path)) {
+                this.expandedPaths.add(path);
+            }
+        }
+        
+        // Re-render
+        this.render();
     }
     
     render() {
