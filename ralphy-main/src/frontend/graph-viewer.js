@@ -441,6 +441,23 @@ class GraphViewer {
     svg.setAttribute('height', rect.height);
     svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
     
+    // Create arrow marker for directional edges (must be created before edges)
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', 'arrow');
+    marker.setAttribute('viewBox', '0 -5 10 10');
+    marker.setAttribute('refX', '15');
+    marker.setAttribute('refY', '0');
+    marker.setAttribute('markerWidth', '6');
+    marker.setAttribute('markerHeight', '6');
+    marker.setAttribute('orient', 'auto');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M0,-5L10,0L0,5');
+    path.setAttribute('fill', '#999');
+    marker.appendChild(path);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+    
     // Initialize force simulation
     this.simulation = new ForceSimulation(graphData.nodes, graphData.edges, {
       width: rect.width,
@@ -469,23 +486,6 @@ class GraphViewer {
       edgeGroup.appendChild(line);
       return { element: line, data: edge };
     });
-    
-    // Create arrow marker for directional edges
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', 'arrow');
-    marker.setAttribute('viewBox', '0 -5 10 10');
-    marker.setAttribute('refX', '15');
-    marker.setAttribute('refY', '0');
-    marker.setAttribute('markerWidth', '6');
-    marker.setAttribute('markerHeight', '6');
-    marker.setAttribute('orient', 'auto');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', 'M0,-5L10,0L0,5');
-    path.setAttribute('fill', '#999');
-    marker.appendChild(path);
-    defs.appendChild(marker);
-    svg.appendChild(defs);
     
     // Create node elements
     const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');

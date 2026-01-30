@@ -120,7 +120,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Style agent nodes as orange
 - [x] Style template nodes as gray
 - [x] Add node labels with file names
-- [ ] Render directional arrow edges
+- [x] Render directional arrow edges
 - [ ] Implement zoom behavior (min=0.1, max=4)
 - [ ] Implement pan with drag behavior
 - [ ] Add click-to-highlight connected nodes and edges
