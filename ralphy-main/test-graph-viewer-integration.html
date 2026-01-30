@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Viewer Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #graph-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    /* Graph viewer styles */
+    .graph-viewer {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .graph-header {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      background: #fff;
+    }
+    
+    .graph-header h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .graph-filters {
+      margin-bottom: 10px;
+    }
+    
+    .graph-filters label {
+      margin-right: 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    .graph-filters input[type="checkbox"] {
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    
+    .graph-search {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .graph-canvas {
+      flex: 1;
+      background: #fafafa;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .graph-svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .node circle {
+      cursor: pointer;
+      transition: stroke-width 0.2s;
+    }
+    
+    .node:hover circle {
+      stroke-width: 3;
+    }
+    
+    .node.highlighted circle {
+      stroke: #333;
+      stroke-width: 3;
+    }
+    
+    .node text {
+      pointer-events: none;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .edge {
+      pointer-events: none;
+      opacity: 0.6;
+      transition: opacity 0.2s, stroke-width 0.2s;
+    }
+    
+    .edge.highlighted {
+      opacity: 1;
+      stroke-width: 3;
+      stroke: #333;
+    }
+    
+    .graph-tooltip {
+      z-index: 1000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="graph-container"></div>
+  <script src="src/frontend/graph-viewer.js"></script>
+  <script>
+    // Create graph viewer instance
+    const container = document.getElementById('graph-container');
+    const graphViewer = new GraphViewer(container);
+    
+    // Test data (instead of API calls)
+    const testGraphData = {
+      nodes: [
+        { id: 'commands/lpl/test-cmd.md', name: 'test-cmd', type: 'command', path: 'commands/lpl/test-cmd.md' },
+        { id: 'looppool/workflows/test-flow.md', name: 'test-flow', type: 'workflow', path: 'looppool/workflows/test-flow.md' },
+        { id: 'agents/test-agent.md', name: 'test-agent', type: 'agent', path: 'agents/test-agent.md' },
+        { id: 'looppool/templates/test-tmpl.md', name: 'test-tmpl', type: 'template', path: 'looppool/templates/test-tmpl.md' }
+      ],
+      edges: [
+        { source: 'commands/lpl/test-cmd.md', target: 'looppool/workflows/test-flow.md', type: 'delegates-to' },
+        { source: 'looppool/workflows/test-flow.md', target: 'agents/test-agent.md', type: 'spawns' },
+        { source: 'agents/test-agent.md', target: 'looppool/templates/test-tmpl.md', type: 'uses' }
+      ]
+    };
+    
+    // Render the graph
+    graphViewer.renderGraph(testGraphData);
+  </script>
+</body>
+</html>
