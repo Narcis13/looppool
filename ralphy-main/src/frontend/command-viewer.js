@@ -401,47 +401,84 @@ class CommandViewer {
 
   async copyCommand(commandName) {
     const text = `/${commandName}`;
+    this.copyToClipboard(text, '.copy-command', 'Copied!');
+  }
+
+  testInTerminal(frontmatter) {
+    if (!frontmatter.name) {
+      console.error('No command name found');
+      return;
+    }
+
+    // Build the shell command with proper escaping
+    let shellCommand = `looppool-cc ${this.escapeShellArg(frontmatter.name)}`;
+    
+    // Add argument hint if provided
+    if (frontmatter['argument-hint']) {
+      // Extract the hint text without brackets
+      const hint = frontmatter['argument-hint']
+        .replace(/^\[/, '') // Remove leading [
+        .replace(/\]$/, '') // Remove trailing ]
+        .replace(/^</, '')  // Remove leading <
+        .replace(/>$/, ''); // Remove trailing >
+      
+      // Check if it's optional (was in brackets)
+      const isOptional = frontmatter['argument-hint'].startsWith('[');
+      
+      if (!isOptional) {
+        // For required arguments, add a placeholder
+        shellCommand += ` ${this.escapeShellArg(`<${hint}>`)}`;
+      }
+    }
+    
+    // Copy command to clipboard and show visual feedback
+    this.copyToClipboard(shellCommand, '.test-terminal', 'Test command copied!');
+  }
+
+  escapeShellArg(arg) {
+    // If arg is empty or null, return empty quotes
+    if (!arg) return "''";
+    
+    // If arg contains no special characters, return as-is
+    if (/^[a-zA-Z0-9_\-./]+$/.test(arg)) {
+      return arg;
+    }
+    
+    // Otherwise, wrap in single quotes and escape single quotes
+    return "'" + arg.replace(/'/g, "'\\''") + "'";
+  }
+
+  async copyToClipboard(text, buttonSelector, successMessage) {
+    const button = this.container.querySelector(buttonSelector);
+    const originalText = button.textContent;
     
     try {
-      // Use the Clipboard API to copy text
       await navigator.clipboard.writeText(text);
       
-      // Provide visual feedback
-      const button = this.container.querySelector('.copy-command');
-      const originalText = button.textContent;
-      button.textContent = 'Copied!';
+      // Success feedback
+      button.textContent = successMessage;
       button.style.background = '#4caf50';
       button.style.color = 'white';
       
-      // Reset button after 2 seconds
       setTimeout(() => {
         button.textContent = originalText;
         button.style.background = '';
         button.style.color = '';
       }, 2000);
     } catch (err) {
-      // Fallback for browsers that don't support clipboard API or if permission is denied
       console.error('Failed to copy to clipboard:', err);
       
-      // Show error feedback
-      const button = this.container.querySelector('.copy-command');
-      const originalText = button.textContent;
+      // Error feedback
       button.textContent = 'Copy failed';
       button.style.background = '#f44336';
       button.style.color = 'white';
       
-      // Reset button after 2 seconds
       setTimeout(() => {
         button.textContent = originalText;
         button.style.background = '';
         button.style.color = '';
       }, 2000);
     }
-  }
-
-  testInTerminal(frontmatter) {
-    // TODO: Implement terminal test
-    console.log('Test in terminal:', frontmatter);
   }
 }
 
