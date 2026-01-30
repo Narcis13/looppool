@@ -390,8 +390,8 @@ class CommandViewer {
     metadataCard.innerHTML = html;
 
     // Attach action button listeners
-    metadataCard.querySelector('.copy-command')?.addEventListener('click', () => {
-      this.copyCommand(frontmatter.name);
+    metadataCard.querySelector('.copy-command')?.addEventListener('click', async () => {
+      await this.copyCommand(frontmatter.name);
     });
 
     metadataCard.querySelector('.test-terminal')?.addEventListener('click', () => {
@@ -399,11 +399,44 @@ class CommandViewer {
     });
   }
 
-  copyCommand(commandName) {
-    // TODO: Implement clipboard copy
-    const text = `/lpl:${commandName}`;
-    console.log('Copy to clipboard:', text);
-    // navigator.clipboard.writeText(text);
+  async copyCommand(commandName) {
+    const text = `/${commandName}`;
+    
+    try {
+      // Use the Clipboard API to copy text
+      await navigator.clipboard.writeText(text);
+      
+      // Provide visual feedback
+      const button = this.container.querySelector('.copy-command');
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.style.background = '#4caf50';
+      button.style.color = 'white';
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '';
+        button.style.color = '';
+      }, 2000);
+    } catch (err) {
+      // Fallback for browsers that don't support clipboard API or if permission is denied
+      console.error('Failed to copy to clipboard:', err);
+      
+      // Show error feedback
+      const button = this.container.querySelector('.copy-command');
+      const originalText = button.textContent;
+      button.textContent = 'Copy failed';
+      button.style.background = '#f44336';
+      button.style.color = 'white';
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '';
+        button.style.color = '';
+      }, 2000);
+    }
   }
 
   testInTerminal(frontmatter) {

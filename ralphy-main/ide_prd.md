@@ -77,7 +77,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Display agent name (if specified) in card
 - [x] Add color-coded tool badges for allowed-tools
 - [x] Add hover tooltips for tool badges
-- [ ] Implement "Copy as /lpl:command" button with Clipboard API
+- [x] Implement "Copy as /lpl:command" button with Clipboard API
 - [ ] Implement "Test in terminal" button with shell escaping
 - [ ] Parse file references to identify delegated workflow
 - [ ] Create "View workflow" navigation link
