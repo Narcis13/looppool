@@ -482,3 +482,7 @@ class ResourceManager {
   - **Mitigation**: Automatic reconnection with exponential backoff
 - **Risk**: Memory leaks from file watchers
   - **Mitigation**: Proper cleanup, watcher limits, debouncing
+## Blocked
+
+- Implement find/replace with regex support (why: power user feature) (stuck after 3 attempts)
+- Implement find/replace with regex support (why: power user feature) (stuck after 3 attempts)
