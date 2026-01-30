@@ -79,9 +79,128 @@ class LooppoolIDE {
             }
         });
         
+        // Keyboard navigation
+        document.getElementById('file-tree').addEventListener('keydown', (e) => {
+            this.handleTreeKeyDown(e);
+        });
+        
         // Collapse all button
         document.getElementById('collapse-all').addEventListener('click', () => {
             this.fileTree.collapseAll();
+        });
+    }
+    
+    handleTreeKeyDown(e) {
+        const activeElement = document.activeElement;
+        if (!activeElement.classList.contains('tree-item-content')) {
+            return;
+        }
+        
+        const currentItem = activeElement.parentElement;
+        let handled = true;
+        
+        switch (e.key) {
+            case 'ArrowUp':
+                this.navigateTreeUp(currentItem);
+                break;
+            case 'ArrowDown':
+                this.navigateTreeDown(currentItem);
+                break;
+            case 'ArrowLeft':
+                this.navigateTreeLeft(currentItem);
+                break;
+            case 'ArrowRight':
+                this.navigateTreeRight(currentItem);
+                break;
+            case 'Enter':
+            case ' ':
+                e.preventDefault(); // Prevent scrolling on space
+                this.handleFileSelect(currentItem);
+                break;
+            case 'Home':
+                this.navigateTreeFirst();
+                break;
+            case 'End':
+                this.navigateTreeLast();
+                break;
+            default:
+                handled = false;
+        }
+        
+        if (handled) {
+            e.preventDefault();
+        }
+    }
+    
+    navigateTreeUp(currentItem) {
+        const items = this.getVisibleTreeItems();
+        const currentIndex = items.indexOf(currentItem);
+        
+        if (currentIndex > 0) {
+            items[currentIndex - 1].querySelector('.tree-item-content').focus();
+        }
+    }
+    
+    navigateTreeDown(currentItem) {
+        const items = this.getVisibleTreeItems();
+        const currentIndex = items.indexOf(currentItem);
+        
+        if (currentIndex < items.length - 1) {
+            items[currentIndex + 1].querySelector('.tree-item-content').focus();
+        }
+    }
+    
+    navigateTreeLeft(currentItem) {
+        const isDirectory = currentItem.dataset.type === 'directory';
+        const isExpanded = this.fileTree.expandedPaths.has(currentItem.dataset.path);
+        
+        if (isDirectory && isExpanded) {
+            // Collapse directory
+            this.fileTree.toggleDirectory(currentItem);
+        } else {
+            // Navigate to parent
+            const parentList = currentItem.parentElement.parentElement;
+            if (parentList && parentList.classList.contains('tree-item')) {
+                parentList.querySelector('.tree-item-content').focus();
+            }
+        }
+    }
+    
+    navigateTreeRight(currentItem) {
+        const isDirectory = currentItem.dataset.type === 'directory';
+        const isExpanded = this.fileTree.expandedPaths.has(currentItem.dataset.path);
+        
+        if (isDirectory) {
+            if (!isExpanded) {
+                // Expand directory
+                this.fileTree.toggleDirectory(currentItem);
+            } else {
+                // Navigate to first child if expanded
+                const firstChild = currentItem.querySelector('.tree-item');
+                if (firstChild) {
+                    firstChild.querySelector('.tree-item-content').focus();
+                }
+            }
+        }
+    }
+    
+    navigateTreeFirst() {
+        const items = this.getVisibleTreeItems();
+        if (items.length > 0) {
+            items[0].querySelector('.tree-item-content').focus();
+        }
+    }
+    
+    navigateTreeLast() {
+        const items = this.getVisibleTreeItems();
+        if (items.length > 0) {
+            items[items.length - 1].querySelector('.tree-item-content').focus();
+        }
+    }
+    
+    getVisibleTreeItems() {
+        return Array.from(document.querySelectorAll('#file-tree .tree-item')).filter(item => {
+            return item.offsetParent !== null; // Check if visible
         });
     }
     
@@ -151,10 +270,12 @@ class FileTree {
         li.className = 'tree-item';
         li.dataset.path = node.path;
         li.dataset.type = node.type;
+        li.setAttribute('role', 'treeitem');
         
         const content = document.createElement('div');
         content.className = 'tree-item-content';
         content.tabIndex = 0;
+        content.setAttribute('aria-label', `${node.type === 'directory' ? 'Folder' : 'File'} ${node.name}`);
         
         // Indentation
         const indent = document.createElement('span');
@@ -170,6 +291,9 @@ class FileTree {
             if (this.expandedPaths.has(node.path)) {
                 arrow.classList.add('expanded');
                 arrow.style.transform = 'rotate(90deg)';
+                content.setAttribute('aria-expanded', 'true');
+            } else {
+                content.setAttribute('aria-expanded', 'false');
             }
         } else {
             arrow.classList.add('leaf');
@@ -194,6 +318,7 @@ class FileTree {
         // Render children if expanded
         if (node.type === 'directory' && node.children && this.expandedPaths.has(node.path)) {
             const childContainer = document.createElement('ul');
+            childContainer.setAttribute('role', 'group');
             li.appendChild(childContainer);
             
             node.children.forEach(child => {
@@ -205,10 +330,12 @@ class FileTree {
     toggleDirectory(item) {
         const path = item.dataset.path;
         const arrow = item.querySelector('.tree-arrow');
+        const content = item.querySelector('.tree-item-content');
         
         if (this.expandedPaths.has(path)) {
             this.expandedPaths.delete(path);
             arrow.style.transform = 'rotate(0deg)';
+            content.setAttribute('aria-expanded', 'false');
             
             // Remove children
             const childList = item.querySelector('ul');
@@ -218,11 +345,13 @@ class FileTree {
         } else {
             this.expandedPaths.add(path);
             arrow.style.transform = 'rotate(90deg)';
+            content.setAttribute('aria-expanded', 'true');
             
             // Find node data and render children
             const node = this.findNode(path);
             if (node && node.children) {
                 const childContainer = document.createElement('ul');
+                childContainer.setAttribute('role', 'group');
                 item.appendChild(childContainer);
                 
                 node.children.forEach(child => {

@@ -1,2 +1,2 @@
-LAST_TASK="Create src/server/index.js with native http module (why: zero deps, Express adds 50+ transitive dependencies)"
+LAST_TASK="Create keyboard navigation for file tree (arrow keys, enter to open) (why: power user efficiency)"
 STUCK_COUNT=1

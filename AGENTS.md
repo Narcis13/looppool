@@ -19,4 +19,4 @@ npm run build      # Build project (if configured)
 
 ## Constraints
 
-[To be filled as needed]
+Don't open many tabs that point to:http://127.0.0.1:3456/
