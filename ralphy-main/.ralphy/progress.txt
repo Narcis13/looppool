@@ -478,3 +478,23 @@
 - All tests passed: class definition, method implementations, pattern matching, relationship types
 - Linting passed (no linting configured but command succeeds)
 - Updated ide_prd.md to mark task as complete
+
+## 2026-01-30 - Priority 6: Graph Visualization - Parse command files to identify workflow delegation
+- Verified that parseCommandRelationships() method is already implemented in graph-viewer.js
+- Method parses command files to extract workflow references using pattern: looppool/workflows/*.md
+- Implementation includes code block filtering to avoid false positives
+- Creates "delegates-to" relationship type for command-to-workflow connections
+- Integrated with parseFileRelationships() which calls this method for command type files
+- Created comprehensive test suite test-command-parsing.js with 10 tests covering:
+  - Class and method definitions
+  - Workflow pattern matching with various test cases
+  - Code block filtering logic
+  - Relationship creation with correct parameters
+  - Empty content handling
+  - Integration with file parsing flow
+  - Command file identification in extractFiles
+  - Complete parsing flow
+  - Error handling
+- All tests passed successfully
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete

@@ -110,7 +110,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 ## Priority 6: Graph Visualization
 
 - [x] Create graph data parser extracting relationships from file content
-- [ ] Parse command files to identify workflow delegation
+- [x] Parse command files to identify workflow delegation
 - [ ] Parse workflow files to identify agent spawning
 - [ ] Parse agent files to identify template usage
 - [ ] Implement d3-force or cytoscape.js with hierarchical positioning
