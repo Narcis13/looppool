@@ -1,5 +1,19 @@
 # Ralphy Progress Log
 
+## 2026-01-30 - Priority 6: Graph Visualization - Add double-click to open file in editor
+- Verified that onNodeDoubleClick method was already implemented in graph-viewer.js (lines 705-710)
+- Method dispatches 'open-file' CustomEvent with node.path in event detail
+- Double-click event listener was already added to node groups (line 519)
+- Added 'open-file' event listener in app.js (lines 364-382) to handle the event
+- Event listener loads file content using api.loadFile(path)
+- Opens file in editor using window.editor.loadFile(path, content)
+- Added error handling with console.error and user alert for failed file loads
+- Implementation integrates with existing editor and API infrastructure
+- Created test files test-double-click.js and test-double-click-simple.js
+- Feature enables users to double-click any node in graph to open that file in editor
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
+
 ## 2026-01-30 - Priority 6: Graph Visualization - Style agent nodes as orange
 - Verified that agent nodes are already styled as orange in graph-viewer.js
 - getNodeColor() method at line 566 returns '#ff9800' (orange) for agent type nodes

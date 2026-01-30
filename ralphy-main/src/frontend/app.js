@@ -360,6 +360,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Listen for open-file events (from graph, command viewer, state panel, etc.)
+  window.addEventListener('open-file', async (event) => {
+    const path = event.detail.path;
+    if (!path) return;
+    
+    console.log('Opening file:', path);
+    
+    try {
+      // Load the file content
+      const content = await api.loadFile(path);
+      
+      // Open in editor if editor is available
+      if (window.editor) {
+        window.editor.loadFile(path, content);
+      }
+    } catch (error) {
+      console.error('Failed to open file:', error);
+      alert(`Failed to open file: ${error.message}`);
+    }
+  });
+
   // Connect
   sseClient.connect();
 

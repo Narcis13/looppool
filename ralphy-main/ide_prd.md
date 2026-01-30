@@ -124,7 +124,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Implement zoom behavior (min=0.1, max=4)
 - [x] Implement pan with drag behavior
 - [x] Add click-to-highlight connected nodes and edges
-- [ ] Add double-click to open file in editor
+- [x] Add double-click to open file in editor
 - [ ] Add hover for node details tooltip
 - [ ] Create type filter checkboxes for node visibility
 - [ ] Add search/filter by node name
