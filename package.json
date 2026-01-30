@@ -2,6 +2,7 @@
   "name": "looppool-cc",
   "version": "1.0.0",
   "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code by Narcis13. Fork of Get Shit Done by TÂCHES.",
+  "type": "module",
   "bin": {
     "looppool-cc": "bin/install.js"
   },
@@ -43,6 +44,6 @@
   "scripts": {
     "build:hooks": "node scripts/build-hooks.js",
     "prepublishOnly": "npm run build:hooks",
-    "ide": "node ide/server.js"
+    "ide": "node src/server/index.js"
   }
 }

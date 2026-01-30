@@ -1,0 +1,2 @@
+LAST_TASK="Create src/server/index.js with native http module (why: zero deps, Express adds 50+ transitive dependencies)"
+STUCK_COUNT=1
