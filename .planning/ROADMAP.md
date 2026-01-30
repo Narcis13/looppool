@@ -34,11 +34,11 @@ The v2.0 IDE delivers a web-based visual interface for browsing, editing, and un
   4. PUT /api/file?path=... writes content and returns success for valid paths
   5. Attempts to access paths outside allowed directories (../ attacks) return 403
   6. File changes in watched directories trigger SSE events within 1 second
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md — Security libs and file operation routes (path validation, tree builder, file API)
+- [ ] 07-02-PLAN.md — File watcher, SSE events, server entry point, npm script
 
 ### Phase 8: IDE Core
 **Goal**: Users can browse file tree and edit markdown files with syntax highlighting
@@ -119,7 +119,7 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10 -> 11
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 7. IDE Server | v2.0 | 0/2 | Not started | - |
+| 7. IDE Server | v2.0 | 0/2 | Planned | - |
 | 8. IDE Core | v2.0 | 0/3 | Not started | - |
 | 9. Command Viewer | v2.0 | 0/2 | Not started | - |
 | 10. State Panel | v2.0 | 0/2 | Not started | - |
