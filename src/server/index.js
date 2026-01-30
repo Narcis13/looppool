@@ -8,8 +8,24 @@ import { handleEvents } from './routes/events.js';
 import { handleStatic, isStaticPath } from './routes/static.js';
 import { handleStateGet, handleStatePut } from './routes/state.js';
 
+// Parse command line arguments
+const args = process.argv.slice(2);
+let configPort = 3456;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    const parsedPort = parseInt(args[i + 1], 10);
+    if (!isNaN(parsedPort) && parsedPort > 0 && parsedPort <= 65535) {
+      configPort = parsedPort;
+    } else {
+      console.error(`Invalid port number: ${args[i + 1]}`);
+      process.exit(1);
+    }
+  }
+}
+
 // Server configuration
-const PORT = 3456;
+const PORT = configPort;
 const HOST = '127.0.0.1'; // Bind to localhost only for security
 
 // Get project root directory
