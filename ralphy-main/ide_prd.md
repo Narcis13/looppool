@@ -116,7 +116,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Implement d3-force or cytoscape.js with hierarchical positioning
 - [x] Configure force simulation: charge -300, link distance by type
 - [x] Style command nodes as blue
-- [ ] Style workflow nodes as green
+- [x] Style workflow nodes as green
 - [ ] Style agent nodes as orange
 - [ ] Style template nodes as gray
 - [ ] Add node labels with file names
