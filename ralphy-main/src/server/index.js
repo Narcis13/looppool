@@ -66,6 +66,60 @@ const mimeTypes = {
 // SSE clients for file watching
 const sseClients = new Set();
 
+// Rate limiting configuration
+const rateLimits = {
+  '/api/tree': { requests: 30, window: 60000 }, // 30 requests per minute
+  '/api/file': { requests: 60, window: 60000 }, // 60 requests per minute  
+  '/api/state': { requests: 60, window: 60000 }, // 60 requests per minute
+  '/api/events': { requests: 10, window: 60000 }  // 10 connections per minute
+};
+
+// Rate limiter state
+const requestCounts = new Map();
+
+// Rate limiting middleware
+const checkRateLimit = (endpoint, clientId) => {
+  const limit = rateLimits[endpoint];
+  if (!limit) return true; // No limit configured
+  
+  const key = `${clientId}:${endpoint}`;
+  const now = Date.now();
+  const windowStart = now - limit.window;
+  
+  // Get or create request history
+  if (!requestCounts.has(key)) {
+    requestCounts.set(key, []);
+  }
+  
+  const requests = requestCounts.get(key);
+  
+  // Remove old requests outside the window
+  const validRequests = requests.filter(timestamp => timestamp > windowStart);
+  requestCounts.set(key, validRequests);
+  
+  // Check if limit exceeded
+  if (validRequests.length >= limit.requests) {
+    return false;
+  }
+  
+  // Add current request
+  validRequests.push(now);
+  return true;
+};
+
+// Cleanup old entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, requests] of requestCounts.entries()) {
+    const validRequests = requests.filter(timestamp => timestamp > now - 60000);
+    if (validRequests.length === 0) {
+      requestCounts.delete(key);
+    } else {
+      requestCounts.set(key, validRequests);
+    }
+  }
+}, 60000); // Clean up every minute
+
 // Debouncer for file changes
 let fileChangeTimeout;
 const debounceFileChange = (filePath) => {
@@ -102,6 +156,22 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Get client identifier (using IP address for localhost)
+  const clientId = req.socket.remoteAddress || 'unknown';
+  
+  // Check rate limit for API endpoints
+  if (pathname.startsWith('/api/')) {
+    const endpoint = pathname.split('?')[0]; // Remove query params for matching
+    if (!checkRateLimit(endpoint, clientId)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        error: 'Too many requests', 
+        message: 'Rate limit exceeded. Please try again later.' 
+      }));
+      return;
+    }
+  }
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);

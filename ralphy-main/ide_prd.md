@@ -27,7 +27,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Add --port CLI argument for configurable port
 - [x] Add --root CLI argument for configurable project root
 - [x] Add --no-open flag to skip browser auto-launch
-- [ ] Implement rate limiting for API endpoints
+- [x] Implement rate limiting for API endpoints
 - [ ] Add Content Security Policy headers
 
 ## Priority 2: Frontend Foundation
