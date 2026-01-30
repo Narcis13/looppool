@@ -84,6 +84,9 @@ class StatePanel {
     // Add collapsible planning document tree
     html += this.renderPlanningDocTree();
     
+    // Add resume work button
+    html += this.renderResumeWorkButton();
+    
     // Load initially expanded documents
     setTimeout(() => {
       this.planningDocs.forEach(doc => {
@@ -558,6 +561,19 @@ class StatePanel {
     return html;
   }
 
+  renderResumeWorkButton() {
+    return `
+      <div class="state-section quick-actions-section">
+        <h3>Quick Actions</h3>
+        <div class="quick-action-buttons">
+          <button class="quick-action-btn resume-work-btn" data-path="CONTINUE_HERE.md">
+            ▶️ Resume work
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   async loadDocumentContent(docPath) {
     const contentId = `doc-content-${docPath.replace('.', '-')}`;
     const contentDiv = document.getElementById(contentId);
@@ -640,6 +656,13 @@ class StatePanel {
       
       // Open document in editor
       if (e.target.classList.contains('open-doc')) {
+        const path = e.target.dataset.path;
+        const event = new CustomEvent('open-file', { detail: { path } });
+        document.dispatchEvent(event);
+      }
+      
+      // Resume work button
+      if (e.target.classList.contains('resume-work-btn')) {
         const path = e.target.dataset.path;
         const event = new CustomEvent('open-file', { detail: { path } });
         document.dispatchEvent(event);
@@ -1185,6 +1208,52 @@ const statePanelStyles = `
   font-style: italic;
   color: #999;
   margin-top: 5px;
+}
+
+.quick-actions-section {
+  background: #f0f9ff;
+  border: 1px solid #0284c7;
+}
+
+.quick-action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-action-btn {
+  padding: 8px 16px;
+  border: none;
+  background: #0284c7;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.quick-action-btn:hover {
+  background: #0369a1;
+}
+
+.quick-action-btn:active {
+  background: #075985;
+}
+
+.resume-work-btn {
+  background: #059669;
+}
+
+.resume-work-btn:hover {
+  background: #047857;
+}
+
+.resume-work-btn:active {
+  background: #065f46;
 }
 </style>
 `;
