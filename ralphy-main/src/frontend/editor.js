@@ -443,7 +443,98 @@ class MarkdownEditor {
     this.handleInput();
   }
 
+  showLoadingSkeleton(path) {
+    // Update status bar
+    this.container.querySelector('.file-path').textContent = path;
+    this.updateStatus('Loading...');
+    
+    // Show skeleton in editor
+    const editorWrapper = this.container.querySelector('.editor-wrapper');
+    const skeletonHTML = `
+      <div class="editor-skeleton skeleton-fade-in" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 10; padding: 10px;">
+        <div class="editor-skeleton-toolbar">
+          <div class="skeleton skeleton-button"></div>
+          <div class="skeleton skeleton-button"></div>
+          <div class="skeleton skeleton-button"></div>
+        </div>
+        ${this.generateEditorSkeletonLines(15)}
+      </div>
+    `;
+    
+    // Create skeleton overlay
+    const skeletonDiv = document.createElement('div');
+    skeletonDiv.innerHTML = skeletonHTML;
+    this.skeletonOverlay = skeletonDiv.firstElementChild;
+    editorWrapper.appendChild(this.skeletonOverlay);
+    
+    // Hide textarea and line numbers temporarily
+    this.textarea.style.opacity = '0';
+    this.lineNumbers.style.opacity = '0';
+  }
+  
+  generateEditorSkeletonLines(count) {
+    let html = '';
+    const widthClasses = ['full', 'long', 'medium', 'short'];
+    
+    for (let i = 0; i < count; i++) {
+      const widthClass = widthClasses[Math.floor(Math.random() * widthClasses.length)];
+      html += `<div class="skeleton editor-skeleton-line ${widthClass}"></div>`;
+      
+      // Add occasional blank lines for more realistic code appearance
+      if (Math.random() > 0.7) {
+        html += '<div style="height: 20px;"></div>';
+      }
+    }
+    
+    return html;
+  }
+  
+  showError(message) {
+    // Remove skeleton if present
+    this.hideLoadingSkeleton();
+    
+    // Show error in editor
+    const errorHTML = `
+      <div class="editor-error" style="padding: 40px; text-align: center; color: #f44336;">
+        <h3>Error Loading File</h3>
+        <p>${message}</p>
+      </div>
+    `;
+    
+    this.textarea.value = '';
+    this.updateLineNumbers();
+    this.updateStatus('Error');
+    
+    // Show error overlay
+    const editorWrapper = this.container.querySelector('.editor-wrapper');
+    const errorDiv = document.createElement('div');
+    errorDiv.innerHTML = errorHTML;
+    errorDiv.style.position = 'absolute';
+    errorDiv.style.top = '0';
+    errorDiv.style.left = '0';
+    errorDiv.style.right = '0';
+    errorDiv.style.bottom = '0';
+    errorDiv.style.background = '#fff';
+    errorDiv.style.zIndex = '10';
+    editorWrapper.appendChild(errorDiv);
+    
+    // Remove error after 5 seconds
+    setTimeout(() => errorDiv.remove(), 5000);
+  }
+  
+  hideLoadingSkeleton() {
+    if (this.skeletonOverlay) {
+      this.skeletonOverlay.remove();
+      this.skeletonOverlay = null;
+    }
+    
+    // Restore textarea and line numbers opacity
+    this.textarea.style.opacity = '1';
+    this.lineNumbers.style.opacity = '1';
+  }
+
   loadFile(path, content) {
+    this.hideLoadingSkeleton();
     this.currentFile = path;
     this.currentContent = content;
     this.textarea.value = content;

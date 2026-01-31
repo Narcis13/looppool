@@ -31,11 +31,50 @@ class StatePanel {
         <button class="refresh-btn" id="refresh-btn">⟳ Refresh</button>
       </div>
       <div class="state-panel-content">
-        <div class="state-loading">Loading state...</div>
+        ${this.renderStateSkeleton()}
       </div>
     `;
     
     document.getElementById('refresh-btn').addEventListener('click', () => this.loadState());
+  }
+  
+  renderStateSkeleton() {
+    return `
+      <div class="state-panel-skeleton skeleton-fade-in">
+        <!-- Planning docs skeleton -->
+        <div class="state-panel-skeleton-section">
+          <div class="skeleton state-panel-skeleton-header"></div>
+          <div class="skeleton skeleton-text medium"></div>
+          <div class="skeleton skeleton-text long"></div>
+          <div class="skeleton skeleton-text short" style="margin-top: 10px;"></div>
+        </div>
+        
+        <!-- Quick actions skeleton -->
+        <div class="state-panel-skeleton-section">
+          <div class="skeleton state-panel-skeleton-header" style="width: 40%;"></div>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <div class="skeleton skeleton-button"></div>
+            <div class="skeleton skeleton-button"></div>
+            <div class="skeleton skeleton-button"></div>
+          </div>
+        </div>
+        
+        <!-- Task completion skeleton -->
+        <div class="state-panel-skeleton-section">
+          <div class="skeleton state-panel-skeleton-header" style="width: 50%;"></div>
+          <div class="skeleton state-panel-skeleton-circular"></div>
+          <div class="skeleton skeleton-text medium" style="margin: 0 auto; width: 60%;"></div>
+        </div>
+        
+        <!-- Progress bars skeleton -->
+        <div class="state-panel-skeleton-section">
+          <div class="skeleton skeleton-text short"></div>
+          <div class="skeleton state-panel-skeleton-progress"></div>
+          <div class="skeleton skeleton-text short" style="margin-top: 12px;"></div>
+          <div class="skeleton state-panel-skeleton-progress"></div>
+        </div>
+      </div>
+    `;
   }
 
   async loadState() {

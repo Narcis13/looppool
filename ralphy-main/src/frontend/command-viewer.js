@@ -405,6 +405,9 @@ class CommandViewer {
   async loadCommand(filePath) {
     this.currentFile = filePath;
     
+    // Show skeleton loader
+    this.showCommandSkeleton();
+    
     try {
       const response = await fetch(`/api/file?path=${encodeURIComponent(filePath)}`);
       if (!response.ok) {
@@ -628,6 +631,45 @@ class CommandViewer {
         button.style.color = '';
       }, 2000);
     }
+  }
+  
+  showCommandSkeleton() {
+    const metadataCard = this.container.querySelector('.metadata-card');
+    metadataCard.innerHTML = `
+      <div class="command-viewer-skeleton skeleton-fade-in">
+        <div class="command-viewer-skeleton-card">
+          <div class="skeleton command-viewer-skeleton-title"></div>
+          <div class="skeleton skeleton-text long" style="margin-bottom: 20px;"></div>
+          
+          <div class="skeleton skeleton-text short" style="margin-bottom: 8px;"></div>
+          <div class="skeleton skeleton-text medium" style="margin-bottom: 20px;"></div>
+          
+          <div class="skeleton skeleton-text short" style="margin-bottom: 8px;"></div>
+          <div class="command-viewer-skeleton-badges">
+            <div class="skeleton command-viewer-skeleton-badge"></div>
+            <div class="skeleton command-viewer-skeleton-badge"></div>
+            <div class="skeleton command-viewer-skeleton-badge"></div>
+          </div>
+          
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div class="skeleton skeleton-button"></div>
+            <div class="skeleton skeleton-button"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Also show skeleton in raw content
+    this.container.querySelector('.raw-content').innerHTML = `
+      <div class="editor-skeleton skeleton-fade-in">
+        <div class="skeleton skeleton-text full"></div>
+        <div class="skeleton skeleton-text long"></div>
+        <div class="skeleton skeleton-text medium"></div>
+        <div class="skeleton skeleton-text long" style="margin-top: 16px;"></div>
+        <div class="skeleton skeleton-text full"></div>
+        <div class="skeleton skeleton-text short"></div>
+      </div>
+    `;
   }
 }
 

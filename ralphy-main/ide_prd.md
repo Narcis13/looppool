@@ -139,7 +139,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Add file content caching with ETag validation
 - [x] Create Cmd/Ctrl+P quick open file shortcut
 - [x] Build error boundary components with user-friendly messages
-- [ ] Create loading skeletons for async operations
+- [x] Create loading skeletons for async operations
 - [ ] Add telemetry-free analytics using localStorage
 - [ ] Build settings panel for editor preferences
 - [ ] Package as single executable using Node.js SEA

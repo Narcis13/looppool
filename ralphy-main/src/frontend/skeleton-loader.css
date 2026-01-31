@@ -1,0 +1,288 @@
+/* Skeleton Loader CSS - Reusable loading skeleton animations */
+
+/* Base skeleton element */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Animated shimmer effect */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Common skeleton shapes */
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.skeleton-text:last-child {
+  margin-bottom: 0;
+}
+
+.skeleton-title {
+  height: 24px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-button {
+  height: 32px;
+  width: 100px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.skeleton-square {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+}
+
+/* Width modifiers */
+.skeleton-text.short {
+  width: 40%;
+}
+
+.skeleton-text.medium {
+  width: 60%;
+}
+
+.skeleton-text.long {
+  width: 80%;
+}
+
+.skeleton-text.full {
+  width: 100%;
+}
+
+/* File tree skeleton loader */
+.file-tree-skeleton {
+  padding: 10px;
+}
+
+.file-tree-skeleton-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.file-tree-skeleton-arrow {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  border-radius: 2px;
+}
+
+.file-tree-skeleton-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.file-tree-skeleton-name {
+  flex: 1;
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* State panel skeleton loader */
+.state-panel-skeleton {
+  padding: 20px;
+}
+
+.state-panel-skeleton-section {
+  margin-bottom: 30px;
+}
+
+.state-panel-skeleton-header {
+  height: 28px;
+  width: 60%;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.state-panel-skeleton-progress {
+  height: 24px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.state-panel-skeleton-circular {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 16px auto;
+}
+
+/* Command viewer skeleton loader */
+.command-viewer-skeleton {
+  padding: 20px;
+}
+
+.command-viewer-skeleton-card {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+  margin-bottom: 16px;
+}
+
+.command-viewer-skeleton-title {
+  height: 24px;
+  width: 50%;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.command-viewer-skeleton-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.command-viewer-skeleton-badge {
+  height: 24px;
+  width: 80px;
+  border-radius: 12px;
+}
+
+/* Editor skeleton loader */
+.editor-skeleton {
+  padding: 20px;
+  height: 100%;
+  background: #fff;
+}
+
+.editor-skeleton-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.editor-skeleton-line {
+  height: 20px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+/* Graph viewer skeleton */
+.graph-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+}
+
+.graph-skeleton-container {
+  text-align: center;
+  max-width: 300px;
+}
+
+.graph-skeleton-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+}
+
+.graph-skeleton-message {
+  height: 20px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+/* Quick open skeleton */
+.quick-open-skeleton {
+  padding: 8px 0;
+}
+
+.quick-open-skeleton-item {
+  padding: 8px 20px;
+}
+
+.quick-open-skeleton-name {
+  height: 18px;
+  width: 70%;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+.quick-open-skeleton-path {
+  height: 14px;
+  width: 90%;
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+/* Utility classes */
+.skeleton-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.skeleton-fade-in {
+  animation: skeleton-fade-in 0.3s ease-in-out;
+}
+
+@keyframes skeleton-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: #424242;
+  }
+  
+  .skeleton::after {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}

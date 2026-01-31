@@ -112,6 +112,11 @@ class QuickOpen {
   }
   
   async loadFiles() {
+    // Show skeleton loader if dialog is open
+    if (this.isOpen) {
+      this.showLoadingSkeleton();
+    }
+    
     try {
       if (window.api) {
         const tree = await window.api.loadTree();
@@ -123,7 +128,32 @@ class QuickOpen {
       }
     } catch (error) {
       console.error('Failed to load files for quick open:', error);
+      if (this.isOpen) {
+        this.showError('Failed to load files');
+      }
     }
+  }
+  
+  showLoadingSkeleton() {
+    const skeletonHTML = `
+      <div class="quick-open-skeleton skeleton-fade-in">
+        ${Array(5).fill('').map((_, i) => `
+          <div class="quick-open-skeleton-item">
+            <div class="skeleton quick-open-skeleton-name"></div>
+            <div class="skeleton quick-open-skeleton-path"></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    this.list.innerHTML = skeletonHTML;
+  }
+  
+  showError(message) {
+    this.list.innerHTML = `
+      <div class="quick-open-empty" style="color: #f44336;">
+        ${message}
+      </div>
+    `;
   }
   
   flattenTree(node, basePath = '') {
@@ -158,12 +188,14 @@ class QuickOpen {
     this.isOpen = true;
     this.overlay.style.display = 'flex';
     this.input.value = '';
-    this.filterFiles();
     this.input.focus();
     
-    // Ensure files are loaded
+    // Show skeleton if no files loaded yet
     if (this.files.length === 0) {
+      this.showLoadingSkeleton();
       this.loadFiles();
+    } else {
+      this.filterFiles();
     }
   }
   

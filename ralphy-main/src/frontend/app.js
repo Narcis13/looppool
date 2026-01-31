@@ -434,6 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('Opening file:', path);
     
+    // Show skeleton loader in editor while loading
+    if (window.editor) {
+      window.editor.showLoadingSkeleton(path);
+    }
+    
     try {
       // Load the file content
       const content = await api.loadFile(path);
@@ -444,6 +449,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       console.error('Failed to open file:', error);
+      if (window.editor) {
+        window.editor.showError(`Failed to load file: ${error.message}`);
+      }
       alert(`Failed to open file: ${error.message}`);
     }
   });

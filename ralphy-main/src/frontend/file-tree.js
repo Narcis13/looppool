@@ -445,7 +445,31 @@ class FileTree {
   }
   
   showLoading() {
-    this.content.innerHTML = '<div class="loading">Loading files...</div>';
+    // Show skeleton loader for file tree
+    const skeletonHTML = `
+      <div class="file-tree-skeleton skeleton-fade-in">
+        ${this.generateTreeSkeletonItems(8)}
+      </div>
+    `;
+    this.content.innerHTML = skeletonHTML;
+  }
+  
+  generateTreeSkeletonItems(count) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      const level = Math.floor(Math.random() * 3); // Random indentation level
+      const hasArrow = level > 0 && Math.random() > 0.5;
+      const widthClass = ['short', 'medium', 'long'][Math.floor(Math.random() * 3)];
+      
+      html += `
+        <div class="file-tree-skeleton-item" style="padding-left: ${level * 16 + 8}px;">
+          ${hasArrow ? '<div class="skeleton file-tree-skeleton-arrow"></div>' : ''}
+          <div class="skeleton file-tree-skeleton-icon"></div>
+          <div class="skeleton file-tree-skeleton-name ${widthClass}"></div>
+        </div>
+      `;
+    }
+    return html;
   }
   
   hideLoading() {
