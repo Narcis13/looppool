@@ -1,5 +1,23 @@
 # Ralphy Progress Log
 
+## 2026-01-31 - Priority 6: Graph Visualization - Create type filter checkboxes for node visibility
+- Improved the existing type filter implementation in graph-viewer.js
+- Replaced CSS display style approach with proper SVG visibility attribute for better compatibility
+- Used setAttribute('visibility', 'hidden') and removeAttribute('visibility') for SVG elements
+- Added activeFilters property to store current filter state
+- Implemented proper node position fixing when filtered (simNode.fx/fy = position)
+- Added dragging state tracking (_isDragging) to prevent unfixing nodes during drag
+- Created updateNodeCountDisplay() method showing "(visible/total nodes)" in header
+- Added node count span to graph header HTML
+- Implemented smooth repositioning with lower alpha (0.3) when filters change
+- Added CSS classes 'filtered-out' for better styling control
+- Edges automatically hide when either source or target node is filtered
+- Created comprehensive test suite test-type-filters-simple.js with 5 tests
+- All tests passed: filter checkboxes exist, SVG visibility used, node count display, event listeners, edge filtering
+- Feature enables users to show/hide nodes by type (commands, workflows, agents, templates)
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
+
 ## 2026-01-30 - Priority 6: Graph Visualization - Add double-click to open file in editor
 - Verified that onNodeDoubleClick method was already implemented in graph-viewer.js (lines 705-710)
 - Method dispatches 'open-file' CustomEvent with node.path in event detail

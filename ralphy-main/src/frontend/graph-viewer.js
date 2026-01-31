@@ -226,7 +226,7 @@ class GraphViewer {
     this.container.innerHTML = `
       <div class="graph-viewer">
         <div class="graph-header">
-          <h2>System Graph</h2>
+          <h2>System Graph <span class="node-count"></span></h2>
           <div class="graph-filters">
             <label><input type="checkbox" class="filter-commands" checked> Commands</label>
             <label><input type="checkbox" class="filter-workflows" checked> Workflows</label>
@@ -415,8 +415,83 @@ class GraphViewer {
   }
 
   updateFilters() {
-    // Implementation for filter updates
-    console.log('Filters updated');
+    // Get filter states
+    const filters = {
+      command: this.container.querySelector('.filter-commands').checked,
+      workflow: this.container.querySelector('.filter-workflows').checked,
+      agent: this.container.querySelector('.filter-agents').checked,
+      template: this.container.querySelector('.filter-templates').checked
+    };
+
+    // Store filter state
+    this.activeFilters = filters;
+
+    // Apply filters to nodes
+    this.nodeElements?.forEach(({ element, data }) => {
+      const isVisible = filters[data.type];
+      
+      // Use SVG visibility attribute instead of display style
+      if (isVisible) {
+        element.removeAttribute('visibility');
+        element.classList.remove('filtered-out');
+      } else {
+        element.setAttribute('visibility', 'hidden');
+        element.classList.add('filtered-out');
+      }
+      
+      // Update simulation node to stop physics on hidden nodes
+      const simNode = this.simulation?.getNodeById(data.id);
+      if (simNode) {
+        if (!isVisible) {
+          // Fix position when hiding
+          simNode.fx = simNode.x;
+          simNode.fy = simNode.y;
+        } else {
+          // Unfix position when showing (unless being dragged)
+          if (!simNode._isDragging) {
+            simNode.fx = null;
+            simNode.fy = null;
+          }
+        }
+      }
+    });
+
+    // Apply filters to edges (hide edges where source or target is hidden)
+    this.edgeElements?.forEach(({ element, data }) => {
+      const sourceNode = this.nodeMap.get(data.source);
+      const targetNode = this.nodeMap.get(data.target);
+      const isVisible = filters[sourceNode?.type] && filters[targetNode?.type];
+      
+      // Use SVG visibility attribute
+      if (isVisible) {
+        element.removeAttribute('visibility');
+        element.classList.remove('filtered-out');
+      } else {
+        element.setAttribute('visibility', 'hidden');
+        element.classList.add('filtered-out');
+      }
+    });
+
+    // Update visible node count display
+    const visibleNodes = this.nodeElements?.filter(({ data }) => filters[data.type]).length || 0;
+    const totalNodes = this.nodeElements?.length || 0;
+    this.updateNodeCountDisplay(visibleNodes, totalNodes);
+
+    // Restart simulation with lower alpha for smooth repositioning
+    if (this.simulation && visibleNodes > 0) {
+      this.simulation.options.alpha = 0.3;
+      this.simulation.start();
+    }
+  }
+
+  updateNodeCountDisplay(visible, total) {
+    const countElement = this.container.querySelector('.node-count');
+    if (countElement) {
+      countElement.textContent = `(${visible}/${total} nodes)`;
+      countElement.style.fontSize = '14px';
+      countElement.style.color = '#666';
+      countElement.style.fontWeight = 'normal';
+    }
   }
 
   searchNodes(query) {
@@ -530,6 +605,12 @@ class GraphViewer {
     this.nodeElements = nodes;
     this.edgeElements = edges;
     
+    // Update nodeMap for filter lookups
+    this.nodeMap.clear();
+    graphData.nodes.forEach(node => {
+      this.nodeMap.set(node.id, node);
+    });
+    
     // Set up zoom and pan
     this.setupZoomPan(svg);
     
@@ -557,6 +638,9 @@ class GraphViewer {
     });
     
     this.simulation.start();
+    
+    // Initialize filters and node count
+    this.updateFilters();
   }
 
   getNodeColor(type) {
@@ -578,6 +662,12 @@ class GraphViewer {
       startX = e.clientX;
       startY = e.clientY;
       e.preventDefault();
+      
+      // Mark node as being dragged
+      const simNode = this.simulation.getNodeById(node.id);
+      if (simNode) {
+        simNode._isDragging = true;
+      }
     });
     
     document.addEventListener('mousemove', (e) => {
@@ -601,8 +691,12 @@ class GraphViewer {
         isDragging = false;
         const simNode = this.simulation.getNodeById(node.id);
         if (simNode) {
-          simNode.fx = null;
-          simNode.fy = null;
+          simNode._isDragging = false;
+          // Only unfix if node is visible
+          if (!this.activeFilters || this.activeFilters[node.type]) {
+            simNode.fx = null;
+            simNode.fy = null;
+          }
         }
       }
     });
