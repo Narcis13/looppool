@@ -158,6 +158,25 @@
       z-index: 1000;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+    
+    .node[style*="display: none"] {
+      display: none !important;
+    }
+    
+    .edge[style*="display: none"] {
+      display: none !important;
+    }
+    
+    /* Search filtered nodes visual feedback */
+    .node.search-filtered {
+      opacity: 0.3;
+    }
+    
+    .graph-search:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
   </style>
 </head>
 <body>

@@ -1,5 +1,24 @@
 # Ralphy Progress Log
 
+## 2026-01-31 - Priority 6: Graph Visualization - Add search/filter by node name
+- Implemented searchNodes() method in graph-viewer.js to filter nodes by name
+- Search is case-insensitive and supports partial matching
+- Search respects active type filters - nodes must match both search and type filter
+- Empty search shows all nodes respecting current type filters
+- Implemented edge visibility logic - edges hide when either connected node is filtered
+- Added search state tracking in conjunction with type filters
+- Updated updateFilters() method to respect current search query when type filters change
+- Search input triggers filtering on every keystroke via input event
+- Nodes get fixed position when hidden to prevent physics simulation issues
+- Added CSS classes for visual feedback: search-filtered for opacity reduction
+- Enhanced search input focus styles with blue border and box shadow
+- Created comprehensive test suite test-search-nodes-simple.js with 10 tests
+- All tests passed: method implementation, case sensitivity, filter integration, edge handling
+- Feature enables users to quickly find specific nodes by typing in search box
+- Search combines with type filters for powerful filtering capabilities
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
+
 ## 2026-01-31 - Priority 6: Graph Visualization - Create type filter checkboxes for node visibility
 - Improved the existing type filter implementation in graph-viewer.js
 - Replaced CSS display style approach with proper SVG visibility attribute for better compatibility

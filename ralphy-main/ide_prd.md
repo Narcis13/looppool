@@ -127,7 +127,7 @@ A minimalist web-based IDE for managing the looppool-cc meta-prompting system.
 - [x] Add double-click to open file in editor
 - [x] Add hover for node details tooltip
 - [x] Create type filter checkboxes for node visibility
-- [ ] Add search/filter by node name
+- [x] Add search/filter by node name
 - [ ] Ensure performant rendering for 50+ nodes
 - [ ] Optimize for 100+ nodes
 - [ ] Add canvas fallback for 200+ nodes if SVG degrades

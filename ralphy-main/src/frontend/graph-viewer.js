@@ -425,10 +425,16 @@ class GraphViewer {
 
     // Store filter state
     this.activeFilters = filters;
+    
+    // Get current search query
+    const searchInput = this.container.querySelector('.graph-search');
+    const searchQuery = searchInput?.value?.toLowerCase().trim() || '';
 
     // Apply filters to nodes
     this.nodeElements?.forEach(({ element, data }) => {
-      const isVisible = filters[data.type];
+      const typeFilterActive = filters[data.type];
+      const nameMatches = !searchQuery || data.name.toLowerCase().includes(searchQuery);
+      const isVisible = typeFilterActive && nameMatches;
       
       // Use SVG visibility attribute instead of display style
       if (isVisible) {
@@ -495,8 +501,83 @@ class GraphViewer {
   }
 
   searchNodes(query) {
-    // Implementation for node search
-    console.log('Searching for:', query);
+    // Normalize query for case-insensitive search
+    const searchQuery = query.toLowerCase().trim();
+    
+    // If query is empty, show all nodes (respecting filters)
+    if (!searchQuery) {
+      this.updateFilters();
+      return;
+    }
+    
+    // Apply search filter to nodes
+    this.nodeElements?.forEach(({ element, data }) => {
+      // Check if node type is filtered out
+      const typeFilterActive = this.activeFilters && this.activeFilters[data.type];
+      
+      // Check if node name matches search query
+      const nameMatches = data.name.toLowerCase().includes(searchQuery);
+      
+      // Node is visible if it matches search AND type filter is active
+      const isVisible = nameMatches && typeFilterActive;
+      
+      // Apply visibility
+      if (isVisible) {
+        element.removeAttribute('visibility');
+        element.classList.remove('filtered-out');
+        element.classList.remove('search-filtered');
+      } else {
+        element.setAttribute('visibility', 'hidden');
+        element.classList.add('filtered-out');
+        if (!nameMatches) {
+          element.classList.add('search-filtered');
+        }
+      }
+      
+      // Update simulation node
+      const simNode = this.simulation?.getNodeById(data.id);
+      if (simNode) {
+        if (!isVisible) {
+          // Fix position when hiding
+          simNode.fx = simNode.x;
+          simNode.fy = simNode.y;
+        } else {
+          // Unfix position when showing (unless being dragged)
+          if (!simNode._isDragging) {
+            simNode.fx = null;
+            simNode.fy = null;
+          }
+        }
+      }
+    });
+    
+    // Update edge visibility based on connected nodes
+    this.edgeElements?.forEach(({ element, data }) => {
+      const sourceElement = this.nodeElements?.find(n => n.data.id === data.source);
+      const targetElement = this.nodeElements?.find(n => n.data.id === data.target);
+      
+      const sourceVisible = sourceElement && !sourceElement.element.hasAttribute('visibility');
+      const targetVisible = targetElement && !targetElement.element.hasAttribute('visibility');
+      
+      if (sourceVisible && targetVisible) {
+        element.removeAttribute('visibility');
+      } else {
+        element.setAttribute('visibility', 'hidden');
+      }
+    });
+    
+    // Update node count display
+    const visibleNodes = this.nodeElements?.filter(({ element }) => 
+      !element.hasAttribute('visibility')
+    ).length || 0;
+    const totalNodes = this.nodeElements?.length || 0;
+    this.updateNodeCountDisplay(visibleNodes, totalNodes);
+    
+    // Restart simulation if needed
+    if (this.simulation && visibleNodes > 0) {
+      this.simulation.options.alpha = 0.3;
+      this.simulation.start();
+    }
   }
 
   async loadGraph() {
