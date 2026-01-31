@@ -1,5 +1,52 @@
 # Ralphy Progress Log
 
+## 2026-01-31 - Priority 7: Polish and Performance - Add file content caching with ETag validation
+- Implemented comprehensive ETag-based caching system for file content API endpoint
+- Added crypto import to server for potential future MD5 hashing (currently using size + mtime)
+- Created generateETag() function that generates ETags based on file size and modification time
+  - Format: "size-mtime" (e.g., "1234-1706877600000")
+  - Returns both etag and stats for efficiency
+  - Handles errors gracefully returning null values
+- Implemented server-side file cache using Map data structure:
+  - CACHE_MAX_SIZE: 50 files maximum
+  - CACHE_MAX_AGE: 300000ms (5 minutes)
+  - Automatic cleanup runs every minute via setInterval
+  - LRU-style eviction when cache is full (removes oldest entry)
+- Enhanced /api/file GET endpoint with caching logic:
+  - Generates ETag for requested file using stats
+  - Checks If-None-Match header from client
+  - Returns 304 Not Modified if ETags match (no body sent)
+  - Serves from cache if available and ETag matches
+  - Reads file and updates cache for cache misses
+  - Includes ETag and Cache-Control headers in response
+- Updated /api/file PUT endpoint to invalidate cache on writes
+- Created frontend ETagCache class for client-side ETag tracking:
+  - Methods: get(), set(), delete(), clear()
+  - Integrated into OperationQueue for automatic management
+- Enhanced frontend loadFile operation:
+  - Checks cached ETag and sends If-None-Match header
+  - Handles 304 responses gracefully
+  - Stores ETags from response headers
+  - Returns object with cached flag and content
+  - Maintains backward compatibility by returning just content
+- Updated frontend saveFile operation to invalidate ETag cache
+- Created comprehensive test suite test-etag-simple.mjs
+- All tests passed verifying:
+  - Server imports and functions
+  - Cache implementation and configuration
+  - If-None-Match header handling
+  - ETag and Cache-Control headers in responses
+  - Cache invalidation on writes
+  - Frontend ETag management
+- Benefits of implementation:
+  - Reduces bandwidth usage for unchanged files
+  - Improves load times by avoiding redundant transfers
+  - Server-side cache reduces disk I/O
+  - Client-side cache enables efficient polling
+  - Automatic cache management prevents memory leaks
+- Linting passed (no linting configured but command succeeds)
+- Updated ide_prd.md to mark task as complete
+
 ## 2026-01-31 - Priority 7: Polish and Performance - Implement request debouncing for file tree operations
 - Created FileTree class in src/frontend/file-tree.js with comprehensive debouncing implementation
 - Added multiple debouncing mechanisms for different operations:

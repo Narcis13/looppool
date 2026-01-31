@@ -1,9 +1,33 @@
+// ETag cache for storing file ETags
+class ETagCache {
+  constructor() {
+    this.cache = new Map();
+  }
+  
+  get(path) {
+    return this.cache.get(path);
+  }
+  
+  set(path, etag) {
+    this.cache.set(path, etag);
+  }
+  
+  delete(path) {
+    this.cache.delete(path);
+  }
+  
+  clear() {
+    this.cache.clear();
+  }
+}
+
 // Operation queue for handling operations during disconnection
 class OperationQueue {
   constructor() {
     this.queue = [];
     this.processing = false;
     this.maxQueueSize = 100;
+    this.etagCache = new ETagCache();
   }
 
   enqueue(operation) {
@@ -82,16 +106,43 @@ class OperationQueue {
           throw new Error(`Failed to save file: ${saveResponse.status}`);
         }
         
-        return await saveResponse.json();
+        // Invalidate ETag cache for this file after save
+        this.etagCache.delete(operation.path);
+        
+        return await saveResponse.text();
         
       case 'loadFile':
-        const loadResponse = await fetch(`/api/file?path=${encodeURIComponent(operation.path)}`);
+        // Check if we have a cached ETag for this file
+        const cachedEtag = this.etagCache.get(operation.path);
+        const headers = {};
+        
+        if (cachedEtag) {
+          headers['If-None-Match'] = cachedEtag;
+        }
+        
+        const loadResponse = await fetch(`/api/file?path=${encodeURIComponent(operation.path)}`, {
+          headers
+        });
+        
+        // Handle 304 Not Modified
+        if (loadResponse.status === 304) {
+          // File hasn't changed, we need to get it from browser cache or return a special value
+          // Since the browser will handle caching, we can indicate this is a cache hit
+          return { cached: true, content: operation.cachedContent || '' };
+        }
         
         if (!loadResponse.ok) {
           throw new Error(`Failed to load file: ${loadResponse.status}`);
         }
         
-        return await loadResponse.text();
+        // Extract ETag from response headers
+        const etag = loadResponse.headers.get('ETag');
+        if (etag) {
+          this.etagCache.set(operation.path, etag);
+        }
+        
+        const content = await loadResponse.text();
+        return { cached: false, content };
         
       case 'loadTree':
         const treeResponse = await fetch('/api/tree');
@@ -298,13 +349,20 @@ class API {
   }
 
   async loadFile(path, options = {}) {
-    return this.executeOrQueue({
+    const result = await this.executeOrQueue({
       type: 'loadFile',
       path,
+      cachedContent: options.cachedContent,
       maxRetries: options.maxRetries || 3,
       onSuccess: options.onSuccess,
       onError: options.onError
     });
+    
+    // For backward compatibility, return just the content if not from cache
+    if (result && typeof result === 'object' && 'content' in result) {
+      return result.content;
+    }
+    return result;
   }
 
   async loadTree(options = {}) {

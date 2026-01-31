@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import crypto from 'crypto';
 
 const execAsync = promisify(exec);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +52,34 @@ const validatePath = (requestedPath) => {
   const resolved = path.resolve(projectRoot, requestedPath);
   return resolved.startsWith(projectRoot) ? resolved : null;
 };
+
+// Generate ETag for file content
+const generateETag = async (filePath) => {
+  try {
+    const stats = await fs.promises.stat(filePath);
+    // Use file size and modification time for ETag
+    // This is faster than reading content for MD5
+    const etag = `"${stats.size}-${stats.mtime.getTime()}"`;
+    return { etag, stats };
+  } catch (error) {
+    return { etag: null, stats: null };
+  }
+};
+
+// Cache for file ETags and content
+const fileCache = new Map();
+const CACHE_MAX_SIZE = 50; // Maximum number of files to cache
+const CACHE_MAX_AGE = 300000; // 5 minutes in milliseconds
+
+// Clean up old cache entries
+setInterval(() => {
+  const now = Date.now();
+  for (const [path, entry] of fileCache.entries()) {
+    if (now - entry.timestamp > CACHE_MAX_AGE) {
+      fileCache.delete(path);
+    }
+  }
+}, 60000); // Check every minute
 
 // MIME type mapping
 const mimeTypes = {
@@ -224,9 +253,64 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'GET') {
       try {
-        const stream = fs.createReadStream(filePath);
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        stream.pipe(res);
+        // Generate ETag for the file
+        const { etag, stats } = await generateETag(filePath);
+        
+        if (!etag) {
+          res.writeHead(404);
+          res.end('File not found');
+          return;
+        }
+
+        // Check If-None-Match header
+        const ifNoneMatch = req.headers['if-none-match'];
+        if (ifNoneMatch && ifNoneMatch === etag) {
+          // File hasn't changed, return 304 Not Modified
+          res.writeHead(304, {
+            'ETag': etag,
+            'Cache-Control': 'private, must-revalidate'
+          });
+          res.end();
+          return;
+        }
+
+        // Check cache
+        const cached = fileCache.get(filePath);
+        if (cached && cached.etag === etag) {
+          // Serve from cache
+          res.writeHead(200, {
+            'Content-Type': 'text/plain',
+            'ETag': etag,
+            'Cache-Control': 'private, must-revalidate',
+            'Content-Length': Buffer.byteLength(cached.content)
+          });
+          res.end(cached.content);
+          return;
+        }
+
+        // Read file and update cache
+        const content = await fs.promises.readFile(filePath, 'utf8');
+        
+        // Update cache (with size limit)
+        if (fileCache.size >= CACHE_MAX_SIZE) {
+          // Remove oldest entry
+          const firstKey = fileCache.keys().next().value;
+          fileCache.delete(firstKey);
+        }
+        
+        fileCache.set(filePath, {
+          content,
+          etag,
+          timestamp: Date.now()
+        });
+
+        res.writeHead(200, {
+          'Content-Type': 'text/plain',
+          'ETag': etag,
+          'Cache-Control': 'private, must-revalidate',
+          'Content-Length': Buffer.byteLength(content)
+        });
+        res.end(content);
       } catch (error) {
         res.writeHead(404);
         res.end('File not found');
@@ -239,6 +323,10 @@ const server = http.createServer(async (req, res) => {
           const tempPath = filePath + '.tmp';
           await fs.promises.writeFile(tempPath, body);
           await fs.promises.rename(tempPath, filePath);
+          
+          // Invalidate cache after write
+          fileCache.delete(filePath);
+          
           res.writeHead(200);
           res.end('OK');
         } catch (error) {
