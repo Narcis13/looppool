@@ -6,11 +6,16 @@
   "scripts": {
     "ide": "node src/server/index.js",
     "test": "node test-cli-args.js",
-    "lint": "echo 'No linting configured yet'"
+    "lint": "echo 'No linting configured yet'",
+    "build:sea": "node scripts/build-sea.js",
+    "build": "npm run build:sea"
   },
   "engines": {
     "node": ">=18"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "postject": "^1.0.0-alpha.6"
+  }
 }
