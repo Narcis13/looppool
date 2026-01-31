@@ -73,8 +73,14 @@ class ForceSimulation {
       return;
     }
     
+    // Performance optimization: skip force calculations for large graphs at low alpha
+    const nodeCount = this.nodes.length;
+    const skipExpensiveForces = nodeCount > 100 && this.options.alpha < 0.3;
+    
     // Apply forces
-    this.applyForceCharge();
+    if (!skipExpensiveForces) {
+      this.applyForceCharge();
+    }
     this.applyForceLink();
     this.applyForceCenter();
     
@@ -112,32 +118,75 @@ class ForceSimulation {
   
   applyForceCharge() {
     const charge = this.options.charge;
+    const theta = 0.9; // Barnes-Hut approximation parameter
+    const maxDistance = 300; // Ignore nodes beyond this distance for performance
     
-    for (let i = 0; i < this.nodes.length; i++) {
-      for (let j = i + 1; j < this.nodes.length; j++) {
+    // Use spatial optimization for large graphs
+    if (this.nodes.length > 50) {
+      // Apply Barnes-Hut-like optimization
+      for (let i = 0; i < this.nodes.length; i++) {
         const nodeA = this.nodes[i];
-        const nodeB = this.nodes[j];
         
-        const dx = nodeB.x - nodeA.x;
-        const dy = nodeB.y - nodeA.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance > 0) {
-          const force = charge * this.options.alpha / (distance * distance);
-          const fx = force * dx / distance;
-          const fy = force * dy / distance;
+        for (let j = i + 1; j < this.nodes.length; j++) {
+          const nodeB = this.nodes[j];
           
-          if (nodeA.fx === null) {
-            nodeA.vx -= fx;
+          const dx = nodeB.x - nodeA.x;
+          const dy = nodeB.y - nodeA.y;
+          const distanceSq = dx * dx + dy * dy;
+          
+          // Skip if nodes are too far apart (performance optimization)
+          if (distanceSq > maxDistance * maxDistance) continue;
+          
+          const distance = Math.sqrt(distanceSq);
+          
+          if (distance > 0) {
+            const force = charge * this.options.alpha / distanceSq;
+            const fx = force * dx / distance;
+            const fy = force * dy / distance;
+            
+            if (nodeA.fx === null) {
+              nodeA.vx -= fx;
+            }
+            if (nodeA.fy === null) {
+              nodeA.vy -= fy;
+            }
+            if (nodeB.fx === null) {
+              nodeB.vx += fx;
+            }
+            if (nodeB.fy === null) {
+              nodeB.vy += fy;
+            }
           }
-          if (nodeA.fy === null) {
-            nodeA.vy -= fy;
-          }
-          if (nodeB.fx === null) {
-            nodeB.vx += fx;
-          }
-          if (nodeB.fy === null) {
-            nodeB.vy += fy;
+        }
+      }
+    } else {
+      // Use original implementation for smaller graphs
+      for (let i = 0; i < this.nodes.length; i++) {
+        for (let j = i + 1; j < this.nodes.length; j++) {
+          const nodeA = this.nodes[i];
+          const nodeB = this.nodes[j];
+          
+          const dx = nodeB.x - nodeA.x;
+          const dy = nodeB.y - nodeA.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance > 0) {
+            const force = charge * this.options.alpha / (distance * distance);
+            const fx = force * dx / distance;
+            const fy = force * dy / distance;
+            
+            if (nodeA.fx === null) {
+              nodeA.vx -= fx;
+            }
+            if (nodeA.fy === null) {
+              nodeA.vy -= fy;
+            }
+            if (nodeB.fx === null) {
+              nodeB.vx += fx;
+            }
+            if (nodeB.fy === null) {
+              nodeB.vy += fy;
+            }
           }
         }
       }
@@ -219,6 +268,16 @@ class GraphViewer {
     this.nodes = [];
     this.edges = [];
     this.nodeMap = new Map();
+    
+    // Performance monitoring
+    this.performanceStats = {
+      nodeCount: 0,
+      edgeCount: 0,
+      lastRenderTime: 0,
+      avgRenderTime: 0,
+      renderTimes: []
+    };
+    
     this.setupHTML();
   }
 
@@ -614,8 +673,9 @@ class GraphViewer {
     defs.appendChild(marker);
     svg.appendChild(defs);
     
-    // Initialize force simulation
-    this.simulation = new ForceSimulation(graphData.nodes, graphData.edges, {
+    // Initialize force simulation with performance optimizations
+    const nodeCount = graphData.nodes.length;
+    const performanceOptions = {
       width: rect.width,
       height: rect.height,
       charge: -300,
@@ -625,8 +685,14 @@ class GraphViewer {
         if (edge.type === 'spawns') return 120;
         if (edge.type === 'uses') return 100;
         return 100;
-      }
-    });
+      },
+      // Performance: reduce alpha decay for large graphs (runs fewer iterations)
+      alphaDecay: nodeCount > 50 ? 0.05 : 0.0228,
+      // Performance: increase alpha min to stop simulation earlier for large graphs
+      alphaMin: nodeCount > 100 ? 0.01 : 0.001
+    };
+    
+    this.simulation = new ForceSimulation(graphData.nodes, graphData.edges, performanceOptions);
     
     // Create edge elements
     const edgeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -686,6 +752,10 @@ class GraphViewer {
     this.nodeElements = nodes;
     this.edgeElements = edges;
     
+    // Update performance stats
+    this.performanceStats.nodeCount = nodes.length;
+    this.performanceStats.edgeCount = edges.length;
+    
     // Update nodeMap for filter lookups
     this.nodeMap.clear();
     graphData.nodes.forEach(node => {
@@ -695,17 +765,60 @@ class GraphViewer {
     // Set up zoom and pan
     this.setupZoomPan(svg);
     
-    // Run simulation
-    this.simulation.on('tick', () => {
+    // Performance optimization: batch DOM updates and add viewport culling
+    let lastUpdateTime = 0;
+    const updateInterval = 16; // 60fps max
+    let pendingUpdate = false;
+    
+    // Get viewport bounds for culling
+    const getViewportBounds = () => {
+      const zoomGroup = svg.querySelector('.zoom-group');
+      if (!zoomGroup || !this.transform) {
+        return { left: -100, top: -100, right: rect.width + 100, bottom: rect.height + 100 };
+      }
+      
+      const scale = this.transform.scale;
+      const tx = this.transform.translateX;
+      const ty = this.transform.translateY;
+      
+      return {
+        left: -tx / scale - 100,
+        top: -ty / scale - 100,
+        right: (-tx + rect.width) / scale + 100,
+        bottom: (-ty + rect.height) / scale + 100
+      };
+    };
+    
+    // Check if node is in viewport
+    const isInViewport = (node, bounds) => {
+      return node.x >= bounds.left && node.x <= bounds.right &&
+             node.y >= bounds.top && node.y <= bounds.bottom;
+    };
+    
+    // Batch DOM updates
+    const updateDOM = () => {
+      const startTime = performance.now();
+      const bounds = getViewportBounds();
+      const nodeCount = nodes.length;
+      let visibleNodes = 0;
+      let visibleEdges = 0;
+      
       // Update edge positions
       edges.forEach(({ element, data }) => {
         const source = this.simulation.getNodeById(data.source);
         const target = this.simulation.getNodeById(data.target);
         if (source && target) {
-          element.setAttribute('x1', source.x);
-          element.setAttribute('y1', source.y);
-          element.setAttribute('x2', target.x);
-          element.setAttribute('y2', target.y);
+          // Only update if at least one endpoint is in viewport
+          if (isInViewport(source, bounds) || isInViewport(target, bounds)) {
+            element.setAttribute('x1', source.x);
+            element.setAttribute('y1', source.y);
+            element.setAttribute('x2', target.x);
+            element.setAttribute('y2', target.y);
+            element.style.display = '';
+            visibleEdges++;
+          } else {
+            element.style.display = 'none';
+          }
         }
       });
       
@@ -713,9 +826,52 @@ class GraphViewer {
       nodes.forEach(({ element, data }) => {
         const simNode = this.simulation.getNodeById(data.id);
         if (simNode) {
-          element.setAttribute('transform', `translate(${simNode.x}, ${simNode.y})`);
+          if (isInViewport(simNode, bounds)) {
+            element.setAttribute('transform', `translate(${simNode.x}, ${simNode.y})`);
+            element.style.display = '';
+            visibleNodes++;
+            
+            // Performance: hide text labels for large graphs when zoomed out
+            const textElement = element.querySelector('text');
+            if (textElement && nodeCount > 50) {
+              textElement.style.display = this.transform.scale < 0.5 ? 'none' : '';
+            }
+          } else {
+            element.style.display = 'none';
+          }
         }
       });
+      
+      // Track performance
+      const renderTime = performance.now() - startTime;
+      this.performanceStats.lastRenderTime = renderTime;
+      this.performanceStats.renderTimes.push(renderTime);
+      
+      // Keep only last 60 samples for average calculation
+      if (this.performanceStats.renderTimes.length > 60) {
+        this.performanceStats.renderTimes.shift();
+      }
+      
+      // Calculate average render time
+      const sum = this.performanceStats.renderTimes.reduce((a, b) => a + b, 0);
+      this.performanceStats.avgRenderTime = sum / this.performanceStats.renderTimes.length;
+      
+      // Log performance warning if render time exceeds 16ms (60fps)
+      if (nodeCount > 50 && renderTime > 16) {
+        console.warn(`Graph render time: ${renderTime.toFixed(2)}ms for ${visibleNodes}/${nodeCount} nodes, ${visibleEdges}/${edges.length} edges`);
+      }
+      
+      pendingUpdate = false;
+    };
+    
+    // Run simulation with batched updates
+    this.simulation.on('tick', () => {
+      const now = performance.now();
+      if (!pendingUpdate && now - lastUpdateTime >= updateInterval) {
+        lastUpdateTime = now;
+        pendingUpdate = true;
+        requestAnimationFrame(updateDOM);
+      }
     });
     
     this.simulation.start();
