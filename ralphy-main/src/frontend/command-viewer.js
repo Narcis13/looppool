@@ -26,19 +26,19 @@ class CommandViewer {
 
   init() {
     this.container.innerHTML = `
-      <div class="command-viewer">
-        <div class="command-tabs">
-          <button class="command-tab active" data-tab="metadata">Metadata</button>
-          <button class="command-tab" data-tab="raw">Raw Content</button>
+      <div class="command-viewer" role="tablist" aria-label="Command viewer tabs">
+        <div class="command-tabs" role="tablist">
+          <button class="command-tab active" data-tab="metadata" role="tab" aria-selected="true" aria-controls="metadata-panel" id="metadata-tab">Metadata</button>
+          <button class="command-tab" data-tab="raw" role="tab" aria-selected="false" aria-controls="raw-panel" id="raw-tab">Raw Content</button>
         </div>
         <div class="command-content">
-          <div class="command-panel metadata-panel active" data-panel="metadata">
+          <div class="command-panel metadata-panel active" data-panel="metadata" role="tabpanel" aria-labelledby="metadata-tab" id="metadata-panel">
             <div class="metadata-card">
-              <div class="metadata-loading">Select a command file to view metadata</div>
+              <div class="metadata-loading" role="status" aria-live="polite">Select a command file to view metadata</div>
             </div>
           </div>
-          <div class="command-panel raw-panel" data-panel="raw">
-            <pre class="raw-content"></pre>
+          <div class="command-panel raw-panel" data-panel="raw" role="tabpanel" aria-labelledby="raw-tab" id="raw-panel">
+            <pre class="raw-content" aria-label="Raw file content"></pre>
           </div>
         </div>
       </div>
@@ -248,7 +248,9 @@ class CommandViewer {
   switchTab(tabName) {
     // Update tab buttons
     this.container.querySelectorAll('.command-tab').forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.tab === tabName);
+      const isActive = tab.dataset.tab === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
     // Update panels
@@ -488,13 +490,13 @@ class CommandViewer {
       html += '</div>';
     }
 
-    html += '<div class="action-buttons">';
-    html += `<button class="action-button copy-command">Copy as /lpl:command</button>`;
-    html += `<button class="action-button test-terminal">Test in terminal</button>`;
+    html += '<div class="action-buttons" role="group" aria-label="Command actions">';
+    html += `<button class="action-button copy-command" aria-label="Copy command to clipboard">Copy as /lpl:command</button>`;
+    html += `<button class="action-button test-terminal" aria-label="Copy test command for terminal">Test in terminal</button>`;
     
     // Add View workflow button if a workflow is referenced
     if (parsedReferences.workflows.length > 0) {
-      html += `<button class="action-button view-workflow" data-workflow="${parsedReferences.workflows[0]}">View workflow →</button>`;
+      html += `<button class="action-button view-workflow" data-workflow="${parsedReferences.workflows[0]}" aria-label="Open workflow file">View workflow →</button>`;
     }
     
     html += '</div>';
@@ -639,7 +641,8 @@ class CommandViewer {
   showCommandSkeleton() {
     const metadataCard = this.container.querySelector('.metadata-card');
     metadataCard.innerHTML = `
-      <div class="command-viewer-skeleton skeleton-fade-in">
+      <div class="command-viewer-skeleton skeleton-fade-in" role="status" aria-label="Loading command metadata">
+        <span class="sr-only">Loading command metadata...</span>
         <div class="command-viewer-skeleton-card">
           <div class="skeleton command-viewer-skeleton-title"></div>
           <div class="skeleton skeleton-text long" style="margin-bottom: 20px;"></div>
@@ -664,7 +667,8 @@ class CommandViewer {
     
     // Also show skeleton in raw content
     this.container.querySelector('.raw-content').innerHTML = `
-      <div class="editor-skeleton skeleton-fade-in">
+      <div class="editor-skeleton skeleton-fade-in" role="status" aria-label="Loading raw content">
+        <span class="sr-only">Loading raw content...</span>
         <div class="skeleton skeleton-text full"></div>
         <div class="skeleton skeleton-text long"></div>
         <div class="skeleton skeleton-text medium"></div>

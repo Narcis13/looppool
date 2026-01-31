@@ -35,38 +35,38 @@ class MarkdownEditor {
     // Create editor structure
     this.container.innerHTML = `
       <div class="editor-container">
-        <div class="find-bar" id="find-bar" style="display: none;">
+        <div class="find-bar" id="find-bar" style="display: none;" role="search" aria-label="Find and replace">
           <div class="find-controls">
-            <input type="text" id="find-input" placeholder="Find..." class="find-input">
-            <span class="find-results">0/0</span>
-            <button class="find-prev" title="Previous match (Shift+Enter)">↑</button>
-            <button class="find-next" title="Next match (Enter)">↓</button>
+            <input type="text" id="find-input" placeholder="Find..." class="find-input" aria-label="Find text" role="searchbox">
+            <span class="find-results" aria-live="polite" aria-atomic="true">0/0</span>
+            <button class="find-prev" title="Previous match (Shift+Enter)" aria-label="Previous match">↑</button>
+            <button class="find-next" title="Next match (Enter)" aria-label="Next match">↓</button>
             <label class="regex-toggle">
-              <input type="checkbox" id="regex-checkbox">
+              <input type="checkbox" id="regex-checkbox" aria-label="Use regular expressions">
               <span title="Use regular expressions">.*</span>
             </label>
-            <button class="replace-toggle" title="Toggle replace">▼</button>
-            <button class="find-close" title="Close (Esc)">×</button>
+            <button class="replace-toggle" title="Toggle replace" aria-label="Toggle replace mode" aria-expanded="false">▼</button>
+            <button class="find-close" title="Close (Esc)" aria-label="Close find and replace">×</button>
           </div>
           <div class="replace-controls" id="replace-controls" style="display: none;">
-            <input type="text" id="replace-input" placeholder="Replace..." class="replace-input">
-            <button class="replace-current" title="Replace current match">Replace</button>
-            <button class="replace-all" title="Replace all matches">Replace All</button>
+            <input type="text" id="replace-input" placeholder="Replace..." class="replace-input" aria-label="Replace text">
+            <button class="replace-current" title="Replace current match" aria-label="Replace current match">Replace</button>
+            <button class="replace-all" title="Replace all matches" aria-label="Replace all matches">Replace All</button>
           </div>
         </div>
         <div class="editor-content">
-          <div class="line-numbers"></div>
+          <div class="line-numbers" aria-hidden="true"></div>
           <div class="editor-wrapper">
-            <div class="highlight-layer"></div>
-            <textarea class="editor-textarea" wrap="off" spellcheck="false"></textarea>
+            <div class="highlight-layer" aria-hidden="true"></div>
+            <textarea class="editor-textarea" wrap="off" spellcheck="false" aria-label="Code editor" role="textbox" aria-multiline="true"></textarea>
           </div>
         </div>
-        <div class="status-bar">
-          <span class="file-path"></span>
-          <span class="vim-mode-indicator"></span>
-          <span class="save-status">Ready</span>
+        <div class="status-bar" role="status">
+          <span class="file-path" aria-label="Current file"></span>
+          <span class="vim-mode-indicator" aria-live="polite" aria-atomic="true"></span>
+          <span class="save-status" aria-live="polite" aria-atomic="true">Ready</span>
           <label class="vim-toggle">
-            <input type="checkbox" id="vim-checkbox">
+            <input type="checkbox" id="vim-checkbox" aria-label="Toggle Vim mode">
             <span>Vim</span>
           </label>
         </div>
@@ -197,6 +197,11 @@ class MarkdownEditor {
   toggleReplaceBar() {
     const isVisible = this.replaceControls.style.display !== 'none';
     this.replaceControls.style.display = isVisible ? 'none' : 'block';
+    
+    // Update aria-expanded attribute
+    const toggleButton = this.container.querySelector('.replace-toggle');
+    toggleButton.setAttribute('aria-expanded', !isVisible ? 'true' : 'false');
+    
     if (!isVisible) {
       this.replaceInput.focus();
     }
@@ -456,7 +461,8 @@ class MarkdownEditor {
     // Show skeleton in editor
     const editorWrapper = this.container.querySelector('.editor-wrapper');
     const skeletonHTML = `
-      <div class="editor-skeleton skeleton-fade-in" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 10; padding: 10px;">
+      <div class="editor-skeleton skeleton-fade-in" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 10; padding: 10px;" role="status" aria-label="Loading file">
+        <span class="sr-only">Loading file ${path}...</span>
         <div class="editor-skeleton-toolbar">
           <div class="skeleton skeleton-button"></div>
           <div class="skeleton skeleton-button"></div>
@@ -500,7 +506,7 @@ class MarkdownEditor {
     
     // Show error in editor
     const errorHTML = `
-      <div class="editor-error" style="padding: 40px; text-align: center; color: #f44336;">
+      <div class="editor-error" style="padding: 40px; text-align: center; color: #f44336;" role="alert" aria-live="assertive">
         <h3>Error Loading File</h3>
         <p>${message}</p>
       </div>

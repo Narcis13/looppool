@@ -27,10 +27,10 @@ class StatePanel {
   render() {
     this.container.innerHTML = `
       <div class="state-panel-header">
-        <h2>Project State</h2>
-        <button class="refresh-btn" id="refresh-btn">⟳ Refresh</button>
+        <h2 id="state-panel-heading">Project State</h2>
+        <button class="refresh-btn" id="refresh-btn" aria-label="Refresh project state">⟳ Refresh</button>
       </div>
-      <div class="state-panel-content">
+      <div class="state-panel-content" role="region" aria-labelledby="state-panel-heading">
         ${this.renderStateSkeleton()}
       </div>
     `;
@@ -40,7 +40,8 @@ class StatePanel {
   
   renderStateSkeleton() {
     return `
-      <div class="state-panel-skeleton skeleton-fade-in">
+      <div class="state-panel-skeleton skeleton-fade-in" role="status" aria-label="Loading project state">
+        <span class="sr-only">Loading project state...</span>
         <!-- Planning docs skeleton -->
         <div class="state-panel-skeleton-section">
           <div class="skeleton state-panel-skeleton-header"></div>
@@ -372,10 +373,10 @@ class StatePanel {
   renderError(error) {
     const contentDiv = this.container.querySelector('.state-panel-content');
     contentDiv.innerHTML = `
-      <div class="error-state">
+      <div class="error-state" role="alert" aria-live="assertive">
         <h3>Error loading state</h3>
         <p>${this.escapeHtml(error)}</p>
-        <button onclick="window.statePanel.loadState()">Retry</button>
+        <button onclick="window.statePanel.loadState()" aria-label="Retry loading state">Retry</button>
       </div>
     `;
   }
@@ -608,16 +609,16 @@ class StatePanel {
 
   renderResumeWorkButton() {
     return `
-      <div class="state-section quick-actions-section">
+      <div class="state-section quick-actions-section" role="group" aria-label="Quick actions">
         <h3>Quick Actions</h3>
         <div class="quick-action-buttons">
-          <button class="quick-action-btn resume-work-btn" data-path="CONTINUE_HERE.md">
+          <button class="quick-action-btn resume-work-btn" data-path="CONTINUE_HERE.md" aria-label="Resume work from continue here file">
             ▶️ Resume work
           </button>
-          <button class="quick-action-btn view-decisions-btn" data-path="DECISIONS.md">
+          <button class="quick-action-btn view-decisions-btn" data-path="DECISIONS.md" aria-label="View project decisions">
             📋 View decisions
           </button>
-          <button class="quick-action-btn progress-summary-btn">
+          <button class="quick-action-btn progress-summary-btn" aria-label="Show progress summary">
             📊 Progress summary
           </button>
         </div>

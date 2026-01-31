@@ -76,49 +76,49 @@ class SettingsPanel {
   
   setupPanel() {
     this.container.innerHTML = `
-      <div class="settings-panel">
+      <div class="settings-panel" role="region" aria-label="Settings panel">
         <div class="settings-header">
-          <h2>Settings</h2>
-          <button class="settings-close-btn" title="Close settings">×</button>
+          <h2 id="settings-heading">Settings</h2>
+          <button class="settings-close-btn" title="Close settings" aria-label="Close settings panel">×</button>
         </div>
-        <div class="settings-content">
+        <div class="settings-content" role="form" aria-labelledby="settings-heading">
           <div class="settings-section">
             <h3>Editor</h3>
             
             <div class="setting-group">
               <label for="font-size">Font Size</label>
               <div class="setting-control">
-                <input type="range" id="font-size" min="10" max="20" value="${this.settings.editor.fontSize}">
-                <span class="setting-value">${this.settings.editor.fontSize}px</span>
+                <input type="range" id="font-size" min="10" max="20" value="${this.settings.editor.fontSize}" aria-label="Font size" aria-valuemin="10" aria-valuemax="20" aria-valuenow="${this.settings.editor.fontSize}">
+                <span class="setting-value" aria-live="polite">${this.settings.editor.fontSize}px</span>
               </div>
             </div>
             
             <div class="setting-group">
               <label for="line-height">Line Height</label>
               <div class="setting-control">
-                <input type="range" id="line-height" min="16" max="30" value="${this.settings.editor.lineHeight}">
-                <span class="setting-value">${this.settings.editor.lineHeight}px</span>
+                <input type="range" id="line-height" min="16" max="30" value="${this.settings.editor.lineHeight}" aria-label="Line height" aria-valuemin="16" aria-valuemax="30" aria-valuenow="${this.settings.editor.lineHeight}">
+                <span class="setting-value" aria-live="polite">${this.settings.editor.lineHeight}px</span>
               </div>
             </div>
             
             <div class="setting-group">
               <label for="tab-size">Tab Size</label>
               <div class="setting-control">
-                <input type="range" id="tab-size" min="2" max="8" step="2" value="${this.settings.editor.tabSize}">
-                <span class="setting-value">${this.settings.editor.tabSize} spaces</span>
+                <input type="range" id="tab-size" min="2" max="8" step="2" value="${this.settings.editor.tabSize}" aria-label="Tab size" aria-valuemin="2" aria-valuemax="8" aria-valuenow="${this.settings.editor.tabSize}">
+                <span class="setting-value" aria-live="polite">${this.settings.editor.tabSize} spaces</span>
               </div>
             </div>
             
             <div class="setting-group">
               <label>
-                <input type="checkbox" id="word-wrap" ${this.settings.editor.wordWrap ? 'checked' : ''}>
+                <input type="checkbox" id="word-wrap" ${this.settings.editor.wordWrap ? 'checked' : ''} aria-label="Enable word wrap">
                 Word Wrap
               </label>
             </div>
             
             <div class="setting-group">
               <label>
-                <input type="checkbox" id="show-line-numbers" ${this.settings.editor.showLineNumbers ? 'checked' : ''}>
+                <input type="checkbox" id="show-line-numbers" ${this.settings.editor.showLineNumbers ? 'checked' : ''} aria-label="Show line numbers">
                 Show Line Numbers
               </label>
             </div>
@@ -139,7 +139,7 @@ class SettingsPanel {
             
             <div class="setting-group">
               <label>
-                <input type="checkbox" id="auto-save" ${this.settings.editor.autoSave ? 'checked' : ''}>
+                <input type="checkbox" id="auto-save" ${this.settings.editor.autoSave ? 'checked' : ''} aria-label="Enable auto save">
                 Auto Save
               </label>
             </div>
@@ -147,14 +147,14 @@ class SettingsPanel {
             <div class="setting-group ${!this.settings.editor.autoSave ? 'disabled' : ''}">
               <label for="auto-save-delay">Auto Save Delay</label>
               <div class="setting-control">
-                <input type="range" id="auto-save-delay" min="500" max="5000" step="500" value="${this.settings.editor.autoSaveDelay}" ${!this.settings.editor.autoSave ? 'disabled' : ''}>
-                <span class="setting-value">${this.settings.editor.autoSaveDelay}ms</span>
+                <input type="range" id="auto-save-delay" min="500" max="5000" step="500" value="${this.settings.editor.autoSaveDelay}" ${!this.settings.editor.autoSave ? 'disabled' : ''} aria-label="Auto save delay in milliseconds" aria-valuemin="500" aria-valuemax="5000" aria-valuenow="${this.settings.editor.autoSaveDelay}">
+                <span class="setting-value" aria-live="polite">${this.settings.editor.autoSaveDelay}ms</span>
               </div>
             </div>
             
             <div class="setting-group">
               <label for="theme">Theme</label>
-              <select id="theme" class="setting-select">
+              <select id="theme" class="setting-select" aria-label="Select theme">
                 <option value="light" ${this.settings.editor.theme === 'light' ? 'selected' : ''}>Light</option>
                 <option value="dark" ${this.settings.editor.theme === 'dark' ? 'selected' : ''}>Dark</option>
                 <option value="auto" ${this.settings.editor.theme === 'auto' ? 'selected' : ''}>Auto (System)</option>
@@ -227,11 +227,11 @@ class SettingsPanel {
           </div>
           
           <div class="settings-footer">
-            <button class="settings-reset-btn">Reset to Defaults</button>
+            <button class="settings-reset-btn" aria-label="Reset all settings to default values">Reset to Defaults</button>
             <div class="settings-actions">
-              <button class="settings-export-btn">Export Settings</button>
-              <button class="settings-import-btn">Import Settings</button>
-              <input type="file" id="settings-import-input" accept=".json" style="display: none;">
+              <button class="settings-export-btn" aria-label="Export settings to JSON file">Export Settings</button>
+              <button class="settings-import-btn" aria-label="Import settings from JSON file">Import Settings</button>
+              <input type="file" id="settings-import-input" accept=".json" style="display: none;" aria-label="Select settings file to import">
             </div>
           </div>
         </div>

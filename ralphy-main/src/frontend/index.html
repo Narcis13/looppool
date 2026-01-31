@@ -539,28 +539,41 @@
       background: #252526;
       border-bottom-color: #333;
     }
+    
+    /* Screen reader only text */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div class="project-name">LPL IDE</div>
+  <div class="top-bar" role="banner">
+    <div class="project-name" role="heading" aria-level="1">LPL IDE</div>
     <div style="display: flex; align-items: center;">
-      <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
-      <button class="analytics-btn" onclick="showAnalytics()">📊 Analytics</button>
-      <div id="connection-status" class="connection-status">Disconnected</div>
+      <button class="settings-btn" onclick="toggleSettings()" aria-label="Open settings panel" title="Open settings panel">⚙️ Settings</button>
+      <button class="analytics-btn" onclick="showAnalytics()" aria-label="Show analytics summary" title="Show analytics summary">📊 Analytics</button>
+      <div id="connection-status" class="connection-status" role="status" aria-live="polite" aria-label="Connection status">Disconnected</div>
     </div>
   </div>
-  <div class="main-content">
-    <div class="sidebar">
+  <div class="main-content" role="main">
+    <div class="sidebar" role="navigation" aria-label="File tree">
       <!-- File tree will go here -->
     </div>
-    <div class="editor-panel" id="editor-panel">
+    <div class="editor-panel" id="editor-panel" role="region" aria-label="Code editor">
       <!-- Editor will be mounted here -->
     </div>
-    <div class="state-panel-container" id="state-panel-container">
+    <div class="state-panel-container" id="state-panel-container" role="complementary" aria-label="State panel">
       <!-- State panel will be mounted here -->
     </div>
-    <div class="settings-panel-container" id="settings-panel-container" style="display: none;">
+    <div class="settings-panel-container" id="settings-panel-container" style="display: none;" role="region" aria-label="Settings panel">
       <!-- Settings panel will be mounted here -->
     </div>
   </div>

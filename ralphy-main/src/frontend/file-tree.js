@@ -25,17 +25,17 @@ class FileTree {
   
   setupHTML() {
     this.container.innerHTML = `
-      <div class="file-tree">
+      <div class="file-tree" role="tree" aria-label="File explorer">
         <div class="file-tree-header">
-          <h3>Files</h3>
-          <button class="refresh-btn" title="Refresh">↻</button>
+          <h3 id="file-tree-heading">Files</h3>
+          <button class="refresh-btn" title="Refresh file tree" aria-label="Refresh file tree">↻</button>
         </div>
         <div class="file-tree-search">
-          <input type="text" placeholder="Search files..." class="file-search-input">
+          <input type="text" placeholder="Search files..." class="file-search-input" aria-label="Search files" role="searchbox">
         </div>
         <div class="file-tree-container">
-          <div class="file-tree-viewport">
-            <div class="file-tree-content"></div>
+          <div class="file-tree-viewport" role="group" aria-labelledby="file-tree-heading">
+            <div class="file-tree-content" role="presentation"></div>
           </div>
         </div>
       </div>
@@ -277,11 +277,25 @@ class FileTree {
     div.dataset.path = item.path;
     div.dataset.type = item.type;
     
+    // Add ARIA attributes
+    div.setAttribute('role', 'treeitem');
+    div.setAttribute('aria-level', item.level + 1);
+    div.setAttribute('aria-selected', item.path === this.selectedFile ? 'true' : 'false');
+    div.setAttribute('tabindex', item.path === this.selectedFile ? '0' : '-1');
+    
+    if (item.type === 'directory') {
+      div.setAttribute('aria-expanded', item.isExpanded ? 'true' : 'false');
+      div.setAttribute('aria-label', `Folder ${item.name}, ${item.isExpanded ? 'expanded' : 'collapsed'}`);
+    } else {
+      div.setAttribute('aria-label', `File ${item.name}${this.unsavedFiles.has(item.path) ? ', unsaved changes' : ''}`);
+    }
+    
     // Add expand/collapse arrow for directories
     if (item.type === 'directory' && item.hasChildren) {
       const arrow = document.createElement('span');
       arrow.className = 'tree-arrow';
       arrow.textContent = item.isExpanded ? '▼' : '▶';
+      arrow.setAttribute('aria-hidden', 'true');
       arrow.onclick = (e) => {
         e.stopPropagation();
         this.debouncedToggleDir(item.path);
@@ -293,6 +307,7 @@ class FileTree {
     const icon = document.createElement('span');
     icon.className = 'tree-icon';
     icon.textContent = this.getFileIcon(item.name, item.type);
+    icon.setAttribute('aria-hidden', 'true');
     div.appendChild(icon);
     
     // Add name
@@ -306,6 +321,7 @@ class FileTree {
       const dot = document.createElement('span');
       dot.className = 'unsaved-dot';
       dot.textContent = '●';
+      dot.setAttribute('aria-label', 'Unsaved changes');
       div.appendChild(dot);
     }
     
@@ -447,7 +463,8 @@ class FileTree {
   showLoading() {
     // Show skeleton loader for file tree
     const skeletonHTML = `
-      <div class="file-tree-skeleton skeleton-fade-in">
+      <div class="file-tree-skeleton skeleton-fade-in" role="status" aria-label="Loading file tree">
+        <span class="sr-only">Loading file tree...</span>
         ${this.generateTreeSkeletonItems(8)}
       </div>
     `;
@@ -477,6 +494,6 @@ class FileTree {
   }
   
   showError(error) {
-    this.content.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+    this.content.innerHTML = `<div class="error" role="alert" aria-live="assertive">Error: ${error.message}</div>`;
   }
 }

@@ -17,10 +17,10 @@ class QuickOpen {
     overlay.style.display = 'none';
     
     overlay.innerHTML = `
-      <div class="quick-open-modal">
-        <input type="text" class="quick-open-input" placeholder="Type to search files...">
+      <div class="quick-open-modal" role="dialog" aria-modal="true" aria-label="Quick open files">
+        <input type="text" class="quick-open-input" placeholder="Type to search files..." aria-label="Search files" role="combobox" aria-expanded="true" aria-controls="quick-open-list" aria-autocomplete="list">
         <div class="quick-open-results">
-          <div class="quick-open-list"></div>
+          <div class="quick-open-list" id="quick-open-list" role="listbox" aria-label="Search results"></div>
         </div>
       </div>
     `;
@@ -136,7 +136,8 @@ class QuickOpen {
   
   showLoadingSkeleton() {
     const skeletonHTML = `
-      <div class="quick-open-skeleton skeleton-fade-in">
+      <div class="quick-open-skeleton skeleton-fade-in" role="status" aria-label="Loading files">
+        <span class="sr-only">Loading files...</span>
         ${Array(5).fill('').map((_, i) => `
           <div class="quick-open-skeleton-item">
             <div class="skeleton quick-open-skeleton-name"></div>
@@ -150,7 +151,7 @@ class QuickOpen {
   
   showError(message) {
     this.list.innerHTML = `
-      <div class="quick-open-empty" style="color: #f44336;">
+      <div class="quick-open-empty" style="color: #f44336;" role="alert" aria-live="assertive">
         ${message}
       </div>
     `;
@@ -297,7 +298,7 @@ class QuickOpen {
       const highlightedPath = this.highlightMatch(filePath, this.input.value);
       
       return `
-        <div class="quick-open-item ${selected}" data-index="${index}">
+        <div class="quick-open-item ${selected}" data-index="${index}" role="option" aria-selected="${index === this.selectedIndex ? 'true' : 'false'}" aria-label="File ${fileName} in ${filePath}">
           <div class="quick-open-item-name">${highlightedName}</div>
           <div class="quick-open-item-path">${highlightedPath}</div>
         </div>
@@ -327,13 +328,18 @@ class QuickOpen {
   updateSelection() {
     const items = this.list.querySelectorAll('.quick-open-item');
     items.forEach((item, index) => {
-      item.classList.toggle('selected', index === this.selectedIndex);
+      const isSelected = index === this.selectedIndex;
+      item.classList.toggle('selected', isSelected);
+      item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
     });
     
     // Scroll selected item into view
     const selectedItem = items[this.selectedIndex];
     if (selectedItem) {
       selectedItem.scrollIntoView({ block: 'nearest' });
+      // Update aria-activedescendant on the input
+      this.input.setAttribute('aria-activedescendant', `quick-open-item-${this.selectedIndex}`);
+      selectedItem.id = `quick-open-item-${this.selectedIndex}`;
     }
   }
   
