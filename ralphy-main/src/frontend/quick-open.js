@@ -190,6 +190,9 @@ class QuickOpen {
     this.input.value = '';
     this.input.focus();
     
+    // Track quick open usage
+    document.dispatchEvent(new CustomEvent('quick-open-used'));
+    
     // Show skeleton if no files loaded yet
     if (this.files.length === 0) {
       this.showLoadingSkeleton();

@@ -862,6 +862,12 @@ class GraphViewer {
   }
 
   renderGraph(graphData) {
+    // Track graph view
+    document.dispatchEvent(new CustomEvent('graph-viewed'));
+    
+    // Track start time for performance metrics
+    const renderStartTime = Date.now();
+    
     // Clear canvas
     this.canvas.innerHTML = '';
     
@@ -878,6 +884,12 @@ class GraphViewer {
     } else {
       // Use SVG rendering for fewer nodes
       this.renderGraphSVG(graphData);
+    }
+    
+    // Track performance metric
+    const renderTime = Date.now() - renderStartTime;
+    if (window.analytics) {
+      window.analytics.trackPerformance('graphRender', renderTime);
     }
   }
   

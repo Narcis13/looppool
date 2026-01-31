@@ -435,12 +435,31 @@
       color: #999;
       font-size: 14px;
     }
+    
+    /* Analytics button in top bar */
+    .analytics-btn {
+      background: none;
+      border: 1px solid #ddd;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s;
+    }
+    
+    .analytics-btn:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <div class="project-name">LPL IDE</div>
-    <div id="connection-status" class="connection-status">Disconnected</div>
+    <div style="display: flex; align-items: center;">
+      <button class="analytics-btn" onclick="showAnalytics()">📊 Analytics</button>
+      <div id="connection-status" class="connection-status">Disconnected</div>
+    </div>
   </div>
   <div class="main-content">
     <div class="sidebar">
@@ -455,6 +474,7 @@
   </div>
   <script src="error-boundary.js"></script>
   <script src="async-error-handler.js"></script>
+  <script src="analytics.js"></script>
   <script src="app.js"></script>
   <script src="file-tree.js"></script>
   <script src="editor.js"></script>
@@ -462,6 +482,47 @@
   <script src="command-viewer.js"></script>
   <script src="quick-open.js"></script>
   <script>
+    // Initialize analytics
+    const analytics = new Analytics();
+    window.analytics = analytics;
+    
+    // Show analytics summary
+    function showAnalytics() {
+      const summary = analytics.getSummary();
+      const message = `
+📊 Analytics Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 Usage
+• Days since first use: ${summary.daysSinceFirstUse}
+• Total sessions: ${summary.totalSessions}
+
+📁 File Operations
+• Files opened: ${summary.features.fileOpens}
+• Files saved: ${summary.features.fileSaves}
+
+🔧 Features Used
+• Find/Search: ${summary.features.findUsed}
+• Replace: ${summary.features.replaceUsed}
+• Vim mode: ${summary.features.vimModeUsed}
+• Quick open (Cmd+P): ${summary.features.quickOpenUsed}
+• Graph viewed: ${summary.features.graphViewed}
+• Commands viewed: ${summary.features.commandsViewed}
+• State panel viewed: ${summary.features.stateViewed}
+
+⏱️ Performance
+• Avg file load time: ${summary.performance.avgFileLoadTime}ms
+• Avg file save time: ${summary.performance.avgFileSaveTime}ms
+• Avg graph render time: ${summary.performance.avgGraphRenderTime}ms
+
+❌ Errors
+• Total errors: ${summary.errors.total}
+${Object.entries(summary.errors.byType).map(([type, count]) => `• ${type}: ${count}`).join('\n')}
+      `;
+      
+      alert(message.trim());
+    }
+    
     // Initialize components with error boundaries
     
     // Initialize file tree with error boundary

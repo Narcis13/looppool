@@ -94,6 +94,9 @@ class OperationQueue {
   async executeOperation(operation) {
     switch (operation.type) {
       case 'saveFile':
+        // Track start time for performance metrics
+        const saveStartTime = Date.now();
+        
         const saveResponse = await asyncErrorHandler.wrapFetch(`/api/file?path=${encodeURIComponent(operation.path)}`, {
           method: 'PUT',
           headers: {
@@ -109,9 +112,20 @@ class OperationQueue {
         // Invalidate ETag cache for this file after save
         this.etagCache.delete(operation.path);
         
-        return await saveResponse.text();
+        const result = await saveResponse.text();
+        
+        // Track performance metric
+        const saveTime = Date.now() - saveStartTime;
+        if (window.analytics) {
+          window.analytics.trackPerformance('fileSave', saveTime);
+        }
+        
+        return result;
         
       case 'loadFile':
+        // Track start time for performance metrics
+        const loadStartTime = Date.now();
+        
         // Check if we have a cached ETag for this file
         const cachedEtag = this.etagCache.get(operation.path);
         const headers = {};
@@ -142,6 +156,13 @@ class OperationQueue {
         }
         
         const content = await loadResponse.text();
+        
+        // Track performance metric
+        const loadTime = Date.now() - loadStartTime;
+        if (window.analytics) {
+          window.analytics.trackPerformance('fileLoad', loadTime);
+        }
+        
         return { cached: false, content };
         
       case 'loadTree':
@@ -433,6 +454,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!path) return;
     
     console.log('Opening file:', path);
+    
+    // Track file open
+    if (window.analytics) {
+      window.analytics.trackFeature('fileOpens');
+    }
     
     // Show skeleton loader in editor while loading
     if (window.editor) {

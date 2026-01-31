@@ -176,6 +176,11 @@ class MarkdownEditor {
     this.findBar.style.display = 'block';
     if (showReplace) {
       this.replaceControls.style.display = 'block';
+      // Track replace usage
+      document.dispatchEvent(new CustomEvent('replace-used'));
+    } else {
+      // Track find usage
+      document.dispatchEvent(new CustomEvent('find-opened'));
     }
     this.findInput.focus();
     this.findInput.select();
@@ -550,6 +555,9 @@ class MarkdownEditor {
     
     this.updateStatus('Saving...');
     
+    // Track file save
+    document.dispatchEvent(new CustomEvent('file-saved'));
+    
     try {
       await window.api.saveFile(this.currentFile, this.textarea.value, {
         onSuccess: () => {
@@ -674,6 +682,11 @@ class MarkdownEditor {
   toggleVimMode() {
     this.vimEnabled = this.vimCheckbox.checked;
     localStorage.setItem('vim-mode-enabled', this.vimEnabled);
+    
+    // Track vim mode usage
+    if (this.vimEnabled) {
+      document.dispatchEvent(new CustomEvent('vim-mode-toggled'));
+    }
     
     if (this.vimEnabled) {
       this.vimMode = 'normal';

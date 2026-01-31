@@ -405,6 +405,9 @@ class CommandViewer {
   async loadCommand(filePath) {
     this.currentFile = filePath;
     
+    // Track command view
+    document.dispatchEvent(new CustomEvent('command-viewed'));
+    
     // Show skeleton loader
     this.showCommandSkeleton();
     

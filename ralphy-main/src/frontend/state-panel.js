@@ -78,6 +78,9 @@ class StatePanel {
   }
 
   async loadState() {
+    // Track state view
+    document.dispatchEvent(new CustomEvent('state-viewed'));
+    
     try {
       const response = await fetch('/api/state');
       const data = await response.json();
